@@ -462,12 +462,21 @@ public class Client extends Thread
 		
 		int attempt=0;
 		java.io.File dir;
+		boolean fileExists=false;
 		do
 		{
 			try { Thread.sleep(5000); } catch (Exception e) {}
 			dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
+			if(dir.list().length>0)
+			{
+				java.io.File subDir=dir.listFiles()[0];
+				if(subDir.list().length>0)
+				{
+					fileExists=true;
+				}
+			}
 			attempt++;
-		}while(attempt<10 && dir.list().length==0);
+		}while(attempt<10 && !fileExists);
 			
 			
 		// send the replay data to the server
