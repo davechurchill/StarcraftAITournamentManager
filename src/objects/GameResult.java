@@ -40,13 +40,13 @@ public class GameResult implements Comparable<Object>
 	{
 		setResult(data);
 
-		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
+		/*int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
 	
 		for (int i=0; i<numTimers; ++i)
 		{
 			hostTimers.add(0);
 			awayTimers.add(0);
-		}
+		}*/
 	}
 	
 	public void setResult (String dataLine)
@@ -88,8 +88,22 @@ public class GameResult implements Comparable<Object>
 		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
 		for (int i=0; i<numTimers; ++i)
 		{
-			hostTimers.add(Integer.parseInt(data[15 + i]));
-			awayTimers.add(Integer.parseInt(data[15 + numTimers + i]));
+			if(hostTimers.size()==numTimers)//this is the second time here
+			{
+				if(hostTimers.get(i)==0)
+				{
+					hostTimers.set(i, Integer.parseInt(data[15 + i]));
+				}
+				if(awayTimers.get(i)==0)
+				{
+					awayTimers.set(i, Integer.parseInt(data[15 + numTimers + i]));
+				}
+			}
+			else
+			{
+				hostTimers.add(Integer.parseInt(data[15 + i]));
+				awayTimers.add(Integer.parseInt(data[15 + numTimers + i]));
+			}
 		}
 		
 		if (finalFrame > 0 && hostCrash && !awayCrash)
@@ -193,6 +207,17 @@ public class GameResult implements Comparable<Object>
 			}
 		}
 		
+		//if no one timed out or crashed, we have someone kicked out
+	/*	if(finalFrame > 0 && !hostCrash && !awayCrash && prevHostWon!=hostWon)
+		{
+			//let's pronounce as winner the one who played the shortest game (and kicked the other out)
+			if(prevFinalFrame > finalFrame)
+			{
+			}
+			else
+			{
+			}
+		}*/
 		winName = hostWon ? hostName : awayName;
 	}
 	
