@@ -459,8 +459,17 @@ public class Client extends Thread
 	private void sendFilesToServer()
 	{
 		// sleep 5 seconds to make sure starcraft wrote the replay file correctly
-		try { Thread.sleep(5000); } catch (Exception e) {}
 		
+		int attempt=0;
+		java.io.File dir;
+		do
+		{
+			try { Thread.sleep(5000); } catch (Exception e) {}
+			dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
+			attempt++;
+		}while(attempt<10 && dir.list().length==0);
+			
+			
 		// send the replay data to the server
 		DataMessage replayMessage = new DataMessage(DataType.REPLAY, ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
 		log("Sending Data to Sever: " + replayMessage.toString() + "\n");

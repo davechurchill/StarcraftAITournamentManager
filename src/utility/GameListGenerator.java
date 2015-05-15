@@ -9,7 +9,7 @@ import objects.Map;
 public class GameListGenerator 
 {
 
-	public static void GenerateGames(int rounds, Vector<Map> maps, Vector<Bot> bots) 
+	public static void GenerateGames(int rounds, Vector<Map> maps, Vector<Bot> bots, String TournamentType) 
 	{
 		try 
 		{
@@ -17,7 +17,14 @@ public class GameListGenerator
 			
 			BufferedWriter out = new BufferedWriter(fstream);
 			
-			generateRoundRobin(rounds, maps, bots, out);
+			if(TournamentType.equalsIgnoreCase("1VsAll"))
+			{
+				generate1VsAll(rounds, maps, bots, out);
+			}
+			else
+			{
+				generateRoundRobin(rounds, maps, bots, out);
+			}
 			
 			out.write("");
 			out.flush();
@@ -67,5 +74,22 @@ public class GameListGenerator
 			}
 		}
 	}
-
+	public static void generate1VsAll(int rounds, Vector<Map> maps, Vector<Bot> bots, BufferedWriter out) throws IOException 
+	{
+		int gameID = 0;
+		int roundNum = 0;
+		
+		for (int i = 0; i < rounds; i++) 
+		{
+			for(Map m : maps)
+			{
+				for (int k = 1; k < bots.size(); k++) 
+				{
+					out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(0).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
+					gameID++;
+				}
+				roundNum++;
+			}
+		}
+	}
 }

@@ -280,7 +280,7 @@ public class ServerGUI
 				JSpinner spinner = new JSpinner(sModel);
 	
 				JOptionPane.showOptionDialog(mainFrame, spinner, "Enter Number of Rounds Per Map:", JOptionPane.PLAIN_MESSAGE, JOptionPane.QUESTION_MESSAGE, null, null, null);
-				GameListGenerator.GenerateGames(Integer.parseInt("" + spinner.getValue()), ServerSettings.Instance().MapVector, ServerSettings.Instance().BotVector);
+				GameListGenerator.GenerateGames(Integer.parseInt("" + spinner.getValue()), ServerSettings.Instance().MapVector, ServerSettings.Instance().BotVector, ServerSettings.Instance().TournamentType);
 			
 				logText(getTimeStamp() + " " + "Generating Round Robin Tournament With " + spinner.getValue() + " Rounds.\n");
 			}
