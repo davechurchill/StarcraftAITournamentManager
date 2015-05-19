@@ -119,10 +119,10 @@ public class Client extends Thread
 	
 	public void run()
 	{
-		TournamentModuleState gameState = new TournamentModuleState();
 	
 		while (true) 
 		{	
+			TournamentModuleState gameState = new TournamentModuleState();
 			// run this loop every so often
 			try
 			{
