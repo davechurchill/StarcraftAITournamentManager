@@ -435,8 +435,11 @@ public class Client extends Thread
 		}
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
+		ClientCommands.Client_KillStarcraftAndChaoslauncher();
+		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		setStatus(ClientStatus.SENDING, retGame);
-		gameOver();
+		sendFilesToServer();
+		ClientCommands.Client_CleanStarcraftDirectory();
 		setStatus(ClientStatus.READY);
 	}
 

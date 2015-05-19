@@ -1,1 +1,3 @@
 *.class
+client/client.jar
+server/server.jar
