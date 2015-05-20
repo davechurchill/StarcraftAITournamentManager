@@ -190,7 +190,7 @@ public class Client extends Thread
 				}
 				
 				// if the game ended gracefully
-				if (gameState.gameEnded != 0) 
+				if (gameState.gameEnded == 1) 
 				{
 					log("MainLoop: Game ended normally, prepping reply\n");
 					setEndTime();
