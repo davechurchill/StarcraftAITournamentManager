@@ -119,10 +119,10 @@ public class Client extends Thread
 	
 	public void run()
 	{
-		TournamentModuleState gameState = new TournamentModuleState();
 	
 		while (true) 
 		{	
+			TournamentModuleState gameState = new TournamentModuleState();
 			// run this loop every so often
 			try
 			{
@@ -190,7 +190,7 @@ public class Client extends Thread
 				}
 				
 				// if the game ended gracefully
-				if (gameState.gameEnded != 0) 
+				if (gameState.gameEnded == 1) 
 				{
 					log("MainLoop: Game ended normally, prepping reply\n");
 					setEndTime();
@@ -435,14 +435,17 @@ public class Client extends Thread
 		}
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
+		ClientCommands.Client_KillStarcraftAndChaoslauncher();
+		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		setStatus(ClientStatus.SENDING, retGame);
-		gameOver();
+		sendFilesToServer(false);
+		ClientCommands.Client_CleanStarcraftDirectory();
 		setStatus(ClientStatus.READY);
 	}
 
 	private void gameOver()
 	{
-		sendFilesToServer();
+		sendFilesToServer(true);
 		ClientCommands.Client_KillStarcraftAndChaoslauncher();
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		ClientCommands.Client_CleanStarcraftDirectory();
@@ -456,7 +459,7 @@ public class Client extends Thread
 		System.exit(0);
 	}
 	
-	private void sendFilesToServer()
+	private void sendFilesToServer(boolean retryWait)
 	{
 		// sleep 5 seconds to make sure starcraft wrote the replay file correctly
 		
@@ -476,7 +479,7 @@ public class Client extends Thread
 				}
 			}
 			attempt++;
-		}while(attempt<10 && !fileExists);
+		}while(attempt<10 && !fileExists && retryWait);
 			
 			
 		// send the replay data to the server

@@ -92,17 +92,45 @@ public class GameResult implements Comparable<Object>
 			{
 				if(hostTimers.get(i)==0)
 				{
-					hostTimers.set(i, Integer.parseInt(data[15 + i]));
+					try
+					{
+						hostTimers.set(i, Integer.parseInt(data[15 + i]));
+					}
+					catch(java.lang.ArrayIndexOutOfBoundsException ex)
+					{
+						hostTimers.set(i, -1);
+					}
 				}
 				if(awayTimers.get(i)==0)
 				{
-					awayTimers.set(i, Integer.parseInt(data[15 + numTimers + i]));
+					try
+					{
+						awayTimers.set(i, Integer.parseInt(data[15 + numTimers + i]));
+					}
+					catch(java.lang.ArrayIndexOutOfBoundsException ex)
+					{
+						awayTimers.set(i, -1);
+					}
 				}
 			}
 			else
 			{
-				hostTimers.add(Integer.parseInt(data[15 + i]));
-				awayTimers.add(Integer.parseInt(data[15 + numTimers + i]));
+				try
+				{
+					hostTimers.add(Integer.parseInt(data[15 + i]));
+				}
+				catch(java.lang.ArrayIndexOutOfBoundsException ex)
+				{
+					hostTimers.add(-1);
+				}
+				try
+				{
+					awayTimers.add(Integer.parseInt(data[15 + numTimers + i]));
+				}
+				catch(java.lang.ArrayIndexOutOfBoundsException ex)
+				{
+					awayTimers.add(-1);
+				}
 			}
 		}
 		

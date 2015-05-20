@@ -151,12 +151,12 @@ public class ResultsParser
 				gamesAfterRound.get(b2).set(result.roundID, gamesAfterRound.get(b2).get(result.roundID) + 1);
 			}
 			
-			if (result.roundID >= winsAfterRound.get(b1).size())
+			while (result.roundID >= winsAfterRound.get(b1).size())
 			{
 				winsAfterRound.get(b1).add(winsAfterRound.get(b1).lastElement());		
 			}
 			
-			if (result.roundID >= winsAfterRound.get(b2).size())
+			while (result.roundID >= winsAfterRound.get(b2).size())
 			{
 				winsAfterRound.get(b2).add(winsAfterRound.get(b2).lastElement());		
 			}
