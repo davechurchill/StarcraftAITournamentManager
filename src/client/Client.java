@@ -332,7 +332,7 @@ public class Client extends Thread
 			log("StartStarcraft: Launching StarCraft\n");
 			
 			// Prepare the machine for Starcraft launching
-			ClientCommands.Client_KillStarcraftAndChaoslauncher();
+			ClientCommands.Client_KillStarcraft();
 			ClientCommands.Client_CleanStarcraftDirectory();
 			
 			// Write the required starcraft files to the client machine
@@ -435,7 +435,7 @@ public class Client extends Thread
 		}
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
-		ClientCommands.Client_KillStarcraftAndChaoslauncher();
+		ClientCommands.Client_KillStarcraft();
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		setStatus(ClientStatus.SENDING, retGame);
 		sendFilesToServer(false);
@@ -446,16 +446,16 @@ public class Client extends Thread
 	private void gameOver()
 	{
 		sendFilesToServer(true);
-		ClientCommands.Client_KillStarcraftAndChaoslauncher();
+		ClientCommands.Client_KillStarcraft();
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		ClientCommands.Client_CleanStarcraftDirectory();
 	}
 	
 	public void shutDown()
 	{
-		ClientCommands.Client_KillStarcraftAndChaoslauncher();
+		ClientCommands.Client_KillStarcraft();
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
-		ClientCommands.Client_KillStarcraftAndChaoslauncher();
+		ClientCommands.Client_KillStarcraft();
 		System.exit(0);
 	}
 	

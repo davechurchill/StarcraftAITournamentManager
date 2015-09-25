@@ -14,7 +14,7 @@ public class ClientCommands
 		Client.log("      Client_InitialSetup()\n");
 		
 		// Make sure Starcraft isn't running
-		Client_KillStarcraftAndChaoslauncher();
+		Client_KillStarcraft();
 		
 		// Set up local firewall access
 		WindowsCommandTools.RunWindowsCommand("netsh firewall add allowedprogram program = " + ClientSettings.Instance().ClientStarcraftDir + "starcraft.exe name = Starcraft mode = ENABLE scope = ALL", true, false);
@@ -79,9 +79,9 @@ public class ClientCommands
 		//WindowsCommandTools.RegEdit(clpKeyName,  "Chaosplugin for 1.16.1",          "REG_SZ", "0");
 	}	
 	
-	public static void Client_KillStarcraftAndChaoslauncher()
+	public static void Client_KillStarcraft()
 	{
-		Client.log("      Client_KillStarcraftAndChaoslauncher()\n");
+		Client.log("      Client_KillStarcraft()\n");
 		
 		while (WindowsCommandTools.IsWindowsProcessRunning("StarCraft.exe"))
 		{
