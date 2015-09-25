@@ -19,3 +19,9 @@ server/bots/UAlbertaBot
 server/bots/Xelnaga
 server/bots/Ximp
 server/bots/Yarmouk
+*.REP
+server/winpercentage.txt
+server/results.txt
+server/games.txt
+server/html/index.html
+server/html/index.html

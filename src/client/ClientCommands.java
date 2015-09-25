@@ -29,7 +29,7 @@ public class ClientCommands
 		FileUtils.CleanDirectory(new File(ClientSettings.Instance().ClientStarcraftDir + "SentReplays"));
 		
 		// Delete the old Chaoslauncher folder just in case
-		Client_DeleteChaoslauncherDirectory();
+		//Client_DeleteChaoslauncherDirectory();
 		
 		// Clean the Starcraft directory of old files and folders
 		Client_CleanStarcraftDirectory();
@@ -62,21 +62,21 @@ public class ClientCommands
 		WindowsCommandTools.RegEdit(sc64UserKeyName, "introX",      "REG_DWORD", "00000000");
 		
 		// Chaoslauncher Settings
-		String clKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\Launcher";
-		WindowsCommandTools.RegEdit(clKeyName,   "GameVersion",     "REG_SZ",    "Starcraft 1.16.1");
-		WindowsCommandTools.RegEdit(clKeyName,   "Width",           "REG_DWORD", "00000640");
-		WindowsCommandTools.RegEdit(clKeyName,   "Height",          "REG_DWORD", "00000480");
-		WindowsCommandTools.RegEdit(clKeyName,   "StartMinimized",  "REG_SZ",    "0");
-		WindowsCommandTools.RegEdit(clKeyName,   "MinimizeOnRun",   "REG_SZ",    "1");
-		WindowsCommandTools.RegEdit(clKeyName,   "RunScOnStartup",  "REG_SZ",    "1");
-		WindowsCommandTools.RegEdit(clKeyName,   "AutoUpdate",      "REG_SZ",    "0");
-		WindowsCommandTools.RegEdit(clKeyName,   "WarnNoAdmin",     "REG_SZ",    "0");
+		//String clKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\Launcher";
+		//WindowsCommandTools.RegEdit(clKeyName,   "GameVersion",     "REG_SZ",    "Starcraft 1.16.1");
+		//WindowsCommandTools.RegEdit(clKeyName,   "Width",           "REG_DWORD", "00000640");
+		//WindowsCommandTools.RegEdit(clKeyName,   "Height",          "REG_DWORD", "00000480");
+		//WindowsCommandTools.RegEdit(clKeyName,   "StartMinimized",  "REG_SZ",    "0");
+		//WindowsCommandTools.RegEdit(clKeyName,   "MinimizeOnRun",   "REG_SZ",    "1");
+		//WindowsCommandTools.RegEdit(clKeyName,   "RunScOnStartup",  "REG_SZ",    "1");
+		//WindowsCommandTools.RegEdit(clKeyName,   "AutoUpdate",      "REG_SZ",    "0");
+		//WindowsCommandTools.RegEdit(clKeyName,   "WarnNoAdmin",     "REG_SZ",    "0");
 		
 		// Chaoslauncher plugin settings
-		String clpKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\PluginsEnabled";
-		WindowsCommandTools.RegEdit(clpKeyName,  "BWAPI Injector (1.16.1) RELEASE", "REG_SZ", "1");
-		WindowsCommandTools.RegEdit(clpKeyName,  "W-MODE 1.02",                     "REG_SZ", "1");
-		WindowsCommandTools.RegEdit(clpKeyName,  "Chaosplugin for 1.16.1",          "REG_SZ", "0");
+		//String clpKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\PluginsEnabled";
+		//WindowsCommandTools.RegEdit(clpKeyName,  "BWAPI Injector (1.16.1) RELEASE", "REG_SZ", "1");
+		//WindowsCommandTools.RegEdit(clpKeyName,  "W-MODE 1.02",                     "REG_SZ", "1");
+		//WindowsCommandTools.RegEdit(clpKeyName,  "Chaosplugin for 1.16.1",          "REG_SZ", "0");
 	}	
 	
 	public static void Client_KillStarcraftAndChaoslauncher()
@@ -90,19 +90,19 @@ public class ClientCommands
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		} 
 		
-		while (WindowsCommandTools.IsWindowsProcessRunning("Chaoslauncher.exe"))
-		{
-			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /F /IM Chaoslauncher.exe", true, false);
-			try { Thread.sleep(100); } catch (InterruptedException e) {}
-		}
+		//while (WindowsCommandTools.IsWindowsProcessRunning("Chaoslauncher.exe"))
+		//{
+		//	System.out.println("Killing Chaoslauncher...  ");
+		//	WindowsCommandTools.RunWindowsCommand("taskkill /F /IM Chaoslauncher.exe", true, false);
+		//	try { Thread.sleep(100); } catch (InterruptedException e) {}
+		//}
 		
-		while (WindowsCommandTools.IsWindowsProcessRunning("\"Chaoslauncher - MultiInstance.exe\""))
-		{
-			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /F /IM \"Chaoslauncher - MultiInstance.exe\"", true, false);
-			try { Thread.sleep(100); } catch (InterruptedException e) {}
-		}
+		//while (WindowsCommandTools.IsWindowsProcessRunning("\"Chaoslauncher - MultiInstance.exe\""))
+		//{
+		//	System.out.println("Killing Chaoslauncher...  ");
+		//	WindowsCommandTools.RunWindowsCommand("taskkill /F /IM \"Chaoslauncher - MultiInstance.exe\"", true, false);
+		//	try { Thread.sleep(100); } catch (InterruptedException e) {}
+		//}
 	}
 	
 	public static void Client_KillExcessWindowsProccess(Vector<Integer> startingProc)
@@ -171,6 +171,14 @@ public class ClientCommands
 		WindowsCommandTools.RunWindowsCommand("RENAME " + charDir + "*.spc " + botName + ".spc", true, false);
 	}
 	
+    public static void Client_StartInsectLoader()
+	{
+		Client.log("      Client_StartInsectLoader()\n");
+		
+		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
+		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "InsectLoader.exe", false, true);
+	}
+    
 	public static void Client_StartChaoslauncher()
 	{
 		Client.log("      Client_StartChaoslauncher()\n");

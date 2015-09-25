@@ -289,7 +289,7 @@ public class Client extends Thread
 	
 	public boolean canStartStarCraft()
 	{
-		return haveChaoslauncher && (previousInstructions != null) && (requiredFiles != null) && (botFiles != null);
+		return (previousInstructions != null) && (requiredFiles != null) && (botFiles != null);
 	}
 	
 	public void receiveInstructions(InstructionMessage instructions) 
@@ -354,8 +354,8 @@ public class Client extends Thread
 				ClientCommands.Client_RunProxyScript();
 			}
 			
-			// Start chaoslauncher and starcraft
-			ClientCommands.Client_StartChaoslauncher();
+			// Start loader and starcraft
+			ClientCommands.Client_StartInsectLoader();
 
 			// Record the time that we tried to start the game
 			startTime = System.currentTimeMillis();
