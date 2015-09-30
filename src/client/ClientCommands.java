@@ -179,6 +179,14 @@ public class ClientCommands
 		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "DLLInjector.exe --lib \"bwapi-data/BWAPI.dll\" --launch \"Starcraft.exe\"", false, true);
 	}
     
+    public static void Client_StartInsectLoader()
+	{
+		Client.log("      Client_StartStarcraft()\n");
+		
+		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
+		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "InsectLoader.exe", false, true);
+	}
+    
 	public static void Client_StartChaoslauncher()
 	{
 		Client.log("      Client_StartChaoslauncher()\n");
