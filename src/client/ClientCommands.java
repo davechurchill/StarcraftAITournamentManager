@@ -171,12 +171,12 @@ public class ClientCommands
 		WindowsCommandTools.RunWindowsCommand("RENAME " + charDir + "*.spc " + botName + ".spc", true, false);
 	}
 	
-    public static void Client_StartInsectLoader()
+    public static void Client_StartStarcraft()
 	{
-		Client.log("      Client_StartInsectLoader()\n");
+		Client.log("      Client_StartStarcraft()\n");
 		
 		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "InsectLoader.exe", false, true);
+		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "DLLInjector.exe --lib \"bwapi-data/BWAPI.dll\" --launch \"Starcraft.exe\"", false, true);
 	}
     
 	public static void Client_StartChaoslauncher()

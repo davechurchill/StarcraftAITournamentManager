@@ -95,24 +95,20 @@ public class Server  extends Thread
 					continue;
 				}
 				
-				// if this game is a higher round than the last game
-				if(ServerSettings.Instance().TournamentType.equalsIgnoreCase("AllVsAll"))
-				{
-					if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
-					{
-						// put some polling code here to wait until all games from this round are free
-						while (free.size() < clients.size())
-						{
-							log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
-							Thread.sleep(gameRescheduleTimer);
-						}
-						
-						log("Moving Write Directory to Read Directory");
-						
-						// move the write dir to the read dir
-						ServerCommands.Server_MoveWriteToRead();
-					}
-				}
+                if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
+                {
+                    // put some polling code here to wait until all games from this round are free
+                    while (free.size() < clients.size())
+                    {
+                        log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
+                        Thread.sleep(gameRescheduleTimer);
+                    }
+                    
+                    log("Moving Write Directory to Read Directory");
+                    
+                    // move the write dir to the read dir
+                    ServerCommands.Server_MoveWriteToRead();
+                }
 						
 				log(gameString + " SUCCESS: Starting Game\n");
 				start1v1Game(nextGame);
