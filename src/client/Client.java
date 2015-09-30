@@ -355,7 +355,7 @@ public class Client extends Thread
 			}
 			
 			// Start loader and starcraft
-			ClientCommands.Client_StartInsectLoader();
+			ClientCommands.Client_StartChaoslauncher();
 
 			// Record the time that we tried to start the game
 			startTime = System.currentTimeMillis();

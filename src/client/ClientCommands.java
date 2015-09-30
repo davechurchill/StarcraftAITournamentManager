@@ -86,21 +86,21 @@ public class ClientCommands
 		while (WindowsCommandTools.IsWindowsProcessRunning("StarCraft.exe"))
 		{
 			System.out.println("Killing Starcraft...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /F /IM StarCraft.exe", true, false);
+			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM StarCraft.exe", true, false);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		} 
 		
 		while (WindowsCommandTools.IsWindowsProcessRunning("Chaoslauncher.exe"))
 		{
 			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /F /IM Chaoslauncher.exe", true, false);
+			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM Chaoslauncher.exe", true, false);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		}
 		
 		while (WindowsCommandTools.IsWindowsProcessRunning("\"Chaoslauncher - MultiInstance.exe\""))
 		{
 			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /F /IM \"Chaoslauncher - MultiInstance.exe\"", true, false);
+			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM \"Chaoslauncher - MultiInstance.exe\"", true, false);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		}
 	}
@@ -181,7 +181,7 @@ public class ClientCommands
     
     public static void Client_StartInsectLoader()
 	{
-		Client.log("      Client_StartStarcraft()\n");
+		Client.log("      Client_StartInsectLoader()\n");
 		
 		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
 		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "InsectLoader.exe", false, true);
