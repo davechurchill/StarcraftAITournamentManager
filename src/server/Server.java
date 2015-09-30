@@ -314,7 +314,7 @@ public class Server  extends Thread
 			{
                 clients.add(c);
                 log("New Client Added: " + c.toString() + "\n");
-                //c.sendChaoslauncherFiles();
+                c.sendChaoslauncherFiles();
                 c.sendTournamentModuleSettings();
             }
             if (c.getStatus() == ClientStatus.READY && !free.contains(c)) 
