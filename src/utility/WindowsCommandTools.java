@@ -144,14 +144,7 @@ public class WindowsCommandTools
 			String completeCommand = windowsCommandPrefix + command;
 			System.out.println("\n" + completeCommand);
 			Process proc = Runtime.getRuntime().exec(windowsCommandPrefix + command);
-			
-			BufferedReader pOut = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			String line;
-			while ((line = pOut.readLine()) != null) 
-			{
-				System.out.println(line);
-			}
-			
+						
 			if (waitFor)
 			{
 				proc.waitFor();
@@ -177,14 +170,7 @@ public class WindowsCommandTools
 			String completeCommand = windowsCommandPrefix + command;
 			System.out.println("\n" + completeCommand);
 			Process proc = Runtime.getRuntime().exec(windowsCommandPrefix + command);
-			
-			BufferedReader pOut = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-			String line;
-			while ((line = pOut.readLine()) != null) 
-			{
-				System.out.println(line);
-			}
-			
+						
 			if (waitFor)
 			{
 				proc.waitFor();
