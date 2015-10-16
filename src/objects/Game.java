@@ -1,8 +1,10 @@
 package objects;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Vector;
-
+import java.util.Date;
 
 public class Game implements Serializable
 {
@@ -10,6 +12,10 @@ public class Game implements Serializable
 
 	private Bot 			homebot;
 	private Bot 			awaybot;
+	private String			homeAddress = "unknown";
+	private String			awayAddress = "unknown";
+	private Date			started;
+	private Date			finished;
 
 	private GameStatus 		status;
 	private Map 			map;
@@ -37,7 +43,8 @@ public class Game implements Serializable
 	private int 			round;
 	private long			hostTime = 0;
 	private long 			guestTime = 0;
-
+	private String			finishDate = "unknown";
+	private String			startDate = "unknown";
 
 	public Game(int iD, int roundt, Bot home, Bot away, Map map) 
 	{
@@ -90,11 +97,33 @@ public class Game implements Serializable
 			s += t;
 		}
 		
+		s += " " + this.homeAddress + " " + this.awayAddress;
+		s += " " + this.startDate + " " + this.finishDate;
+		
 		s += System.getProperty("line.separator");
 		
 		return s;
 	}
 
+	public void setFinsihDate(String date)
+	{
+		finishDate = date;
+	}
+	
+	public void setStartDate(String date)
+	{
+		startDate = date;		
+	}
+	
+	public void setHomeAddress(String addr)
+	{
+		homeAddress = addr;		
+	}
+	
+	public void setAwayAddress(String addr)
+	{
+		awayAddress = addr;		
+	}
 	
 	public GameStatus getStatus() {
 		return status;
@@ -441,6 +470,8 @@ public class Game implements Serializable
 			if (game.isTimeout()) {
                 calcResult();
             }
+			
+			finishDate = (new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
 		}
 	}
 }

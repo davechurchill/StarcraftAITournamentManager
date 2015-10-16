@@ -13,13 +13,15 @@ public class ResultsParser
 	
 	Vector<GameResult> results 		= new Vector<GameResult>();
 	Set<Integer> gameIDs 			= new HashSet<Integer>();
+	Map<String, String> raceColor   = new HashMap<String, String>();
 	
 	private int numBots 			= ServerSettings.Instance().BotVector.size();
 	private int numMaps 			= ServerSettings.Instance().MapVector.size();
 	
-	private String[] botNames 		= new String[numBots];;
-	private String[] shortBotNames 	= new String[numBots];;
-	private String[] mapNames 		= new String[numMaps];;
+	private String[] botColors		= new String[numBots];
+	private String[] botNames 		= new String[numBots];
+	private String[] shortBotNames 	= new String[numBots];
+	private String[] mapNames 		= new String[numMaps];
 	
 	private int[][] wins 			= new int[numBots][numBots];
 	private int[][] mapWins 		= new int[numBots][numMaps];
@@ -37,11 +39,17 @@ public class ResultsParser
 	
 	public ResultsParser(String filename)
 	{
+		raceColor.put("Protoss", "#f1c232");
+		raceColor.put("Zerg", "#c27ba0");
+		raceColor.put("Terran", "#6fa8dc");
+		raceColor.put("Random", "#cccccc");
+		
 		// set the bot names and map names
 		for (int i=0; i<botNames.length; ++i)
 		{
 			botNames[i] = ServerSettings.Instance().BotVector.get(i).getName();
 			shortBotNames[i] = botNames[i].substring(0, Math.min(5, botNames[i].length()));
+			botColors[i] = raceColor.get(ServerSettings.Instance().BotVector.get(i).getRace());
 		}
 		
 		for (int i=0; i<mapNames.length; ++i)
@@ -244,6 +252,10 @@ public class ResultsParser
 		{
 			html += "    <th width=" + width + ">L " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</td>\n";
 		}
+		html += "    <th width=" + 100 + ">Win Addr</td>\n";
+		html += "    <th width=" + 100 + ">Lose Addr</td>\n";
+		html += "    <th width=" + 100 + ">Start</td>\n";
+		html += "    <th width=" + 100 + ">Finish</td>\n";
 		html += "  </tr></thead><tbody>\n";
 				
 		Collections.sort(results, new GameResultIDComparator());
@@ -311,6 +323,10 @@ public class ResultsParser
 				html += "    <td>" + (r.hostWon ? r.awayTimers.get(t) : r.hostTimers.get(t)) + "</td>\n";
 			}
 			
+			html += "    <td>" + (r.hostWon ? r.hostAddress : r.awayAddress) + "</td>\n";
+			html += "    <td>" + (r.hostWon ? r.awayAddress : r.hostAddress) + "</td>\n";
+			html += "    <td>" + (r.startDate) + "</td>\n";
+			html += "    <td>" + (r.finishDate) + "</td>\n";
 			html += "  </tr>\n";
 		}
 		
@@ -418,8 +434,9 @@ public class ResultsParser
 		{
 			int ii = allPairs.get(i).botIndex;
 			String color = ((i%2) == 1 ? "#ffffff" : "#E8E8E8");
+			
 			html += "  <tr>\n";
-			html += "    <td align=center bgcolor=#CCCCCC>" + botNames[ii] + "</td>\n"; 
+			html += "    <td align=center bgcolor=" + botColors[ii] + ">"+ botNames[ii] + "</td>\n"; 
 			html += "    <td align=center bgcolor=" + color + ">" + allgames[ii] + "</td>\n";
 			dataTotals[0] += allgames[ii];			
 			html += "    <td align=center bgcolor=" + color + ">" + allwins[ii] + "</td>\n";
@@ -464,7 +481,7 @@ public class ResultsParser
 		for (int i=0; i<numBots; ++i)
 		{
 			int ii = allPairs.get(i).botIndex;
-			html += "    <td width=71 align=center bgcolor=#CCCCCC>" + shortBotNames[ii] + "</td>\n";
+			html += "    <td width=71 align=center bgcolor=" + botColors[ii] + ">" + shortBotNames[ii] + "</td>\n";
 		}
 		html += "  </tr>\n";
 		
@@ -474,7 +491,7 @@ public class ResultsParser
 			html += "  <tr>\n";
 			
 			String color = ((i%2) == 1 ? "#ffffff" : "#E8E8E8");
-			html += "    <td width=100 align=center  bgcolor=#CCCCCC>" + botNames[ii] + "</td>\n";
+			html += "    <td width=100 align=center  bgcolor=" + botColors[ii] + ">" + botNames[ii] + "</td>\n";
 			html += "    <td width=71 align=center bgcolor=" + color + ">" + new DecimalFormat("##.##").format(allPairs.get(i).win*100) + "</td>\n";
 			
 			
@@ -523,7 +540,7 @@ public class ResultsParser
 			int ii = allPairs.get(i).botIndex;
 			html += "  <tr>\n";
 			
-			html += "    <td width=100 align=center  bgcolor=#CCCCCC>" + botNames[ii] + "</td>\n";
+			html += "    <td width=100 align=center  bgcolor=" + botColors[ii] + ">" + botNames[ii] + "</td>\n";
 			
 			
 			for (int j=0; j<numMaps; j++)

@@ -393,6 +393,9 @@ public class Server  extends Thread
 		awayClient.sendMessage(new StartGameMessage());
 		
 		// set the game to running
+		game.setHomeAddress(hostClient.address.toString());
+		game.setAwayAddress(awayClient.address.toString());
+		game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
         game.setStatus(GameStatus.RUNNING);
         game.startTime();
 		
@@ -428,7 +431,7 @@ public class Server  extends Thread
         listener = l;
     }
 
-    public synchronized void receiveGameResults(Game game) 
+    public synchronized void receiveGameResults(String address, Game game) 
 	{
 		try 
 		{

@@ -17,7 +17,7 @@ import server.Server;
 public class ServerClientThread extends Thread implements Comparable<ServerClientThread>
 {
 	
-	private InetAddress 		address;
+	public InetAddress 		address;
 	public  InstructionMessage 	lastInstructionSent = null;
 	private Socket 				con;
 	private ClientStatus 		status;
@@ -122,7 +122,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		// if the status is sending, grab the replay
 		if (status == ClientStatus.SENDING)
 		{
-			server.receiveGameResults(m.game); 
+			server.receiveGameResults(address.toString(), m.game); 
 		}
 		
 		if (m.status == ClientStatus.RUNNING && m.gameState != null)

@@ -43,6 +43,19 @@ public class ServerSettings
         return INSTANCE;
     }
 	
+	public Bot getBotFromBotName(String botname)
+	{
+		for (Bot b : BotVector)
+		{
+			if (b.getName().equalsIgnoreCase(botname))
+			{
+				return b;
+			}
+		}
+		
+		return null;
+	}
+	
 	public void parseSettingsFile(String filename)
 	{
 		try

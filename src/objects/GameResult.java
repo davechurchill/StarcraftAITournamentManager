@@ -33,6 +33,11 @@ public class GameResult implements Comparable<Object>
 	public int finalFrame			= -2;
 	public int hostTime				= 0;
 	public int awayTime				= 0;
+	
+	public String hostAddress		= "unknown";
+	public String awayAddress		= "unknown";
+	public String startDate			= "unknown";
+	public String finishDate		= "unknown"; 
 
 	public GameResult() {}
 
@@ -130,6 +135,25 @@ public class GameResult implements Comparable<Object>
 				catch(java.lang.ArrayIndexOutOfBoundsException ex)
 				{
 					awayTimers.add(-1);
+				}
+			}
+		}
+		
+		// if there's an address field
+		if (data.length > 15 + numTimers*2)
+		{
+			hostAddress = data[15 + numTimers*2];
+			awayAddress = data[15 + numTimers*2 + 1];
+			
+			// if there's a date field
+			if (data.length > 15 + numTimers*2 + 2)
+			{			
+				startDate = data[15 + numTimers*2 + 2];
+				
+				// record the finish date only from the second person to report
+				if (!firstReport.equalsIgnoreCase("Error"))
+				{
+					finishDate = data[15 + numTimers*2 + 3];
 				}
 			}
 		}
@@ -251,7 +275,7 @@ public class GameResult implements Comparable<Object>
 	
 	public String toString()
 	{
-		String s = String.format("%7d %5d %15s %15s %15s %8d %15s %15s %25s %6b %6b%6b %8d %8d %10d %10d\n",
+		String s = String.format("%7d %5d %15s %15s %15s %8d %15s %15s %25s %6b %6b%6b %8d %8d %10d %10d \n",
 				this.gameID, this.roundID, this.hostName, 
 				this.awayName, this.winName, this.finalFrame, this.crashName, this.timeOutName, this.mapName, 
 				this.hostCrash, this.awayCrash, 
