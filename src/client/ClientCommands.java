@@ -21,16 +21,7 @@ public class ClientCommands
 		WindowsCommandTools.RunWindowsCommand("netsh firewall add allowedprogram program = client.jar name = AIIDEClient mode = ENABLE scope = ALL", true, false);
 		WindowsCommandTools.RunWindowsCommand("netsh firewall add portopening TCP 12345 \"Open Port 12345TCP\"", true, false);
 		WindowsCommandTools.RunWindowsCommand("netsh firewall add portopening UDP 12345 \"Open Port 12345UDP\"", true, false);
-		
-		// Remove the local replay backup if it exists and remake it
-		//WindowsCommandTools.RunWindowsCommand("rmdir /S /Q " + ClientSettings.Instance().ClientStarcraftDir + "SentReplays", true, false);
-		//WindowsCommandTools.RunWindowsCommand("mkdir " + ClientSettings.Instance().ClientStarcraftDir + "SentReplays", true, false);
-		
-		FileUtils.CleanDirectory(new File(ClientSettings.Instance().ClientStarcraftDir + "SentReplays"));
-		
-		// Delete the old Chaoslauncher folder just in case
-		//Client_DeleteChaoslauncherDirectory();
-		
+				
 		// Clean the Starcraft directory of old files and folders
 		Client_CleanStarcraftDirectory();
 	}

@@ -80,6 +80,7 @@ public class Client extends Thread
 	public void setListener(ClientListenerThread l)
 	{
 		listener = l;
+		listener.start();
 	}
 
 	public static void log(String s)

@@ -18,6 +18,7 @@ public class ClientListenerThread extends Thread
 
 	public ClientListenerThread(Client client) 
 	{
+		System.out.println("ClientListenerThread constructor");
 		this.client = client;
 	}
 
@@ -27,6 +28,7 @@ public class ClientListenerThread extends Thread
 		int port = Integer.parseInt(temp.substring(temp.indexOf(':') + 1));
 		String address = temp.substring(0, temp.indexOf(':'));
 		
+		System.out.println("Connecting to Server @ " + address + ":" + port + "\n");
 		Client.log("Connecting to Server @ " + address + ":" + port + "\n");
 		
 		while(true)
@@ -41,6 +43,7 @@ public class ClientListenerThread extends Thread
 			} 
 			catch (Exception e) 
 			{
+				System.out.println("Couldn't connect to server, trying again in 5 seconds.\n");
 				Client.log("Couldn't connect to server, trying again in 5 seconds.\n");
 				connected = false;
 			}
@@ -69,6 +72,8 @@ public class ClientListenerThread extends Thread
 	
 	public void run()
 	{
+		System.out.println("ClientListenerThread run()");
+		
 		setupSocket();
 		setupStreams();
 

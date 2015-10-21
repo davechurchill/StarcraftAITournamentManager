@@ -49,6 +49,7 @@ public class FileUtils
 	
 	public static void DeleteDirectory(File f) 
 	{
+		System.out.println("Deleting directory:" + f.getAbsolutePath());
 		DeleteRecursive(f);
 	}
 	
