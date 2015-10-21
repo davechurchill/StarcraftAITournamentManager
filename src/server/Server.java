@@ -149,7 +149,7 @@ public class Server  extends Thread
 			if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
 			{
 				log("Generating All Results File...\n");
-				writeHTMLFile(rp.getAllResultsHTML(), "html/results.html");
+				rp.writeDetailedResultsHTML("html/results.html");
 				log("Generating All Results File Complete!\n");
 			}
 			

@@ -82,7 +82,7 @@ public class ServerGUI
     				{
     					ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
     					logText(getTimeStamp() + " Generating All Results File...\n");
-    					writeHTMLFile(rp.getAllResultsHTML(), "html/results.html");
+    					rp.writeDetailedResultsHTML("html/results.html");
     					logText(getTimeStamp() + " Generating All Results File Complete!\n");
     				}
     				catch (Exception ex)
