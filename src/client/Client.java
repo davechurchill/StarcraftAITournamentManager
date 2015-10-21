@@ -80,7 +80,6 @@ public class Client extends Thread
 	public void setListener(ClientListenerThread l)
 	{
 		listener = l;
-		listener.start();
 	}
 
 	public static void log(String s)
@@ -348,6 +347,9 @@ public class Client extends Thread
 			ClientCommands.Client_WriteBWAPISettings(instructions);
 			ClientCommands.Client_WriteTournamentModuleSettings(tmSettings);
 			
+			// Clear out the write directory, since all of it was copied over from server
+			ClientCommands.Client_ClearWriteDirectory();
+						
 			// If this is a proxy bot, start the proxy bot script before StarCraft starts
 			if (isProxyBot(previousInstructions))
 			{

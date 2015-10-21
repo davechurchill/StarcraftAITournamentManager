@@ -5,6 +5,7 @@ server/bots/Aiur
 server/bots/Bonjwa
 server/bots/BTHAI
 server/bots/CruzBot
+server/bots/Garmbot
 server/bots/HITA
 server/bots/IceBot
 server/bots/LetaBot
@@ -13,8 +14,13 @@ server/bots/MooseBot
 server/bots/Nova
 server/bots/NUSBot
 server/bots/Oritaka
+server/bots/OpprimoBot
+server/bots/Overkill
 server/bots/Skynet
+server/bots/SusanooTricks
 server/bots/TerranUAB
+server/bots/Tscmoo
+server/bots/Tyr
 server/bots/UAlbertaBot
 server/bots/Xelnaga
 server/bots/Ximp

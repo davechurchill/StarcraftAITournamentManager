@@ -50,23 +50,17 @@ public class GameListGenerator
 			{
 				for (int j = 0; j < bots.size(); j++) 
 				{
-					for (int k = 0; k < bots.size(); k++) 
-					{
+					for (int k = j+1; k < bots.size(); k++) 
+					{						
 						if (roundNum % 2 == 0) 
 						{
-							if (k > j) 
-							{
-								out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(j).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
-								gameID++;
-							}
+							out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(j).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
+							gameID++;
 						} 
 						else 
 						{
-							if (k < j) 
-							{
-								out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(j).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
-								gameID++;
-							}
+							out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(k).getName(), bots.get(j).getName(), m.getMapName()) + System.getProperty("line.separator"));
+							gameID++;
 						}
 					}
 				}

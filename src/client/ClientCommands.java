@@ -42,6 +42,13 @@ public class ClientCommands
 		WindowsCommandTools.RunWindowsCommand(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI\\run_proxy.bat", false, false);
 	}
 	
+	public static void Client_ClearWriteDirectory()
+	{
+		Client.log("      Client_ClearWriteDirectory()\n");
+
+		FileUtils.CleanDirectory(new File(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data/write/"));
+	}
+	
 	// makes edits to windows registry so Chaoslauncher knows where StarCraft is installed
 	public static void Client_RegisterStarCraft()
 	{
