@@ -246,6 +246,7 @@ public class ResultsParser
 	{
 		try
 		{
+			System.out.println("Writing detailed results html");
 			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
 			
 			int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
@@ -356,6 +357,7 @@ public class ResultsParser
 			
 			out.write("</tbody></table>\n");
 			out.write("<br></html>\n");
+			out.close();
 		}
 		catch (IOException e)
 		{
