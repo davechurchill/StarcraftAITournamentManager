@@ -4,6 +4,7 @@ server/server.jar
 server/bots/Aiur
 server/bots/Bonjwa
 server/bots/BTHAI
+server/bots/Cimex
 server/bots/CruzBot
 server/bots/Garmbot
 server/bots/HITA
@@ -17,6 +18,8 @@ server/bots/Oritaka
 server/bots/OpprimoBot
 server/bots/Overkill
 server/bots/Skynet
+server/bots/Stone
+server/bots/ZZZKBot
 server/bots/SusanooTricks
 server/bots/TerranUAB
 server/bots/Tscmoo
@@ -29,5 +32,5 @@ server/bots/Yarmouk
 server/winpercentage.txt
 server/results.txt
 server/games.txt
-server/html/index.html
-server/html/index.html
+server/html/*.html
+server/html/*.txt

@@ -297,6 +297,42 @@ public class GameResult implements Comparable<Object>
 		return s;
 	}
 	
+	public String getResultString() 
+	{
+		String winnerName = hostWon ? hostName : awayName;
+		String loserName = hostWon ? awayName : hostName;
+		
+		String s = String
+				.format("%7d %5d %15s %15s %15s %15s %25s %8d %8d %8d",
+						gameID, 
+						roundID,
+						winnerName,
+						loserName,
+						crashName.length() == 0 ? "-" : crashName,
+						timeOutName.length() == 0 ? "-" : timeOutName,
+						mapName,
+						finalFrame, 
+						hostWon ? hostScore : awayScore, 
+						hostWon ? awayScore : hostScore);
+
+		for (int i=0; i<hostTimers.size(); ++i)
+		{
+			String t = String.format(" %7d", hostTimers.get(i));
+			s += t;
+		}
+		
+		for (int i=0; i<awayTimers.size(); ++i)
+		{
+			String t = String.format(" %7d", awayTimers.get(i));
+			s += t;
+		}
+		
+		s += "  " + (hostWon ? hostAddress : awayAddress) + "  " + (hostWon ? awayAddress : hostAddress);
+		s += "  " + startDate + "  " + finishDate;
+		
+		return s;
+	}
+	
 	public int compareTo(Object other)
 	{
 		return this.gameID - ((GameResult)other).gameID;

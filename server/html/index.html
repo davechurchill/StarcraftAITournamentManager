@@ -1,912 +1,1184 @@
 <html>
 <head>
 <title>StarCraft AI Competition Results</title>
+<script type="text/javascript" src="javascript/jquery-1.10.2.min.js"></script>	<script type="text/javascript" src="javascript/jquery.tablesorter.js"></script>
+<link rel="stylesheet" href="javascript/themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script type="text/javascript"> $(function() { $("#resultsTable").tablesorter({widgets: ['zebra']}); });</script>
+<script type="text/javascript"> $(function() { $("#resultsPairTable").tablesorter({widgets: ['zebra']}); });</script>
+<script type="text/javascript"> $(function() { $("#resultsMapTable").tablesorter({widgets: ['zebra']}); });</script>
 </head>
 <body alink="#0000FF" vlink="#0000FF" link="#0000FF">
-<p style="font: 16px/1.5em Verdana">Go To: <a href="results.html">Detailed Game Results</a> ( 0 kB )</p>
-<table cellpadding=2 rules=all style="font: 14px/1.5em Verdana">
+<p style="font: 16px/1.5em Verdana">Detailed Game Results: <a href="results.html">html table</a> (8634 kB) or <a href="detailed_results.txt">plaintext</a> (5052 kB)</p>
+<table cellpadding=2 rules=all style="font: 14px/1.5em Verdana" id="resultsTable" class="tablesorter">
+  <thead><tr>
+    <th bgcolor=#CCCCCC align=center width=80>Bot</td>
+    <th bgcolor=#CCCCCC align=center width=80>Games</td>
+    <th bgcolor=#CCCCCC align=center width=80>Win</td>
+    <th bgcolor=#CCCCCC align=center width=80>Loss</td>
+    <th bgcolor=#CCCCCC align=center width=80>Win %</td>
+    <th bgcolor=#CCCCCC align=center width=80>AvgTime</td>
+    <th bgcolor=#CCCCCC align=center width=80>Hour</td>
+    <th bgcolor=#CCCCCC align=center width=80>Crash</td>
+    <th bgcolor=#CCCCCC align=center width=80>Timeout</td>
+  </tr></thead>
   <tr>
-    <td width=100 rowspan=2> </td>
-    <td colspan=8 bgcolor=#CCCCCC align=center style="font: 16px/1.5em Verdana">Overall Tournament Statistics</td>
+    <td bgcolor=#c27ba0>tscmoo</td>
+    <td >1890</td>
+    <td>1673</td>
+    <td>217</td>
+    <td>88.52</td>
+    <td>12:06</td>
+    <td>3</td>
+    <td>0</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td bgcolor=#CCCCCC align=center width=80>Games</td>
-    <td bgcolor=#CCCCCC align=center width=80>Win</td>
-    <td bgcolor=#CCCCCC align=center width=80>Loss</td>
-    <td bgcolor=#CCCCCC align=center width=80>Win %</td>
-    <td bgcolor=#CCCCCC align=center width=80>AvgTime</td>
-    <td bgcolor=#CCCCCC align=center width=80>Hour</td>
-    <td bgcolor=#CCCCCC align=center width=80>Crash</td>
-    <td bgcolor=#CCCCCC align=center width=80>Timeout</td>
+    <td bgcolor=#c27ba0>ZZZKBot</td>
+    <td >1890</td>
+    <td>1660</td>
+    <td>230</td>
+    <td>87.83</td>
+    <td>6:35</td>
+    <td>3</td>
+    <td>0</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>IceBot</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>992</td>
-    <td align=center bgcolor=#E8E8E8>163</td>
-    <td align=center bgcolor=#E8E8E8>85.89</td>
-    <td align=center bgcolor=#E8E8E8>14:41</td>
-    <td align=center bgcolor=#E8E8E8>10</td>
-    <td align=center bgcolor=#E8E8E8>21</td>
-    <td align=center bgcolor=#E8E8E8>0</td>
+    <td bgcolor=#c27ba0>Overkill</td>
+    <td >1890</td>
+    <td>1525</td>
+    <td>365</td>
+    <td>80.69</td>
+    <td>11:15</td>
+    <td>17</td>
+    <td>21</td>
+    <td>7</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Ximp</td>
-    <td align=center bgcolor=#ffffff>1153</td>
-    <td align=center bgcolor=#ffffff>973</td>
-    <td align=center bgcolor=#ffffff>180</td>
-    <td align=center bgcolor=#ffffff>84.39</td>
-    <td align=center bgcolor=#ffffff>16:21</td>
-    <td align=center bgcolor=#ffffff>10</td>
-    <td align=center bgcolor=#ffffff>32</td>
-    <td align=center bgcolor=#ffffff>7</td>
+    <td bgcolor=#cccccc>UAlbertaBot</td>
+    <td >1889</td>
+    <td>1515</td>
+    <td>374</td>
+    <td>80.2</td>
+    <td>10:47</td>
+    <td>52</td>
+    <td>0</td>
+    <td>10</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>LetaBot</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>947</td>
-    <td align=center bgcolor=#E8E8E8>208</td>
-    <td align=center bgcolor=#E8E8E8>81.99</td>
-    <td align=center bgcolor=#E8E8E8>11:32</td>
-    <td align=center bgcolor=#E8E8E8>20</td>
-    <td align=center bgcolor=#E8E8E8>2</td>
-    <td align=center bgcolor=#E8E8E8>0</td>
+    <td bgcolor=#f1c232>Aiur</td>
+    <td >1890</td>
+    <td>1380</td>
+    <td>510</td>
+    <td>73.02</td>
+    <td>14:11</td>
+    <td>54</td>
+    <td>0</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Aiur</td>
-    <td align=center bgcolor=#ffffff>1155</td>
-    <td align=center bgcolor=#ffffff>820</td>
-    <td align=center bgcolor=#ffffff>335</td>
-    <td align=center bgcolor=#ffffff>71</td>
-    <td align=center bgcolor=#ffffff>13:39</td>
-    <td align=center bgcolor=#ffffff>30</td>
-    <td align=center bgcolor=#ffffff>1</td>
-    <td align=center bgcolor=#ffffff>0</td>
+    <td bgcolor=#f1c232>Ximp</td>
+    <td >1890</td>
+    <td>1281</td>
+    <td>609</td>
+    <td>67.78</td>
+    <td>15:56</td>
+    <td>9</td>
+    <td>48</td>
+    <td>50</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Skynet</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>796</td>
-    <td align=center bgcolor=#E8E8E8>359</td>
-    <td align=center bgcolor=#E8E8E8>68.92</td>
-    <td align=center bgcolor=#E8E8E8>11:03</td>
-    <td align=center bgcolor=#E8E8E8>11</td>
-    <td align=center bgcolor=#E8E8E8>1</td>
-    <td align=center bgcolor=#E8E8E8>0</td>
+    <td bgcolor=#6fa8dc>IceBot</td>
+    <td >1889</td>
+    <td>1213</td>
+    <td>676</td>
+    <td>64.21</td>
+    <td>14:28</td>
+    <td>17</td>
+    <td>13</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Xelnaga</td>
-    <td align=center bgcolor=#ffffff>1154</td>
-    <td align=center bgcolor=#ffffff>787</td>
-    <td align=center bgcolor=#ffffff>367</td>
-    <td align=center bgcolor=#ffffff>68.2</td>
-    <td align=center bgcolor=#ffffff>16:13</td>
-    <td align=center bgcolor=#ffffff>59</td>
-    <td align=center bgcolor=#ffffff>34</td>
-    <td align=center bgcolor=#ffffff>0</td>
+    <td bgcolor=#f1c232>Skynet</td>
+    <td >1890</td>
+    <td>1212</td>
+    <td>678</td>
+    <td>64.13</td>
+    <td>11:01</td>
+    <td>12</td>
+    <td>0</td>
+    <td>3</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>UAlbertaBot</td>
-    <td align=center bgcolor=#E8E8E8>1154</td>
-    <td align=center bgcolor=#E8E8E8>778</td>
-    <td align=center bgcolor=#E8E8E8>376</td>
-    <td align=center bgcolor=#E8E8E8>67.42</td>
-    <td align=center bgcolor=#E8E8E8>11:11</td>
-    <td align=center bgcolor=#E8E8E8>18</td>
-    <td align=center bgcolor=#E8E8E8>16</td>
-    <td align=center bgcolor=#E8E8E8>25</td>
+    <td bgcolor=#f1c232>Xelnaga</td>
+    <td >1890</td>
+    <td>1185</td>
+    <td>705</td>
+    <td>62.7</td>
+    <td>15:51</td>
+    <td>91</td>
+    <td>111</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>MaasCraft</td>
-    <td align=center bgcolor=#ffffff>1155</td>
-    <td align=center bgcolor=#ffffff>682</td>
-    <td align=center bgcolor=#ffffff>473</td>
-    <td align=center bgcolor=#ffffff>59.05</td>
-    <td align=center bgcolor=#ffffff>13:50</td>
-    <td align=center bgcolor=#ffffff>35</td>
-    <td align=center bgcolor=#ffffff>22</td>
-    <td align=center bgcolor=#ffffff>0</td>
+    <td bgcolor=#6fa8dc>LetaBot</td>
+    <td >1890</td>
+    <td>1152</td>
+    <td>738</td>
+    <td>60.95</td>
+    <td>10:45</td>
+    <td>24</td>
+    <td>58</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>MooseBot</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>579</td>
-    <td align=center bgcolor=#E8E8E8>576</td>
-    <td align=center bgcolor=#E8E8E8>50.13</td>
-    <td align=center bgcolor=#E8E8E8>12:32</td>
-    <td align=center bgcolor=#E8E8E8>25</td>
-    <td align=center bgcolor=#E8E8E8>15</td>
-    <td align=center bgcolor=#E8E8E8>5</td>
+    <td bgcolor=#6fa8dc>Tyr</td>
+    <td >1889</td>
+    <td>1016</td>
+    <td>873</td>
+    <td>53.79</td>
+    <td>19:07</td>
+    <td>125</td>
+    <td>23</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>BTHAI</td>
-    <td align=center bgcolor=#ffffff>1155</td>
-    <td align=center bgcolor=#ffffff>537</td>
-    <td align=center bgcolor=#ffffff>618</td>
-    <td align=center bgcolor=#ffffff>46.49</td>
-    <td align=center bgcolor=#ffffff>18:17</td>
-    <td align=center bgcolor=#ffffff>68</td>
-    <td align=center bgcolor=#ffffff>294</td>
-    <td align=center bgcolor=#ffffff>0</td>
+    <td bgcolor=#c27ba0>GarmBot</td>
+    <td >1890</td>
+    <td>988</td>
+    <td>902</td>
+    <td>52.28</td>
+    <td>16:06</td>
+    <td>15</td>
+    <td>0</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>TerranUAB</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>494</td>
-    <td align=center bgcolor=#E8E8E8>661</td>
-    <td align=center bgcolor=#E8E8E8>42.77</td>
-    <td align=center bgcolor=#E8E8E8>14:08</td>
-    <td align=center bgcolor=#E8E8E8>25</td>
-    <td align=center bgcolor=#E8E8E8>36</td>
-    <td align=center bgcolor=#E8E8E8>0</td>
+    <td bgcolor=#f1c232>NUSBot</td>
+    <td >1890</td>
+    <td>744</td>
+    <td>1146</td>
+    <td>39.37</td>
+    <td>12:23</td>
+    <td>37</td>
+    <td>254</td>
+    <td>103</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>NUSBot</td>
-    <td align=center bgcolor=#ffffff>1155</td>
-    <td align=center bgcolor=#ffffff>430</td>
-    <td align=center bgcolor=#ffffff>725</td>
-    <td align=center bgcolor=#ffffff>37.23</td>
-    <td align=center bgcolor=#ffffff>12:50</td>
-    <td align=center bgcolor=#ffffff>25</td>
-    <td align=center bgcolor=#ffffff>163</td>
-    <td align=center bgcolor=#ffffff>23</td>
+    <td bgcolor=#6fa8dc>TerranUAB</td>
+    <td >1890</td>
+    <td>721</td>
+    <td>1169</td>
+    <td>38.15</td>
+    <td>16:01</td>
+    <td>67</td>
+    <td>69</td>
+    <td>2</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Nova</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>378</td>
-    <td align=center bgcolor=#E8E8E8>777</td>
-    <td align=center bgcolor=#E8E8E8>32.73</td>
-    <td align=center bgcolor=#E8E8E8>10:55</td>
-    <td align=center bgcolor=#E8E8E8>34</td>
-    <td align=center bgcolor=#E8E8E8>389</td>
-    <td align=center bgcolor=#E8E8E8>3</td>
+    <td bgcolor=#c27ba0>Cimex</td>
+    <td >1889</td>
+    <td>673</td>
+    <td>1216</td>
+    <td>35.63</td>
+    <td>16:12</td>
+    <td>87</td>
+    <td>435</td>
+    <td>11</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>HITA</td>
-    <td align=center bgcolor=#ffffff>1155</td>
-    <td align=center bgcolor=#ffffff>370</td>
-    <td align=center bgcolor=#ffffff>785</td>
-    <td align=center bgcolor=#ffffff>32.03</td>
-    <td align=center bgcolor=#ffffff>10:45</td>
-    <td align=center bgcolor=#ffffff>1</td>
-    <td align=center bgcolor=#ffffff>513</td>
-    <td align=center bgcolor=#ffffff>8</td>
+    <td bgcolor=#f1c232>CruzBot</td>
+    <td >1890</td>
+    <td>612</td>
+    <td>1278</td>
+    <td>32.38</td>
+    <td>19:03</td>
+    <td>173</td>
+    <td>2</td>
+    <td>41</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>CruzBot</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>337</td>
-    <td align=center bgcolor=#E8E8E8>818</td>
-    <td align=center bgcolor=#E8E8E8>29.18</td>
-    <td align=center bgcolor=#E8E8E8>17:08</td>
-    <td align=center bgcolor=#E8E8E8>71</td>
-    <td align=center bgcolor=#E8E8E8>0</td>
-    <td align=center bgcolor=#E8E8E8>10</td>
+    <td bgcolor=#6fa8dc>OpprimoBot</td>
+    <td >1890</td>
+    <td>527</td>
+    <td>1363</td>
+    <td>27.88</td>
+    <td>19:42</td>
+    <td>0</td>
+    <td>116</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Bonjwa</td>
-    <td align=center bgcolor=#ffffff>1155</td>
-    <td align=center bgcolor=#ffffff>189</td>
-    <td align=center bgcolor=#ffffff>966</td>
-    <td align=center bgcolor=#ffffff>16.36</td>
-    <td align=center bgcolor=#ffffff>14:46</td>
-    <td align=center bgcolor=#ffffff>83</td>
-    <td align=center bgcolor=#ffffff>0</td>
-    <td align=center bgcolor=#ffffff>0</td>
+    <td bgcolor=#6fa8dc>Oritaka</td>
+    <td >1890</td>
+    <td>492</td>
+    <td>1398</td>
+    <td>26.03</td>
+    <td>15:56</td>
+    <td>131</td>
+    <td>1</td>
+    <td>0</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Oritaka</td>
-    <td align=center bgcolor=#E8E8E8>1155</td>
-    <td align=center bgcolor=#E8E8E8>165</td>
-    <td align=center bgcolor=#E8E8E8>990</td>
-    <td align=center bgcolor=#E8E8E8>14.29</td>
-    <td align=center bgcolor=#E8E8E8>13:59</td>
-    <td align=center bgcolor=#E8E8E8>58</td>
-    <td align=center bgcolor=#E8E8E8>1</td>
-    <td align=center bgcolor=#E8E8E8>0</td>
+    <td bgcolor=#6fa8dc>Stone</td>
+    <td >1890</td>
+    <td>466</td>
+    <td>1424</td>
+    <td>24.66</td>
+    <td>14:51</td>
+    <td>123</td>
+    <td>1</td>
+    <td>6</td>
   </tr>
   <tr>
-    <td align=center bgcolor=#CCCCCC>Yarmouk</td>
-    <td align=center bgcolor=#ffffff>1139</td>
-    <td align=center bgcolor=#ffffff>131</td>
-    <td align=center bgcolor=#ffffff>1008</td>
-    <td align=center bgcolor=#ffffff>11.5</td>
-    <td align=center bgcolor=#ffffff>14:06</td>
-    <td align=center bgcolor=#ffffff>57</td>
-    <td align=center bgcolor=#ffffff>42</td>
-    <td align=center bgcolor=#ffffff>0</td>
+    <td bgcolor=#6fa8dc>Bonjwa</td>
+    <td >1890</td>
+    <td>433</td>
+    <td>1457</td>
+    <td>22.91</td>
+    <td>17:57</td>
+    <td>176</td>
+    <td>10</td>
+    <td>1</td>
   </tr>
   <tr>
+    <td bgcolor=#6fa8dc>Yarmouk</td>
+    <td >1890</td>
+    <td>172</td>
+    <td>1718</td>
+    <td>9.1</td>
+    <td>14:00</td>
+    <td>102</td>
+    <td>86</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td bgcolor=#f1c232>SusanooTricks</td>
+    <td >1890</td>
+    <td>148</td>
+    <td>1742</td>
+    <td>7.83</td>
+    <td>17:49</td>
+    <td>146</td>
+    <td>103</td>
+    <td>84</td>
+  </tr>
+  <tfoot><tr>
     <td align=center bgcolor=#CCCCCC><b>Total</b></td>
-    <td align=center bgcolor=#CCCCCC>10385</td>
-    <td align=center bgcolor=#CCCCCC>10385</td>
-    <td align=center bgcolor=#CCCCCC>10385</td>
+    <td align=center bgcolor=#CCCCCC>20788</td>
+    <td align=center bgcolor=#CCCCCC>20788</td>
+    <td align=center bgcolor=#CCCCCC>20788</td>
     <td align=center bgcolor=#CCCCCC>N/A</td>
-    <td align=center bgcolor=#CCCCCC>13:47</td>
-    <td align=center bgcolor=#CCCCCC>320</td>
-    <td align=center bgcolor=#CCCCCC>1582</td>
-    <td align=center bgcolor=#CCCCCC>81</td>
+    <td align=center bgcolor=#CCCCCC>14:38</td>
+    <td align=center bgcolor=#CCCCCC>732</td>
+    <td align=center bgcolor=#CCCCCC>1351</td>
+    <td align=center bgcolor=#CCCCCC>318</td>
+  </tr></tfoot>
+</table>
+<br>
+<table cellpadding=2 rules=all style="font: 14px/1.5em Verdana"  id="resultsPairTable" class="tablesorter">
+  <thead><tr>
+    <th width=100 align=center bgcolor=#CCCCCC>Bot</td>
+    <th width=71 align=center bgcolor=#CCCCCC>Win %</td>
+    <th width=50 align=left bgcolor=#c27ba0>tscm</td>
+    <th width=50 align=left bgcolor=#c27ba0>ZZZK</td>
+    <th width=50 align=left bgcolor=#c27ba0>Over</td>
+    <th width=50 align=left bgcolor=#cccccc>UAlb</td>
+    <th width=50 align=left bgcolor=#f1c232>Aiur</td>
+    <th width=50 align=left bgcolor=#f1c232>Ximp</td>
+    <th width=50 align=left bgcolor=#6fa8dc>IceB</td>
+    <th width=50 align=left bgcolor=#f1c232>Skyn</td>
+    <th width=50 align=left bgcolor=#f1c232>Xeln</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Leta</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Tyr</td>
+    <th width=50 align=left bgcolor=#c27ba0>Garm</td>
+    <th width=50 align=left bgcolor=#f1c232>NUSB</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Terr</td>
+    <th width=50 align=left bgcolor=#c27ba0>Cime</td>
+    <th width=50 align=left bgcolor=#f1c232>Cruz</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Oppr</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Orit</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Ston</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Bonj</td>
+    <th width=50 align=left bgcolor=#6fa8dc>Yarm</td>
+    <th width=50 align=left bgcolor=#f1c232>Susa</td>
+  </tr></thead>
+  <tr>
+    <td width=100 align=center  bgcolor=#c27ba0>tscmoo</td>
+    <td width=50 align=center bgcolor=#E8E8E8>88.52</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,187,187)">39/90</td>
+    <td align=center style="background-color:rgb(91,255,91)">71/90</td>
+    <td align=center style="background-color:rgb(255,210,210)">44/90</td>
+    <td align=center style="background-color:rgb(125,255,125)">64/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(68,255,68)">76/90</td>
+    <td align=center style="background-color:rgb(68,255,68)">76/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#c27ba0>ZZZKBot</td>
+    <td width=50 align=center bgcolor=#ffffff>87.83</td>
+    <td align=center style="background-color:rgb(188,255,188)">51/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(178,255,178)">53/90</td>
+    <td align=center style="background-color:rgb(255,173,173)">36/90</td>
+    <td align=center style="background-color:rgb(144,255,144)">60/90</td>
+    <td align=center style="background-color:rgb(83,255,83)">73/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(130,255,130)">63/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#c27ba0>Overkill</td>
+    <td width=50 align=center bgcolor=#E8E8E8>80.69</td>
+    <td align=center style="background-color:rgb(255,90,90)">19/90</td>
+    <td align=center style="background-color:rgb(255,176,176)">37/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,100,100)">21/90</td>
+    <td align=center style="background-color:rgb(141,255,141)">61/90</td>
+    <td align=center style="background-color:rgb(54,255,54)">79/90</td>
+    <td align=center style="background-color:rgb(102,255,102)">69/90</td>
+    <td align=center style="background-color:rgb(96,255,96)">70/90</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(149,255,149)">59/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(28,255,28)">84/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#cccccc>UAlbertaBot</td>
+    <td width=50 align=center bgcolor=#ffffff>80.2</td>
+    <td align=center style="background-color:rgb(212,255,212)">46/90</td>
+    <td align=center style="background-color:rgb(173,255,173)">54/90</td>
+    <td align=center style="background-color:rgb(102,255,102)">69/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(115,255,115)">66/90</td>
+    <td align=center style="background-color:rgb(130,255,130)">63/90</td>
+    <td align=center style="background-color:rgb(73,255,73)">75/90</td>
+    <td align=center style="background-color:rgb(144,255,144)">60/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(183,255,183)">52/90</td>
+    <td align=center style="background-color:rgb(127,255,127)">63/89</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(136,255,136)">62/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(62,255,62)">77/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(141,255,141)">61/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>Aiur</td>
+    <td width=50 align=center bgcolor=#E8E8E8>73.02</td>
+    <td align=center style="background-color:rgb(255,124,124)">26/90</td>
+    <td align=center style="background-color:rgb(255,144,144)">30/90</td>
+    <td align=center style="background-color:rgb(255,139,139)">29/90</td>
+    <td align=center style="background-color:rgb(255,115,115)">24/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,90,90)">19/90</td>
+    <td align=center style="background-color:rgb(83,255,83)">73/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+    <td align=center style="background-color:rgb(130,255,130)">63/90</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(159,255,159)">57/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+    <td align=center style="background-color:rgb(54,255,54)">79/90</td>
+    <td align=center style="background-color:rgb(57,255,57)">78/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(57,255,57)">78/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>Ximp</td>
+    <td width=50 align=center bgcolor=#ffffff>67.78</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,81,81)">17/90</td>
+    <td align=center style="background-color:rgb(255,52,52)">11/90</td>
+    <td align=center style="background-color:rgb(255,129,129)">27/90</td>
+    <td align=center style="background-color:rgb(91,255,91)">71/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(193,255,193)">50/90</td>
+    <td align=center style="background-color:rgb(255,202,202)">42/90</td>
+    <td align=center style="background-color:rgb(255,28,28)">06/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>IceBot</td>
+    <td width=50 align=center bgcolor=#E8E8E8>64.21</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,100,100)">21/90</td>
+    <td align=center style="background-color:rgb(255,71,71)">15/90</td>
+    <td align=center style="background-color:rgb(255,81,81)">17/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(141,255,141)">61/90</td>
+    <td align=center style="background-color:rgb(255,119,119)">25/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,115,115)">24/90</td>
+    <td align=center style="background-color:rgb(170,255,170)">55/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">87/89</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>Skynet</td>
+    <td width=50 align=center bgcolor=#ffffff>64.13</td>
+    <td align=center style="background-color:rgb(255,66,66)">14/90</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(255,95,95)">20/90</td>
+    <td align=center style="background-color:rgb(255,144,144)">30/90</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,139,139)">29/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(149,255,149)">59/90</td>
+    <td align=center style="background-color:rgb(255,144,144)">30/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(255,124,124)">26/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>Xelnaga</td>
+    <td width=50 align=center bgcolor=#E8E8E8>62.7</td>
+    <td align=center style="background-color:rgb(255,66,66)">14/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,129,129)">27/90</td>
+    <td align=center style="background-color:rgb(255,192,192)">40/90</td>
+    <td align=center style="background-color:rgb(120,255,120)">65/90</td>
+    <td align=center style="background-color:rgb(255,147,147)">31/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(188,255,188)">51/90</td>
+    <td align=center style="background-color:rgb(144,255,144)">60/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(15,255,15)">87/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(15,255,15)">87/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>LetaBot</td>
+    <td width=50 align=center bgcolor=#ffffff>60.95</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,181,181)">38/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(202,255,202)">48/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(144,255,144)">60/90</td>
+    <td align=center style="background-color:rgb(255,187,187)">39/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,57,57)">12/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(115,255,115)">66/90</td>
+    <td align=center style="background-color:rgb(164,255,164)">56/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(255,57,57)">12/90</td>
+    <td align=center style="background-color:rgb(102,255,102)">69/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>Tyr</td>
+    <td width=50 align=center bgcolor=#E8E8E8>53.79</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(255,129,129)">27/90</td>
+    <td align=center style="background-color:rgb(255,147,147)">31/90</td>
+    <td align=center style="background-color:rgb(255,125,125)">26/89</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(28,255,28)">84/90</td>
+    <td align=center style="background-color:rgb(115,255,115)">66/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,144,144)">30/90</td>
+    <td align=center style="background-color:rgb(57,255,57)">78/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(96,255,96)">70/90</td>
+    <td align=center style="background-color:rgb(255,202,202)">42/90</td>
+    <td align=center style="background-color:rgb(255,168,168)">35/90</td>
+    <td align=center style="background-color:rgb(255,168,168)">35/90</td>
+    <td align=center style="background-color:rgb(217,255,217)">45/90</td>
+    <td align=center style="background-color:rgb(120,255,120)">65/90</td>
+    <td align=center style="background-color:rgb(83,255,83)">73/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(159,255,159)">57/90</td>
+    <td align=center style="background-color:rgb(149,255,149)">59/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#c27ba0>GarmBot</td>
+    <td width=50 align=center bgcolor=#ffffff>52.28</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,168,168)">35/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,95,95)">20/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(86,255,86)">72/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(255,197,197)">41/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(25,255,25)">85/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>NUSBot</td>
+    <td width=50 align=center bgcolor=#E8E8E8>39.37</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,28,28)">06/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,158,158)">33/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(125,255,125)">64/90</td>
+    <td align=center style="background-color:rgb(255,13,13)">03/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(202,255,202)">48/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(202,255,202)">48/90</td>
+    <td align=center style="background-color:rgb(217,255,217)">45/90</td>
+    <td align=center style="background-color:rgb(255,119,119)">25/90</td>
+    <td align=center style="background-color:rgb(102,255,102)">69/90</td>
+    <td align=center style="background-color:rgb(91,255,91)">71/90</td>
+    <td align=center style="background-color:rgb(170,255,170)">55/90</td>
+    <td align=center style="background-color:rgb(57,255,57)">78/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(73,255,73)">75/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>TerranUAB</td>
+    <td width=50 align=center bgcolor=#ffffff>38.15</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,115,115)">24/90</td>
+    <td align=center style="background-color:rgb(170,255,170)">55/90</td>
+    <td align=center style="background-color:rgb(255,86,86)">18/90</td>
+    <td align=center style="background-color:rgb(255,202,202)">42/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(86,255,86)">72/90</td>
+    <td align=center style="background-color:rgb(15,255,15)">87/90</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(78,255,78)">74/90</td>
+    <td align=center style="background-color:rgb(255,158,158)">33/90</td>
+    <td align=center style="background-color:rgb(91,255,91)">71/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+    <td align=center style="background-color:rgb(39,255,39)">82/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#c27ba0>Cimex</td>
+    <td width=50 align=center bgcolor=#E8E8E8>35.63</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,134,134)">28/90</td>
+    <td align=center style="background-color:rgb(255,52,52)">11/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/89</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,163,163)">34/90</td>
+    <td align=center style="background-color:rgb(170,255,170)">55/90</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(217,255,217)">45/90</td>
+    <td align=center style="background-color:rgb(255,86,86)">18/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(198,255,198)">49/90</td>
+    <td align=center style="background-color:rgb(255,197,197)">41/90</td>
+    <td align=center style="background-color:rgb(217,255,217)">45/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(83,255,83)">73/90</td>
+    <td align=center style="background-color:rgb(44,255,44)">81/90</td>
+    <td align=center style="background-color:rgb(34,255,34)">83/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>CruzBot</td>
+    <td width=50 align=center bgcolor=#ffffff>32.38</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,57,57)">12/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(217,255,217)">45/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(120,255,120)">65/90</td>
+    <td align=center style="background-color:rgb(255,13,13)">03/90</td>
+    <td align=center style="background-color:rgb(255,197,197)">41/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(62,255,62)">77/90</td>
+    <td align=center style="background-color:rgb(255,95,95)">20/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center style="background-color:rgb(57,255,57)">78/90</td>
+    <td align=center style="background-color:rgb(54,255,54)">79/90</td>
+    <td align=center style="background-color:rgb(0,255,0)">90/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>OpprimoBot</td>
+    <td width=50 align=center bgcolor=#E8E8E8>27.88</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,61,61)">13/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(57,255,57)">78/90</td>
+    <td align=center style="background-color:rgb(255,119,119)">25/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,100,100)">21/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(198,255,198)">49/90</td>
+    <td align=center style="background-color:rgb(255,61,61)">13/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(96,255,96)">70/90</td>
+    <td align=center style="background-color:rgb(255,168,168)">35/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(10,255,10)">88/90</td>
+    <td align=center style="background-color:rgb(28,255,28)">84/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>Oritaka</td>
+    <td width=50 align=center bgcolor=#ffffff>26.03</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,57,57)">12/90</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,100,100)">21/90</td>
+    <td align=center style="background-color:rgb(255,81,81)">17/90</td>
+    <td align=center style="background-color:rgb(198,255,198)">49/90</td>
+    <td align=center style="background-color:rgb(255,90,90)">19/90</td>
+    <td align=center style="background-color:rgb(255,76,76)">16/90</td>
+    <td align=center style="background-color:rgb(217,255,217)">45/90</td>
+    <td align=center style="background-color:rgb(96,255,96)">70/90</td>
+    <td align=center style="background-color:rgb(255,95,95)">20/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,197,197)">41/90</td>
+    <td align=center style="background-color:rgb(86,255,86)">72/90</td>
+    <td align=center style="background-color:rgb(49,255,49)">80/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>Stone</td>
+    <td width=50 align=center bgcolor=#E8E8E8>24.66</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,139,139)">29/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,168,168)">35/90</td>
+    <td align=center style="background-color:rgb(159,255,159)">57/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(170,255,170)">55/90</td>
+    <td align=center style="background-color:rgb(5,255,5)">89/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(255,47,47)">10/90</td>
+    <td align=center style="background-color:rgb(20,255,20)">86/90</td>
+    <td align=center style="background-color:rgb(15,255,15)">87/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>Bonjwa</td>
+    <td width=50 align=center bgcolor=#ffffff>22.91</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,158,158)">33/90</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,57,57)">12/90</td>
+    <td align=center style="background-color:rgb(255,90,90)">19/90</td>
+    <td align=center style="background-color:rgb(255,81,81)">17/90</td>
+    <td align=center style="background-color:rgb(255,57,57)">12/90</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+    <td align=center style="background-color:rgb(198,255,198)">49/90</td>
+    <td align=center style="background-color:rgb(49,255,49)">80/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(136,255,136)">62/90</td>
+    <td align=center style="background-color:rgb(112,255,112)">67/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>Yarmouk</td>
+    <td width=50 align=center bgcolor=#E8E8E8>9.1</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,147,147)">31/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,52,52)">11/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,86,86)">18/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,134,134)">28/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
+    <td align=center style="background-color:rgb(207,255,207)">47/90</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>SusanooTricks</td>
+    <td width=50 align=center bgcolor=#ffffff>7.83</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,42,42)">09/90</td>
+    <td align=center style="background-color:rgb(255,18,18)">04/90</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,23,23)">05/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,13,13)">03/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,8,8)">02/90</td>
+    <td align=center style="background-color:rgb(255,3,3)">01/90</td>
+    <td align=center style="background-color:rgb(255,71,71)">15/90</td>
+    <td align=center style="background-color:rgb(255,37,37)">08/90</td>
+    <td align=center style="background-color:rgb(255,32,32)">07/90</td>
+    <td align=center style="background-color:rgb(255,0,0)">00/90</td>
+    <td align=center style="background-color:rgb(255,28,28)">06/90</td>
+    <td align=center style="background-color:rgb(255,47,47)">10/90</td>
+    <td align=center style="background-color:rgb(255,13,13)">03/90</td>
+    <td align=center style="background-color:rgb(255,110,110)">23/90</td>
+    <td align=center style="background-color:rgb(255,205,205)">43/90</td>
+    <td align=center bgcolor=#ffffff>-</td>
   </tr>
 </table>
 <br>
-<table cellpadding=2 rules=all style="font: 14px/1.5em Verdana">
+<table cellpadding=2 rules=all style="font: 12px/1.5em Verdana" id="resultsMapTable" class="tablesorter">
+  <thead><tr>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Bot</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Benzene</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Destina</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Heartbr</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Aztec</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">TauCros</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Androme</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Circuit</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Empireo</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Fortres</td>
+    <th width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Python</td>
+  </tr></thead>
   <tr>
-    <td width=100 rowspan=2> </td>
-    <td colspan=19 bgcolor=#CCCCCC align=center style="font: 16px/1.5em Verdana">Bot vs. Bot Results - (Row,Col) = Row Wins vs. Col</td>
+    <td width=100 align=center  bgcolor=#c27ba0>tscmoo</td>
+    <td align=center style="background-color:rgb(42,255,42)">171/189</td>
+    <td align=center style="background-color:rgb(32,255,32)">175/189</td>
+    <td align=center style="background-color:rgb(61,255,61)">163/189</td>
+    <td align=center style="background-color:rgb(49,255,49)">168/189</td>
+    <td align=center style="background-color:rgb(28,255,28)">177/189</td>
+    <td align=center style="background-color:rgb(44,255,44)">170/189</td>
+    <td align=center style="background-color:rgb(81,255,81)">154/189</td>
+    <td align=center style="background-color:rgb(45,255,45)">169/189</td>
+    <td align=center style="background-color:rgb(64,255,64)">161/189</td>
+    <td align=center style="background-color:rgb(56,255,56)">165/189</td>
   </tr>
   <tr>
-    <td width=71 align=center bgcolor=#CCCCCC>Win %</td>
-    <td width=71 align=center bgcolor=#CCCCCC>IceBo</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Ximp</td>
-    <td width=71 align=center bgcolor=#CCCCCC>LetaB</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Aiur</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Skyne</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Xelna</td>
-    <td width=71 align=center bgcolor=#CCCCCC>UAlbe</td>
-    <td width=71 align=center bgcolor=#CCCCCC>MaasC</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Moose</td>
-    <td width=71 align=center bgcolor=#CCCCCC>BTHAI</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Terra</td>
-    <td width=71 align=center bgcolor=#CCCCCC>NUSBo</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Nova</td>
-    <td width=71 align=center bgcolor=#CCCCCC>HITA</td>
-    <td width=71 align=center bgcolor=#CCCCCC>CruzB</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Bonjw</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Orita</td>
-    <td width=71 align=center bgcolor=#CCCCCC>Yarmo</td>
+    <td width=100 align=center  bgcolor=#c27ba0>ZZZKBot</td>
+    <td align=center style="background-color:rgb(62,255,62)">162/189</td>
+    <td align=center style="background-color:rgb(64,255,64)">161/189</td>
+    <td align=center style="background-color:rgb(49,255,49)">168/189</td>
+    <td align=center style="background-color:rgb(44,255,44)">170/189</td>
+    <td align=center style="background-color:rgb(49,255,49)">168/189</td>
+    <td align=center style="background-color:rgb(83,255,83)">153/189</td>
+    <td align=center style="background-color:rgb(57,255,57)">164/189</td>
+    <td align=center style="background-color:rgb(57,255,57)">164/189</td>
+    <td align=center style="background-color:rgb(35,255,35)">174/189</td>
+    <td align=center style="background-color:rgb(30,255,30)">176/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>IceBot</td>
-    <td width=71 align=center bgcolor=#E8E8E8>85.89</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(23,255,23)">62/68</td>
-    <td align=center style="background-color:rgb(94,255,94)">43/68</td>
-    <td align=center style="background-color:rgb(139,255,139)">31/68</td>
-    <td align=center style="background-color:rgb(109,255,109)">39/68</td>
-    <td align=center style="background-color:rgb(150,255,150)">28/68</td>
-    <td align=center style="background-color:rgb(19,255,19)">63/68</td>
-    <td align=center style="background-color:rgb(12,255,12)">65/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(45,255,45)">56/68</td>
-    <td align=center style="background-color:rgb(15,255,15)">64/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#c27ba0>Overkill</td>
+    <td align=center style="background-color:rgb(74,255,74)">157/189</td>
+    <td align=center style="background-color:rgb(91,255,91)">149/189</td>
+    <td align=center style="background-color:rgb(102,255,102)">145/189</td>
+    <td align=center style="background-color:rgb(74,255,74)">157/189</td>
+    <td align=center style="background-color:rgb(85,255,85)">152/189</td>
+    <td align=center style="background-color:rgb(81,255,81)">154/189</td>
+    <td align=center style="background-color:rgb(69,255,69)">159/189</td>
+    <td align=center style="background-color:rgb(83,255,83)">153/189</td>
+    <td align=center style="background-color:rgb(96,255,96)">147/189</td>
+    <td align=center style="background-color:rgb(85,255,85)">152/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Ximp</td>
-    <td width=71 align=center bgcolor=#ffffff>84.39</td>
-    <td align=center style="background-color:rgb(233,255,233)">6/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(139,255,139)">31/68</td>
-    <td align=center style="background-color:rgb(60,255,60)">52/68</td>
-    <td align=center style="background-color:rgb(19,255,19)">63/68</td>
-    <td align=center style="background-color:rgb(69,255,69)">49/67</td>
-    <td align=center style="background-color:rgb(12,255,12)">64/67</td>
-    <td align=center style="background-color:rgb(68,255,68)">50/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(23,255,23)">62/68</td>
-    <td align=center style="background-color:rgb(45,255,45)">56/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">67/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#cccccc>UAlbertaBot</td>
+    <td align=center style="background-color:rgb(115,255,115)">139/189</td>
+    <td align=center style="background-color:rgb(102,255,102)">144/188</td>
+    <td align=center style="background-color:rgb(81,255,81)">154/189</td>
+    <td align=center style="background-color:rgb(88,255,88)">151/189</td>
+    <td align=center style="background-color:rgb(90,255,90)">150/189</td>
+    <td align=center style="background-color:rgb(85,255,85)">152/189</td>
+    <td align=center style="background-color:rgb(71,255,71)">158/189</td>
+    <td align=center style="background-color:rgb(95,255,95)">148/189</td>
+    <td align=center style="background-color:rgb(44,255,44)">170/189</td>
+    <td align=center style="background-color:rgb(91,255,91)">149/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>LetaBot</td>
-    <td width=71 align=center bgcolor=#E8E8E8>81.99</td>
-    <td align=center style="background-color:rgb(162,255,162)">25/68</td>
-    <td align=center style="background-color:rgb(117,255,117)">37/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(60,255,60)">52/68</td>
-    <td align=center style="background-color:rgb(83,255,83)">46/68</td>
-    <td align=center style="background-color:rgb(195,255,195)">16/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(27,255,27)">61/68</td>
-    <td align=center style="background-color:rgb(19,255,19)">63/68</td>
-    <td align=center style="background-color:rgb(15,255,15)">64/68</td>
-    <td align=center style="background-color:rgb(34,255,34)">59/68</td>
-    <td align=center style="background-color:rgb(34,255,34)">59/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(15,255,15)">64/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">65/67</td>
+    <td width=100 align=center  bgcolor=#f1c232>Aiur</td>
+    <td align=center style="background-color:rgb(95,255,95)">148/189</td>
+    <td align=center style="background-color:rgb(127,255,127)">134/189</td>
+    <td align=center style="background-color:rgb(95,255,95)">148/189</td>
+    <td align=center style="background-color:rgb(137,255,137)">129/189</td>
+    <td align=center style="background-color:rgb(142,255,142)">127/189</td>
+    <td align=center style="background-color:rgb(124,255,124)">135/189</td>
+    <td align=center style="background-color:rgb(96,255,96)">147/189</td>
+    <td align=center style="background-color:rgb(103,255,103)">144/189</td>
+    <td align=center style="background-color:rgb(127,255,127)">134/189</td>
+    <td align=center style="background-color:rgb(127,255,127)">134/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Aiur</td>
-    <td width=71 align=center bgcolor=#ffffff>71</td>
-    <td align=center style="background-color:rgb(117,255,117)">37/68</td>
-    <td align=center style="background-color:rgb(195,255,195)">16/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(42,255,42)">57/68</td>
-    <td align=center style="background-color:rgb(83,255,83)">46/68</td>
-    <td align=center style="background-color:rgb(72,255,72)">49/68</td>
-    <td align=center style="background-color:rgb(98,255,98)">42/68</td>
-    <td align=center style="background-color:rgb(79,255,79)">47/68</td>
-    <td align=center style="background-color:rgb(12,255,12)">65/68</td>
-    <td align=center style="background-color:rgb(30,255,30)">60/68</td>
-    <td align=center style="background-color:rgb(109,255,109)">39/68</td>
-    <td align=center style="background-color:rgb(38,255,38)">58/68</td>
-    <td align=center style="background-color:rgb(64,255,64)">51/68</td>
-    <td align=center style="background-color:rgb(45,255,45)">56/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(15,255,15)">64/68</td>
-    <td align=center style="background-color:rgb(16,255,16)">63/67</td>
+    <td width=100 align=center  bgcolor=#f1c232>Ximp</td>
+    <td align=center style="background-color:rgb(161,255,161)">119/189</td>
+    <td align=center style="background-color:rgb(117,255,117)">138/189</td>
+    <td align=center style="background-color:rgb(108,255,108)">142/189</td>
+    <td align=center style="background-color:rgb(144,255,144)">126/189</td>
+    <td align=center style="background-color:rgb(136,255,136)">130/189</td>
+    <td align=center style="background-color:rgb(156,255,156)">121/189</td>
+    <td align=center style="background-color:rgb(137,255,137)">129/189</td>
+    <td align=center style="background-color:rgb(141,255,141)">128/189</td>
+    <td align=center style="background-color:rgb(161,255,161)">119/189</td>
+    <td align=center style="background-color:rgb(137,255,137)">129/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Skynet</td>
-    <td width=71 align=center bgcolor=#E8E8E8>68.92</td>
-    <td align=center style="background-color:rgb(147,255,147)">29/68</td>
-    <td align=center style="background-color:rgb(237,255,237)">5/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(214,255,214)">11/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(87,255,87)">45/68</td>
-    <td align=center style="background-color:rgb(135,255,135)">32/68</td>
-    <td align=center style="background-color:rgb(15,255,15)">64/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">67/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(195,255,195)">16/68</td>
-    <td align=center style="background-color:rgb(60,255,60)">52/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>IceBot</td>
+    <td align=center style="background-color:rgb(151,255,151)">123/188</td>
+    <td align=center style="background-color:rgb(137,255,137)">129/189</td>
+    <td align=center style="background-color:rgb(161,255,161)">119/189</td>
+    <td align=center style="background-color:rgb(134,255,134)">131/189</td>
+    <td align=center style="background-color:rgb(156,255,156)">121/189</td>
+    <td align=center style="background-color:rgb(147,255,147)">125/189</td>
+    <td align=center style="background-color:rgb(180,255,180)">111/189</td>
+    <td align=center style="background-color:rgb(168,255,168)">116/189</td>
+    <td align=center style="background-color:rgb(153,255,153)">123/189</td>
+    <td align=center style="background-color:rgb(170,255,170)">115/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Xelnaga</td>
-    <td width=71 align=center bgcolor=#ffffff>68.2</td>
-    <td align=center style="background-color:rgb(105,255,105)">40/68</td>
-    <td align=center style="background-color:rgb(187,255,187)">18/67</td>
-    <td align=center style="background-color:rgb(195,255,195)">16/68</td>
-    <td align=center style="background-color:rgb(173,255,173)">22/68</td>
-    <td align=center style="background-color:rgb(169,255,169)">23/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(207,255,207)">13/68</td>
-    <td align=center style="background-color:rgb(42,255,42)">57/68</td>
-    <td align=center style="background-color:rgb(139,255,139)">31/68</td>
-    <td align=center style="background-color:rgb(68,255,68)">50/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">67/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(45,255,45)">56/68</td>
-    <td align=center style="background-color:rgb(19,255,19)">63/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">67/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">67/68</td>
-    <td align=center style="background-color:rgb(23,255,23)">62/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#f1c232>Skynet</td>
+    <td align=center style="background-color:rgb(175,255,175)">113/189</td>
+    <td align=center style="background-color:rgb(188,255,188)">107/189</td>
+    <td align=center style="background-color:rgb(156,255,156)">121/189</td>
+    <td align=center style="background-color:rgb(163,255,163)">118/189</td>
+    <td align=center style="background-color:rgb(180,255,180)">111/189</td>
+    <td align=center style="background-color:rgb(147,255,147)">125/189</td>
+    <td align=center style="background-color:rgb(141,255,141)">128/189</td>
+    <td align=center style="background-color:rgb(129,255,129)">133/189</td>
+    <td align=center style="background-color:rgb(147,255,147)">125/189</td>
+    <td align=center style="background-color:rgb(134,255,134)">131/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>UAlbertaBot</td>
-    <td width=71 align=center bgcolor=#E8E8E8>67.42</td>
-    <td align=center style="background-color:rgb(237,255,237)">5/68</td>
-    <td align=center style="background-color:rgb(244,255,244)">3/67</td>
-    <td align=center style="background-color:rgb(173,255,173)">22/68</td>
-    <td align=center style="background-color:rgb(184,255,184)">19/68</td>
-    <td align=center style="background-color:rgb(120,255,120)">36/68</td>
-    <td align=center style="background-color:rgb(49,255,49)">55/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(15,255,15)">64/68</td>
-    <td align=center style="background-color:rgb(120,255,120)">36/68</td>
-    <td align=center style="background-color:rgb(139,255,139)">31/68</td>
-    <td align=center style="background-color:rgb(102,255,102)">41/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(19,255,19)">63/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#f1c232>Xelnaga</td>
+    <td align=center style="background-color:rgb(163,255,163)">118/189</td>
+    <td align=center style="background-color:rgb(187,255,187)">108/189</td>
+    <td align=center style="background-color:rgb(149,255,149)">124/189</td>
+    <td align=center style="background-color:rgb(159,255,159)">120/189</td>
+    <td align=center style="background-color:rgb(170,255,170)">115/189</td>
+    <td align=center style="background-color:rgb(181,255,181)">110/189</td>
+    <td align=center style="background-color:rgb(149,255,149)">124/189</td>
+    <td align=center style="background-color:rgb(141,255,141)">128/189</td>
+    <td align=center style="background-color:rgb(147,255,147)">125/189</td>
+    <td align=center style="background-color:rgb(175,255,175)">113/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>MaasCraft</td>
-    <td width=71 align=center bgcolor=#ffffff>59.05</td>
-    <td align=center style="background-color:rgb(244,255,244)">3/68</td>
-    <td align=center style="background-color:rgb(188,255,188)">18/68</td>
-    <td align=center style="background-color:rgb(60,255,60)">52/68</td>
-    <td align=center style="background-color:rgb(158,255,158)">26/68</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/68</td>
-    <td align=center style="background-color:rgb(214,255,214)">11/68</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(132,255,132)">33/68</td>
-    <td align=center style="background-color:rgb(128,255,128)">34/68</td>
-    <td align=center style="background-color:rgb(45,255,45)">56/68</td>
-    <td align=center style="background-color:rgb(27,255,27)">61/68</td>
-    <td align=center style="background-color:rgb(57,255,57)">53/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(19,255,19)">63/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">68/68</td>
-    <td align=center style="background-color:rgb(27,255,27)">61/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>LetaBot</td>
+    <td align=center style="background-color:rgb(187,255,187)">108/189</td>
+    <td align=center style="background-color:rgb(166,255,166)">117/189</td>
+    <td align=center style="background-color:rgb(173,255,173)">114/189</td>
+    <td align=center style="background-color:rgb(168,255,168)">116/189</td>
+    <td align=center style="background-color:rgb(156,255,156)">121/189</td>
+    <td align=center style="background-color:rgb(153,255,153)">123/189</td>
+    <td align=center style="background-color:rgb(193,255,193)">105/189</td>
+    <td align=center style="background-color:rgb(181,255,181)">110/189</td>
+    <td align=center style="background-color:rgb(176,255,176)">112/189</td>
+    <td align=center style="background-color:rgb(144,255,144)">126/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>MooseBot</td>
-    <td width=71 align=center bgcolor=#E8E8E8>50.13</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(177,255,177)">21/68</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/68</td>
-    <td align=center style="background-color:rgb(117,255,117)">37/68</td>
-    <td align=center style="background-color:rgb(135,255,135)">32/68</td>
-    <td align=center style="background-color:rgb(124,255,124)">35/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(199,255,199)">15/68</td>
-    <td align=center style="background-color:rgb(150,255,150)">28/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(124,255,124)">35/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">67/68</td>
-    <td align=center style="background-color:rgb(64,255,64)">51/68</td>
-    <td align=center style="background-color:rgb(53,255,53)">54/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(0,255,0)">67/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>Tyr</td>
+    <td align=center style="background-color:rgb(195,255,195)">104/189</td>
+    <td align=center style="background-color:rgb(153,255,153)">122/188</td>
+    <td align=center style="background-color:rgb(207,255,207)">099/189</td>
+    <td align=center style="background-color:rgb(255,207,207)">091/189</td>
+    <td align=center style="background-color:rgb(209,255,209)">098/189</td>
+    <td align=center style="background-color:rgb(156,255,156)">121/189</td>
+    <td align=center style="background-color:rgb(255,212,212)">093/189</td>
+    <td align=center style="background-color:rgb(195,255,195)">104/189</td>
+    <td align=center style="background-color:rgb(255,204,204)">089/189</td>
+    <td align=center style="background-color:rgb(215,255,215)">095/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>BTHAI</td>
-    <td width=71 align=center bgcolor=#ffffff>46.49</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(229,255,229)">7/68</td>
-    <td align=center style="background-color:rgb(244,255,244)">3/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(188,255,188)">18/68</td>
-    <td align=center style="background-color:rgb(117,255,117)">37/68</td>
-    <td align=center style="background-color:rgb(128,255,128)">34/68</td>
-    <td align=center style="background-color:rgb(57,255,57)">53/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(132,255,132)">33/68</td>
-    <td align=center style="background-color:rgb(113,255,113)">38/68</td>
-    <td align=center style="background-color:rgb(79,255,79)">47/68</td>
-    <td align=center style="background-color:rgb(8,255,8)">66/68</td>
-    <td align=center style="background-color:rgb(128,255,128)">34/68</td>
-    <td align=center style="background-color:rgb(120,255,120)">36/68</td>
-    <td align=center style="background-color:rgb(12,255,12)">65/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">66/67</td>
+    <td width=100 align=center  bgcolor=#c27ba0>GarmBot</td>
+    <td align=center style="background-color:rgb(202,255,202)">101/189</td>
+    <td align=center style="background-color:rgb(207,255,207)">099/189</td>
+    <td align=center style="background-color:rgb(255,210,210)">092/189</td>
+    <td align=center style="background-color:rgb(193,255,193)">105/189</td>
+    <td align=center style="background-color:rgb(209,255,209)">098/189</td>
+    <td align=center style="background-color:rgb(209,255,209)">098/189</td>
+    <td align=center style="background-color:rgb(190,255,190)">106/189</td>
+    <td align=center style="background-color:rgb(209,255,209)">098/189</td>
+    <td align=center style="background-color:rgb(255,204,204)">089/189</td>
+    <td align=center style="background-color:rgb(200,255,200)">102/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>TerranUAB</td>
-    <td width=71 align=center bgcolor=#E8E8E8>42.77</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(237,255,237)">5/68</td>
-    <td align=center style="background-color:rgb(225,255,225)">8/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/68</td>
-    <td align=center style="background-color:rgb(154,255,154)">27/68</td>
-    <td align=center style="background-color:rgb(210,255,210)">12/68</td>
-    <td align=center style="background-color:rgb(105,255,105)">40/68</td>
-    <td align=center style="background-color:rgb(124,255,124)">35/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(132,255,132)">33/68</td>
-    <td align=center style="background-color:rgb(79,255,79)">47/68</td>
-    <td align=center style="background-color:rgb(87,255,87)">45/68</td>
-    <td align=center style="background-color:rgb(30,255,30)">60/68</td>
-    <td align=center style="background-color:rgb(45,255,45)">56/68</td>
-    <td align=center style="background-color:rgb(23,255,23)">62/68</td>
-    <td align=center style="background-color:rgb(23,255,23)">61/67</td>
+    <td width=100 align=center  bgcolor=#f1c232>NUSBot</td>
+    <td align=center style="background-color:rgb(255,187,187)">082/189</td>
+    <td align=center style="background-color:rgb(255,197,197)">086/189</td>
+    <td align=center style="background-color:rgb(255,0,0)">000/189</td>
+    <td align=center style="background-color:rgb(255,192,192)">084/189</td>
+    <td align=center style="background-color:rgb(255,198,198)">087/189</td>
+    <td align=center style="background-color:rgb(255,180,180)">079/189</td>
+    <td align=center style="background-color:rgb(255,187,187)">082/189</td>
+    <td align=center style="background-color:rgb(255,158,158)">069/189</td>
+    <td align=center style="background-color:rgb(215,255,215)">095/189</td>
+    <td align=center style="background-color:rgb(255,181,181)">080/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>NUSBot</td>
-    <td width=71 align=center bgcolor=#ffffff>37.23</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(233,255,233)">6/68</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/68</td>
-    <td align=center style="background-color:rgb(147,255,147)">29/68</td>
-    <td align=center style="background-color:rgb(60,255,60)">52/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(229,255,229)">7/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(143,255,143)">30/68</td>
-    <td align=center style="background-color:rgb(124,255,124)">35/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(124,255,124)">35/68</td>
-    <td align=center style="background-color:rgb(139,255,139)">31/68</td>
-    <td align=center style="background-color:rgb(192,255,192)">17/68</td>
-    <td align=center style="background-color:rgb(27,255,27)">61/68</td>
-    <td align=center style="background-color:rgb(27,255,27)">61/68</td>
-    <td align=center style="background-color:rgb(27,255,27)">60/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>TerranUAB</td>
+    <td align=center style="background-color:rgb(255,171,171)">075/189</td>
+    <td align=center style="background-color:rgb(255,153,153)">067/189</td>
+    <td align=center style="background-color:rgb(255,180,180)">079/189</td>
+    <td align=center style="background-color:rgb(255,164,164)">072/189</td>
+    <td align=center style="background-color:rgb(255,139,139)">061/189</td>
+    <td align=center style="background-color:rgb(255,180,180)">079/189</td>
+    <td align=center style="background-color:rgb(255,185,185)">081/189</td>
+    <td align=center style="background-color:rgb(255,158,158)">069/189</td>
+    <td align=center style="background-color:rgb(255,158,158)">069/189</td>
+    <td align=center style="background-color:rgb(255,158,158)">069/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Nova</td>
-    <td width=71 align=center bgcolor=#E8E8E8>32.73</td>
-    <td align=center style="background-color:rgb(210,255,210)">12/68</td>
-    <td align=center style="background-color:rgb(210,255,210)">12/68</td>
-    <td align=center style="background-color:rgb(222,255,222)">9/68</td>
-    <td align=center style="background-color:rgb(218,255,218)">10/68</td>
-    <td align=center style="background-color:rgb(195,255,195)">16/68</td>
-    <td align=center style="background-color:rgb(210,255,210)">12/68</td>
-    <td align=center style="background-color:rgb(237,255,237)">5/68</td>
-    <td align=center style="background-color:rgb(199,255,199)">15/68</td>
-    <td align=center style="background-color:rgb(132,255,132)">33/68</td>
-    <td align=center style="background-color:rgb(177,255,177)">21/68</td>
-    <td align=center style="background-color:rgb(177,255,177)">21/68</td>
-    <td align=center style="background-color:rgb(132,255,132)">33/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(188,255,188)">18/68</td>
-    <td align=center style="background-color:rgb(98,255,98)">42/68</td>
-    <td align=center style="background-color:rgb(87,255,87)">45/68</td>
-    <td align=center style="background-color:rgb(109,255,109)">39/68</td>
-    <td align=center style="background-color:rgb(122,255,122)">35/67</td>
+    <td width=100 align=center  bgcolor=#c27ba0>Cimex</td>
+    <td align=center style="background-color:rgb(255,164,164)">072/188</td>
+    <td align=center style="background-color:rgb(255,171,171)">075/189</td>
+    <td align=center style="background-color:rgb(255,151,151)">066/189</td>
+    <td align=center style="background-color:rgb(255,151,151)">066/189</td>
+    <td align=center style="background-color:rgb(255,139,139)">061/189</td>
+    <td align=center style="background-color:rgb(255,139,139)">061/189</td>
+    <td align=center style="background-color:rgb(255,146,146)">064/189</td>
+    <td align=center style="background-color:rgb(255,173,173)">076/189</td>
+    <td align=center style="background-color:rgb(255,164,164)">072/189</td>
+    <td align=center style="background-color:rgb(255,136,136)">060/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>HITA</td>
-    <td width=71 align=center bgcolor=#ffffff>32.03</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(222,255,222)">9/68</td>
-    <td align=center style="background-color:rgb(192,255,192)">17/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(237,255,237)">5/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(169,255,169)">23/68</td>
-    <td align=center style="background-color:rgb(117,255,117)">37/68</td>
-    <td align=center style="background-color:rgb(68,255,68)">50/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(109,255,109)">39/68</td>
-    <td align=center style="background-color:rgb(68,255,68)">50/68</td>
-    <td align=center style="background-color:rgb(12,255,12)">65/68</td>
-    <td align=center style="background-color:rgb(4,255,4)">66/67</td>
+    <td width=100 align=center  bgcolor=#f1c232>CruzBot</td>
+    <td align=center style="background-color:rgb(255,147,147)">065/189</td>
+    <td align=center style="background-color:rgb(255,120,120)">053/189</td>
+    <td align=center style="background-color:rgb(255,164,164)">072/189</td>
+    <td align=center style="background-color:rgb(255,136,136)">060/189</td>
+    <td align=center style="background-color:rgb(255,141,141)">062/189</td>
+    <td align=center style="background-color:rgb(255,127,127)">056/189</td>
+    <td align=center style="background-color:rgb(255,134,134)">059/189</td>
+    <td align=center style="background-color:rgb(255,122,122)">054/189</td>
+    <td align=center style="background-color:rgb(255,159,159)">070/189</td>
+    <td align=center style="background-color:rgb(255,139,139)">061/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>CruzBot</td>
-    <td width=71 align=center bgcolor=#E8E8E8>29.18</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(210,255,210)">12/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(237,255,237)">5/68</td>
-    <td align=center style="background-color:rgb(192,255,192)">17/68</td>
-    <td align=center style="background-color:rgb(128,255,128)">34/68</td>
-    <td align=center style="background-color:rgb(225,255,225)">8/68</td>
-    <td align=center style="background-color:rgb(64,255,64)">51/68</td>
-    <td align=center style="background-color:rgb(158,255,158)">26/68</td>
-    <td align=center style="background-color:rgb(147,255,147)">29/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(23,255,23)">62/68</td>
-    <td align=center style="background-color:rgb(132,255,132)">33/68</td>
-    <td align=center style="background-color:rgb(39,255,39)">57/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>OpprimoBot</td>
+    <td align=center style="background-color:rgb(255,100,100)">044/189</td>
+    <td align=center style="background-color:rgb(255,107,107)">047/189</td>
+    <td align=center style="background-color:rgb(255,129,129)">057/189</td>
+    <td align=center style="background-color:rgb(255,112,112)">049/189</td>
+    <td align=center style="background-color:rgb(255,115,115)">051/189</td>
+    <td align=center style="background-color:rgb(255,125,125)">055/189</td>
+    <td align=center style="background-color:rgb(255,141,141)">062/189</td>
+    <td align=center style="background-color:rgb(255,120,120)">053/189</td>
+    <td align=center style="background-color:rgb(255,119,119)">052/189</td>
+    <td align=center style="background-color:rgb(255,129,129)">057/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Bonjwa</td>
-    <td width=71 align=center bgcolor=#ffffff>16.36</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(203,255,203)">14/68</td>
-    <td align=center style="background-color:rgb(135,255,135)">32/68</td>
-    <td align=center style="background-color:rgb(210,255,210)">12/68</td>
-    <td align=center style="background-color:rgb(229,255,229)">7/68</td>
-    <td align=center style="background-color:rgb(169,255,169)">23/68</td>
-    <td align=center style="background-color:rgb(188,255,188)">18/68</td>
-    <td align=center style="background-color:rgb(233,255,233)">6/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(90,255,90)">44/68</td>
-    <td align=center style="background-color:rgb(149,255,149)">28/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>Oritaka</td>
+    <td align=center style="background-color:rgb(255,102,102)">045/189</td>
+    <td align=center style="background-color:rgb(255,66,66)">029/189</td>
+    <td align=center style="background-color:rgb(255,141,141)">062/189</td>
+    <td align=center style="background-color:rgb(255,105,105)">046/189</td>
+    <td align=center style="background-color:rgb(255,127,127)">056/189</td>
+    <td align=center style="background-color:rgb(255,146,146)">064/189</td>
+    <td align=center style="background-color:rgb(255,132,132)">058/189</td>
+    <td align=center style="background-color:rgb(255,119,119)">052/189</td>
+    <td align=center style="background-color:rgb(255,52,52)">023/189</td>
+    <td align=center style="background-color:rgb(255,129,129)">057/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Oritaka</td>
-    <td width=71 align=center bgcolor=#E8E8E8>14.29</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(233,255,233)">6/68</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/68</td>
-    <td align=center style="background-color:rgb(229,255,229)">7/68</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/68</td>
-    <td align=center style="background-color:rgb(244,255,244)">3/68</td>
-    <td align=center style="background-color:rgb(233,255,233)">6/68</td>
-    <td align=center style="background-color:rgb(229,255,229)">7/68</td>
-    <td align=center style="background-color:rgb(147,255,147)">29/68</td>
-    <td align=center style="background-color:rgb(244,255,244)">3/68</td>
-    <td align=center style="background-color:rgb(124,255,124)">35/68</td>
-    <td align=center style="background-color:rgb(165,255,165)">24/68</td>
-    <td align=center bgcolor=#ffffff>-</td>
-    <td align=center style="background-color:rgb(111,255,111)">38/67</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>Stone</td>
+    <td align=center style="background-color:rgb(255,139,139)">061/189</td>
+    <td align=center style="background-color:rgb(255,144,144)">063/189</td>
+    <td align=center style="background-color:rgb(255,136,136)">060/189</td>
+    <td align=center style="background-color:rgb(255,119,119)">052/189</td>
+    <td align=center style="background-color:rgb(255,122,122)">054/189</td>
+    <td align=center style="background-color:rgb(255,69,69)">031/189</td>
+    <td align=center style="background-color:rgb(255,73,73)">032/189</td>
+    <td align=center style="background-color:rgb(255,86,86)">038/189</td>
+    <td align=center style="background-color:rgb(255,83,83)">037/189</td>
+    <td align=center style="background-color:rgb(255,86,86)">038/189</td>
   </tr>
   <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Yarmouk</td>
-    <td width=71 align=center bgcolor=#ffffff>11.5</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(248,255,248)">2/67</td>
-    <td align=center style="background-color:rgb(240,255,240)">4/67</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(255,255,255)">0/67</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/67</td>
-    <td align=center style="background-color:rgb(233,255,233)">6/67</td>
-    <td align=center style="background-color:rgb(229,255,229)">7/67</td>
-    <td align=center style="background-color:rgb(134,255,134)">32/67</td>
-    <td align=center style="background-color:rgb(252,255,252)">1/67</td>
-    <td align=center style="background-color:rgb(217,255,217)">10/67</td>
-    <td align=center style="background-color:rgb(107,255,107)">39/67</td>
-    <td align=center style="background-color:rgb(145,255,145)">29/67</td>
-    <td align=center bgcolor=#ffffff>-</td>
+    <td width=100 align=center  bgcolor=#6fa8dc>Bonjwa</td>
+    <td align=center style="background-color:rgb(255,113,113)">050/189</td>
+    <td align=center style="background-color:rgb(255,79,79)">035/189</td>
+    <td align=center style="background-color:rgb(255,102,102)">045/189</td>
+    <td align=center style="background-color:rgb(255,86,86)">038/189</td>
+    <td align=center style="background-color:rgb(255,100,100)">044/189</td>
+    <td align=center style="background-color:rgb(255,90,90)">040/189</td>
+    <td align=center style="background-color:rgb(255,86,86)">038/189</td>
+    <td align=center style="background-color:rgb(255,100,100)">044/189</td>
+    <td align=center style="background-color:rgb(255,129,129)">057/189</td>
+    <td align=center style="background-color:rgb(255,95,95)">042/189</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#6fa8dc>Yarmouk</td>
+    <td align=center style="background-color:rgb(255,22,22)">010/189</td>
+    <td align=center style="background-color:rgb(255,37,37)">017/189</td>
+    <td align=center style="background-color:rgb(255,44,44)">020/189</td>
+    <td align=center style="background-color:rgb(255,44,44)">020/189</td>
+    <td align=center style="background-color:rgb(255,40,40)">018/189</td>
+    <td align=center style="background-color:rgb(255,34,34)">015/189</td>
+    <td align=center style="background-color:rgb(255,40,40)">018/189</td>
+    <td align=center style="background-color:rgb(255,37,37)">017/189</td>
+    <td align=center style="background-color:rgb(255,52,52)">023/189</td>
+    <td align=center style="background-color:rgb(255,30,30)">014/189</td>
+  </tr>
+  <tr>
+    <td width=100 align=center  bgcolor=#f1c232>SusanooTricks</td>
+    <td align=center style="background-color:rgb(255,23,23)">011/189</td>
+    <td align=center style="background-color:rgb(255,52,52)">023/189</td>
+    <td align=center style="background-color:rgb(255,66,66)">029/189</td>
+    <td align=center style="background-color:rgb(255,22,22)">010/189</td>
+    <td align=center style="background-color:rgb(255,37,37)">017/189</td>
+    <td align=center style="background-color:rgb(255,27,27)">012/189</td>
+    <td align=center style="background-color:rgb(255,15,15)">007/189</td>
+    <td align=center style="background-color:rgb(255,27,27)">012/189</td>
+    <td align=center style="background-color:rgb(255,28,28)">013/189</td>
+    <td align=center style="background-color:rgb(255,30,30)">014/189</td>
   </tr>
 </table>
 <br>
-<table cellpadding=2 rules=all style="font: 12px/1.5em Verdana">
-  <tr>
-    <td width=100 rowspan=2> </td>
-    <td colspan=10 bgcolor=#CCCCCC align=center style="font: 16px/1.5em Verdana">Bot Win Percentage By Map</td>
-  </tr>
-  <tr>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Benzene</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Destina</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Heartbr</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Aztec</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">TauCros</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Androme</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Circuit</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Empireo</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Fortres</td>
-    <td width=63 align=center bgcolor=#CCCCCC style="font: 11px/1.5em Verdana">Python</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>IceBot</td>
-    <td align=center style="background-color:rgb(30,255,30)">88 %</td>
-    <td align=center style="background-color:rgb(26,255,26)">89 %</td>
-    <td align=center style="background-color:rgb(39,255,39)">84 %</td>
-    <td align=center style="background-color:rgb(33,255,33)">87 %</td>
-    <td align=center style="background-color:rgb(28,255,28)">89 %</td>
-    <td align=center style="background-color:rgb(35,255,35)">86 %</td>
-    <td align=center style="background-color:rgb(45,255,45)">82 %</td>
-    <td align=center style="background-color:rgb(39,255,39)">84 %</td>
-    <td align=center style="background-color:rgb(38,255,38)">85 %</td>
-    <td align=center style="background-color:rgb(53,255,53)">79 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Ximp</td>
-    <td align=center style="background-color:rgb(58,255,58)">77 %</td>
-    <td align=center style="background-color:rgb(43,255,43)">83 %</td>
-    <td align=center style="background-color:rgb(26,255,26)">89 %</td>
-    <td align=center style="background-color:rgb(35,255,35)">86 %</td>
-    <td align=center style="background-color:rgb(39,255,39)">84 %</td>
-    <td align=center style="background-color:rgb(37,255,37)">85 %</td>
-    <td align=center style="background-color:rgb(26,255,26)">89 %</td>
-    <td align=center style="background-color:rgb(47,255,47)">81 %</td>
-    <td align=center style="background-color:rgb(50,255,50)">80 %</td>
-    <td align=center style="background-color:rgb(43,255,43)">83 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>LetaBot</td>
-    <td align=center style="background-color:rgb(30,255,30)">88 %</td>
-    <td align=center style="background-color:rgb(41,255,41)">84 %</td>
-    <td align=center style="background-color:rgb(80,255,80)">68 %</td>
-    <td align=center style="background-color:rgb(37,255,37)">85 %</td>
-    <td align=center style="background-color:rgb(54,255,54)">78 %</td>
-    <td align=center style="background-color:rgb(48,255,48)">81 %</td>
-    <td align=center style="background-color:rgb(54,255,54)">78 %</td>
-    <td align=center style="background-color:rgb(39,255,39)">84 %</td>
-    <td align=center style="background-color:rgb(33,255,33)">87 %</td>
-    <td align=center style="background-color:rgb(45,255,45)">82 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Aiur</td>
-    <td align=center style="background-color:rgb(75,255,75)">70 %</td>
-    <td align=center style="background-color:rgb(73,255,73)">71 %</td>
-    <td align=center style="background-color:rgb(56,255,56)">78 %</td>
-    <td align=center style="background-color:rgb(78,255,78)">69 %</td>
-    <td align=center style="background-color:rgb(82,255,82)">68 %</td>
-    <td align=center style="background-color:rgb(82,255,82)">68 %</td>
-    <td align=center style="background-color:rgb(73,255,73)">71 %</td>
-    <td align=center style="background-color:rgb(80,255,80)">68 %</td>
-    <td align=center style="background-color:rgb(68,255,68)">73 %</td>
-    <td align=center style="background-color:rgb(75,255,75)">70 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Skynet</td>
-    <td align=center style="background-color:rgb(95,255,95)">63 %</td>
-    <td align=center style="background-color:rgb(95,255,95)">63 %</td>
-    <td align=center style="background-color:rgb(75,255,75)">70 %</td>
-    <td align=center style="background-color:rgb(93,255,93)">63 %</td>
-    <td align=center style="background-color:rgb(90,255,90)">64 %</td>
-    <td align=center style="background-color:rgb(71,255,71)">72 %</td>
-    <td align=center style="background-color:rgb(67,255,67)">73 %</td>
-    <td align=center style="background-color:rgb(63,255,63)">75 %</td>
-    <td align=center style="background-color:rgb(70,255,70)">72 %</td>
-    <td align=center style="background-color:rgb(75,255,75)">70 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Xelnaga</td>
-    <td align=center style="background-color:rgb(80,255,80)">68 %</td>
-    <td align=center style="background-color:rgb(88,255,88)">65 %</td>
-    <td align=center style="background-color:rgb(78,255,78)">69 %</td>
-    <td align=center style="background-color:rgb(90,255,90)">64 %</td>
-    <td align=center style="background-color:rgb(80,255,80)">68 %</td>
-    <td align=center style="background-color:rgb(75,255,75)">70 %</td>
-    <td align=center style="background-color:rgb(88,255,88)">65 %</td>
-    <td align=center style="background-color:rgb(85,255,85)">66 %</td>
-    <td align=center style="background-color:rgb(73,255,73)">71 %</td>
-    <td align=center style="background-color:rgb(75,255,75)">70 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>UAlbertaBot</td>
-    <td align=center style="background-color:rgb(95,255,95)">63 %</td>
-    <td align=center style="background-color:rgb(73,255,73)">71 %</td>
-    <td align=center style="background-color:rgb(88,255,88)">65 %</td>
-    <td align=center style="background-color:rgb(88,255,88)">65 %</td>
-    <td align=center style="background-color:rgb(80,255,80)">68 %</td>
-    <td align=center style="background-color:rgb(65,255,65)">74 %</td>
-    <td align=center style="background-color:rgb(95,255,95)">63 %</td>
-    <td align=center style="background-color:rgb(94,255,94)">63 %</td>
-    <td align=center style="background-color:rgb(83,255,83)">67 %</td>
-    <td align=center style="background-color:rgb(73,255,73)">71 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>MaasCraft</td>
-    <td align=center style="background-color:rgb(114,255,114)">55 %</td>
-    <td align=center style="background-color:rgb(103,255,103)">59 %</td>
-    <td align=center style="background-color:rgb(99,255,99)">61 %</td>
-    <td align=center style="background-color:rgb(103,255,103)">59 %</td>
-    <td align=center style="background-color:rgb(108,255,108)">57 %</td>
-    <td align=center style="background-color:rgb(95,255,95)">63 %</td>
-    <td align=center style="background-color:rgb(123,255,123)">52 %</td>
-    <td align=center style="background-color:rgb(98,255,98)">61 %</td>
-    <td align=center style="background-color:rgb(105,255,105)">58 %</td>
-    <td align=center style="background-color:rgb(100,255,100)">60 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>MooseBot</td>
-    <td align=center style="background-color:rgb(123,255,123)">52 %</td>
-    <td align=center style="background-color:rgb(133,255,133)">47 %</td>
-    <td align=center style="background-color:rgb(146,255,146)">42 %</td>
-    <td align=center style="background-color:rgb(140,255,140)">45 %</td>
-    <td align=center style="background-color:rgb(112,255,112)">56 %</td>
-    <td align=center style="background-color:rgb(142,255,142)">44 %</td>
-    <td align=center style="background-color:rgb(125,255,125)">51 %</td>
-    <td align=center style="background-color:rgb(111,255,111)">56 %</td>
-    <td align=center style="background-color:rgb(118,255,118)">53 %</td>
-    <td align=center style="background-color:rgb(125,255,125)">50 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>BTHAI</td>
-    <td align=center style="background-color:rgb(123,255,123)">52 %</td>
-    <td align=center style="background-color:rgb(123,255,123)">52 %</td>
-    <td align=center style="background-color:rgb(110,255,110)">57 %</td>
-    <td align=center style="background-color:rgb(153,255,153)">40 %</td>
-    <td align=center style="background-color:rgb(144,255,144)">43 %</td>
-    <td align=center style="background-color:rgb(159,255,159)">37 %</td>
-    <td align=center style="background-color:rgb(123,255,123)">52 %</td>
-    <td align=center style="background-color:rgb(160,255,160)">37 %</td>
-    <td align=center style="background-color:rgb(153,255,153)">40 %</td>
-    <td align=center style="background-color:rgb(123,255,123)">51 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>TerranUAB</td>
-    <td align=center style="background-color:rgb(142,255,142)">44 %</td>
-    <td align=center style="background-color:rgb(150,255,150)">41 %</td>
-    <td align=center style="background-color:rgb(148,255,148)">42 %</td>
-    <td align=center style="background-color:rgb(125,255,125)">51 %</td>
-    <td align=center style="background-color:rgb(170,255,170)">33 %</td>
-    <td align=center style="background-color:rgb(129,255,129)">49 %</td>
-    <td align=center style="background-color:rgb(131,255,131)">48 %</td>
-    <td align=center style="background-color:rgb(167,255,167)">34 %</td>
-    <td align=center style="background-color:rgb(155,255,155)">39 %</td>
-    <td align=center style="background-color:rgb(148,255,148)">42 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>NUSBot</td>
-    <td align=center style="background-color:rgb(159,255,159)">37 %</td>
-    <td align=center style="background-color:rgb(140,255,140)">45 %</td>
-    <td align=center style="background-color:rgb(247,255,247)">3 %</td>
-    <td align=center style="background-color:rgb(163,255,163)">36 %</td>
-    <td align=center style="background-color:rgb(153,255,153)">40 %</td>
-    <td align=center style="background-color:rgb(146,255,146)">42 %</td>
-    <td align=center style="background-color:rgb(165,255,165)">35 %</td>
-    <td align=center style="background-color:rgb(143,255,143)">44 %</td>
-    <td align=center style="background-color:rgb(133,255,133)">48 %</td>
-    <td align=center style="background-color:rgb(150,255,150)">41 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Nova</td>
-    <td align=center style="background-color:rgb(180,255,180)">29 %</td>
-    <td align=center style="background-color:rgb(155,255,155)">39 %</td>
-    <td align=center style="background-color:rgb(148,255,148)">42 %</td>
-    <td align=center style="background-color:rgb(133,255,133)">47 %</td>
-    <td align=center style="background-color:rgb(138,255,138)">46 %</td>
-    <td align=center style="background-color:rgb(247,255,247)">3 %</td>
-    <td align=center style="background-color:rgb(150,255,150)">41 %</td>
-    <td align=center style="background-color:rgb(152,255,152)">40 %</td>
-    <td align=center style="background-color:rgb(210,255,210)">17 %</td>
-    <td align=center style="background-color:rgb(218,255,218)">14 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>HITA</td>
-    <td align=center style="background-color:rgb(174,255,174)">31 %</td>
-    <td align=center style="background-color:rgb(172,255,172)">32 %</td>
-    <td align=center style="background-color:rgb(146,255,146)">42 %</td>
-    <td align=center style="background-color:rgb(178,255,178)">30 %</td>
-    <td align=center style="background-color:rgb(163,255,163)">36 %</td>
-    <td align=center style="background-color:rgb(172,255,172)">32 %</td>
-    <td align=center style="background-color:rgb(187,255,187)">26 %</td>
-    <td align=center style="background-color:rgb(184,255,184)">27 %</td>
-    <td align=center style="background-color:rgb(193,255,193)">24 %</td>
-    <td align=center style="background-color:rgb(170,255,170)">33 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>CruzBot</td>
-    <td align=center style="background-color:rgb(168,255,168)">34 %</td>
-    <td align=center style="background-color:rgb(195,255,195)">23 %</td>
-    <td align=center style="background-color:rgb(185,255,185)">27 %</td>
-    <td align=center style="background-color:rgb(174,255,174)">31 %</td>
-    <td align=center style="background-color:rgb(204,255,204)">20 %</td>
-    <td align=center style="background-color:rgb(168,255,168)">34 %</td>
-    <td align=center style="background-color:rgb(170,255,170)">33 %</td>
-    <td align=center style="background-color:rgb(182,255,182)">28 %</td>
-    <td align=center style="background-color:rgb(175,255,175)">31 %</td>
-    <td align=center style="background-color:rgb(190,255,190)">25 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Bonjwa</td>
-    <td align=center style="background-color:rgb(200,255,200)">21 %</td>
-    <td align=center style="background-color:rgb(221,255,221)">13 %</td>
-    <td align=center style="background-color:rgb(202,255,202)">21 %</td>
-    <td align=center style="background-color:rgb(223,255,223)">12 %</td>
-    <td align=center style="background-color:rgb(217,255,217)">15 %</td>
-    <td align=center style="background-color:rgb(208,255,208)">18 %</td>
-    <td align=center style="background-color:rgb(221,255,221)">13 %</td>
-    <td align=center style="background-color:rgb(225,255,225)">11 %</td>
-    <td align=center style="background-color:rgb(208,255,208)">18 %</td>
-    <td align=center style="background-color:rgb(210,255,210)">17 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Oritaka</td>
-    <td align=center style="background-color:rgb(223,255,223)">12 %</td>
-    <td align=center style="background-color:rgb(230,255,230)">10 %</td>
-    <td align=center style="background-color:rgb(221,255,221)">13 %</td>
-    <td align=center style="background-color:rgb(221,255,221)">13 %</td>
-    <td align=center style="background-color:rgb(204,255,204)">20 %</td>
-    <td align=center style="background-color:rgb(206,255,206)">19 %</td>
-    <td align=center style="background-color:rgb(228,255,228)">10 %</td>
-    <td align=center style="background-color:rgb(223,255,223)">12 %</td>
-    <td align=center style="background-color:rgb(223,255,223)">12 %</td>
-    <td align=center style="background-color:rgb(210,255,210)">17 %</td>
-  </tr>
-  <tr>
-    <td width=100 align=center  bgcolor=#CCCCCC>Yarmouk</td>
-    <td align=center style="background-color:rgb(234,255,234)">8 %</td>
-    <td align=center style="background-color:rgb(240,255,240)">5 %</td>
-    <td align=center style="background-color:rgb(208,255,208)">18 %</td>
-    <td align=center style="background-color:rgb(236,255,236)">7 %</td>
-    <td align=center style="background-color:rgb(238,255,238)">6 %</td>
-    <td align=center style="background-color:rgb(219,255,219)">14 %</td>
-    <td align=center style="background-color:rgb(232,255,232)">9 %</td>
-    <td align=center style="background-color:rgb(220,255,220)">13 %</td>
-    <td align=center style="background-color:rgb(213,255,213)">16 %</td>
-    <td align=center style="background-color:rgb(215,255,215)">15 %</td>
-  </tr>
-</table>
-<br>
-<p style="font: 10px/1.5em Verdana">Last Updated: 2014-09-16 [10:29:38]</p>
+<p style="font: 10px/1.5em Verdana">Last Updated: 2015-11-04 [23:44:47]</p>
 </body>
 </html>
