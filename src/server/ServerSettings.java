@@ -25,6 +25,8 @@ public class ServerSettings
 	public String 			ClearResults	 	= "ask";
 	public String 			ResumeTournament 	= "ask";
 	public String			DetailedResults		= "no";
+	public String			AllowRead 			= "yes";
+	
 	public String			TournamentType		= "AllVsAll";
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
@@ -187,6 +189,18 @@ public class ServerSettings
 		else if (type.equalsIgnoreCase("TournamentType"))
 		{
 			TournamentType = st.nextToken();
+		}
+		else if (type.equalsIgnoreCase("AllowRead"))
+		{
+			String allow = st.nextToken();
+			
+			if (!allow.equalsIgnoreCase("yes") && !allow.equalsIgnoreCase("no"))
+			{
+				System.err.println("ServerSettings: AllowRead invalid option: " + allow);
+				valid = false;
+			}
+			
+			AllowRead = allow;
 		}
 		else if (type.equalsIgnoreCase("ResumeTournament"))
 		{

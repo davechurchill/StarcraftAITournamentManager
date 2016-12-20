@@ -1,4 +1,6 @@
 # StarcraftAITournamentManager
 Tournament Manager Software for StarCraft AI Competitions
 
-Instructions: https://www.youtube.com/watch?v=tl-nansNbsA
+Instructions: http://webdocs.cs.ualberta.ca/~cdavid/starcraftaicomp/tm.shtml
+
+Tutorial video: https://www.youtube.com/watch?v=tl-nansNbsA

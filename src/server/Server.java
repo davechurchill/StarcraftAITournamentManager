@@ -77,7 +77,7 @@ public class Server  extends Thread
 				
 				if (!games.hasMoreGames())
 				{
-					log("No more games in games list, please shut down tournament!");
+					log("No more games in games list, please shut down tournament!\n");
 				}
 				
 				String gameString = "Game(" + nextGame.getGameID() + " / " + nextGame.getRound() + ")";
@@ -104,10 +104,13 @@ public class Server  extends Thread
                         Thread.sleep(gameRescheduleTimer);
                     }
                     
-                    log("Moving Write Directory to Read Directory");
                     
-                    // move the write dir to the read dir
-                    ServerCommands.Server_MoveWriteToRead();
+                    // move the write dir to the read dir if reading is allowed
+                    if(ServerSettings.Instance().AllowRead.equalsIgnoreCase("yes"))
+                    {
+                    	log("Moving Write Directory to Read Directory\n");
+                    	ServerCommands.Server_MoveWriteToRead();
+                    }
                 }
 						
 				log(gameString + " SUCCESS: Starting Game\n");
@@ -435,8 +438,8 @@ public class Server  extends Thread
 	{
 		try 
 		{
-			log("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");				// EXCEPTION HERE
-			System.out.println("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");
+			log("Receiving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");				// EXCEPTION HERE
+			System.out.println("Receiving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");
 			Game g = games.lookupGame(game.getGameID(), game.getRound());
 			g.updateWithGame(game);
 			appendGameData(g);

@@ -34,3 +34,4 @@ server/results.txt
 server/games.txt
 server/html/*.html
 server/html/*.txt
+/bin/
