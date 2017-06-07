@@ -56,39 +56,39 @@ public class GameResult implements Comparable<Object>
 	
 	public void setResult (String dataLine)
 	{
-		String[] data = dataLine.split(" +");
+		String[] data = dataLine.trim().split(" +");
 		
-		gameID 				= Integer.parseInt(data[1]);
-		roundID 			= Integer.parseInt(data[2]);
+		gameID 				= Integer.parseInt(data[0]);
+		roundID 			= Integer.parseInt(data[1]);
 		
-		hostName			= data[3];
-		awayName			= data[4];
-		mapName				= data[5];
+		hostName			= data[2];
+		awayName			= data[3];
+		mapName				= data[4];
 		
-		if (data[6].equals("true"))
+		if (data[5].equals("true"))
 		{
 			hostWon = true;
 		}
 		
-		if (data[7].equals("true"))
+		if (data[6].equals("true"))
 		{
 			hostCrash = true;
 		}
 		
-		if (data[8].equals("true"))
+		if (data[7].equals("true"))
 		{
 			awayCrash = true;
 		}
 		
-		hourTimeout			= Boolean.getBoolean(data[9]);
+		hourTimeout			= Boolean.getBoolean(data[8]);
 		
-		hostScore			= Integer.parseInt(data[10]) != 0 ? Integer.parseInt(data[10]) : hostScore;
-		awayScore			= Integer.parseInt(data[11]) != 0 ? Integer.parseInt(data[11]) : awayScore;
+		hostScore			= Integer.parseInt(data[9]) != 0 ? Integer.parseInt(data[9]) : hostScore;
+		awayScore			= Integer.parseInt(data[10]) != 0 ? Integer.parseInt(data[10]) : awayScore;
 		
-		finalFrame			= Integer.parseInt(data[12]) > finalFrame ? Integer.parseInt(data[12]) : finalFrame;
+		finalFrame			= Integer.parseInt(data[11]) > finalFrame ? Integer.parseInt(data[11]) : finalFrame;
 		
-		hostTime			= Integer.parseInt(data[13]) != 0 ? Integer.parseInt(data[13]) : hostTime;
-		awayTime			= Integer.parseInt(data[14]) != 0 ? Integer.parseInt(data[14]) : awayTime;
+		hostTime			= Integer.parseInt(data[12]) != 0 ? Integer.parseInt(data[12]) : hostTime;
+		awayTime			= Integer.parseInt(data[13]) != 0 ? Integer.parseInt(data[13]) : awayTime;
 		
 		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
 		for (int i=0; i<numTimers; ++i)
@@ -99,7 +99,7 @@ public class GameResult implements Comparable<Object>
 				{
 					try
 					{
-						hostTimers.set(i, Integer.parseInt(data[15 + i]));
+						hostTimers.set(i, Integer.parseInt(data[14 + i]));
 					}
 					catch(java.lang.ArrayIndexOutOfBoundsException ex)
 					{
@@ -110,7 +110,7 @@ public class GameResult implements Comparable<Object>
 				{
 					try
 					{
-						awayTimers.set(i, Integer.parseInt(data[15 + numTimers + i]));
+						awayTimers.set(i, Integer.parseInt(data[14 + numTimers + i]));
 					}
 					catch(java.lang.ArrayIndexOutOfBoundsException ex)
 					{
@@ -122,7 +122,7 @@ public class GameResult implements Comparable<Object>
 			{
 				try
 				{
-					hostTimers.add(Integer.parseInt(data[15 + i]));
+					hostTimers.add(Integer.parseInt(data[14 + i]));
 				}
 				catch(java.lang.ArrayIndexOutOfBoundsException ex)
 				{
@@ -130,7 +130,7 @@ public class GameResult implements Comparable<Object>
 				}
 				try
 				{
-					awayTimers.add(Integer.parseInt(data[15 + numTimers + i]));
+					awayTimers.add(Integer.parseInt(data[14 + numTimers + i]));
 				}
 				catch(java.lang.ArrayIndexOutOfBoundsException ex)
 				{
@@ -140,20 +140,20 @@ public class GameResult implements Comparable<Object>
 		}
 		
 		// if there's an address field
-		if (data.length > 15 + numTimers*2)
+		if (data.length > 14 + numTimers*2)
 		{
-			hostAddress = data[15 + numTimers*2];
-			awayAddress = data[15 + numTimers*2 + 1];
+			hostAddress = data[14 + numTimers*2];
+			awayAddress = data[14 + numTimers*2 + 1];
 			
 			// if there's a date field
-			if (data.length > 15 + numTimers*2 + 2)
+			if (data.length > 14 + numTimers*2 + 2)
 			{			
-				startDate = data[15 + numTimers*2 + 2];
+				startDate = data[14 + numTimers*2 + 2];
 				
 				// record the finish date only from the second person to report
 				if (!firstReport.equalsIgnoreCase("Error"))
 				{
-					finishDate = data[15 + numTimers*2 + 3];
+					finishDate = data[14 + numTimers*2 + 3];
 				}
 			}
 		}
@@ -169,7 +169,7 @@ public class GameResult implements Comparable<Object>
 			hostWon = true;
 		}
 			
-		int tempFinalFrame 	= Integer.parseInt(data[12]);
+		int tempFinalFrame 	= Integer.parseInt(data[11]);
 		
 		// if this is the first bot to report
 		if (firstReport.equals("Error"))

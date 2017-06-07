@@ -738,9 +738,8 @@ public class ResultsParser
 	{
 		if (line.trim().length() > 0)
 		{
-			Vector<String> data = new Vector<String>(Arrays.asList(line.split(" +")));
-			data.remove(0);
-		
+			Vector<String> data = new Vector<String>(Arrays.asList(line.trim().split(" +")));
+					
 			int gameID = Integer.parseInt(data.get(0));
 			gameIDs.add(gameID);
 			
