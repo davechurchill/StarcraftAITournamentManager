@@ -422,6 +422,17 @@ public class Client extends Thread
 									null);
 		
 		retGame.setFinalFrame(gameState.frameCount);
+		
+		//some crashes leave the timeOuts in gameState empty (if game never started).
+		if (gameState.timeOutExceeded.size() == 0)
+		{
+			Vector<Integer> emptyTimers = new Vector<Integer>();
+			for (int i = 0; i < tmSettings.TimeoutLimits.size(); i++) {
+				emptyTimers.add(0);
+			}
+			gameState.timeOutExceeded = emptyTimers;
+		}
+		
 		if (previousInstructions.isHost) 
 		{
 			retGame.setHostcrash(true);
