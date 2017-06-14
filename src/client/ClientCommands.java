@@ -236,17 +236,26 @@ public class ClientCommands
 		BWINI += ";         DLLs specified, then the last entry is used." + newLine;
 		BWINI += ";   - Use a colon to forcefully load the revision specified." + newLine;
 		BWINI += ";   - Example: SomeAI.dll:3400, SecondInstance.dll, ThirdInstance.dll" + newLine;
-		BWINI += "ai     = bwapi-data\\AI\\" + thisBot.getName() + ".dll" + newLine;
-		BWINI += "ai_dbg = bwapi-data\\AI\\" + thisBot.getName() + ".dll" + newLine + newLine;
+		BWINI += "ai     = " + (thisBot.getType().equals("dll") ? "bwapi-data\\AI\\" + thisBot.getName() + ".dll" : "") + newLine;
+		BWINI += "ai_dbg = " + (thisBot.getType().equals("dll") ? "bwapi-data\\AI\\" + thisBot.getName() + ".dll" : "") + newLine + newLine;
 
 		BWINI += "; Used only for tournaments" + newLine;
 		BWINI += "; Tournaments can only be run in RELEASE mode" + newLine;
-		BWINI += "tournament =" + ClientSettings.Instance().TournamentModuleFilename + newLine + newLine;
+		BWINI += "tournament = " + ClientSettings.Instance().TournamentModuleFilename + newLine + newLine;
 
 		BWINI += "[auto_menu]" + newLine;
 		BWINI += "; auto_menu = OFF | SINGLE_PLAYER | LAN | BATTLE_NET" + newLine;
 		BWINI += "; for replays, just set the map to the path of the replay file" + newLine;
 		BWINI += "auto_menu = " + bwapi.auto_menu + newLine + newLine;
+		
+		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		{
+			BWINI += "; character_name = FIRST | WAIT | <other>" + newLine;
+			BWINI += "; if FIRST (default), use the first character in the list" + newLine;
+			BWINI += "; if WAIT, stop at this screen" + newLine;
+			BWINI += "; else the character with the given value is used/created" + newLine;
+			BWINI += "character_name = " + bwapi.character_name + newLine + newLine;
+		}
 
 		BWINI += "; pause_dbg = ON | OFF" + newLine;
 		BWINI += "; This specifies if auto_menu will pause until a debugger is attached to the process." + newLine;
@@ -274,7 +283,7 @@ public class ClientCommands
 		BWINI += ";	will join the game called \"BWAPI\"" + newLine;
 		BWINI += ";	If the game does not exist and the \"map\" entry is not blank, then the game will be created instead" + newLine;
 		BWINI += ";	If this entry is blank, then it will follow the rules of the \"map\" entry" + newLine;
-		BWINI += "game =" + id + newLine + newLine; 
+		BWINI += "game = " + id + newLine + newLine; 
 
 		BWINI += "; mapiteration =  RANDOM | SEQUENCE" + newLine;
 		BWINI += "; type of iteration that will be done on a map name with a wildcard" + newLine;
@@ -304,6 +313,20 @@ public class ClientCommands
 		BWINI += ";game_type = TOP_VS_BOTTOM | MELEE | FREE_FOR_ALL | ONE_ON_ONE | USE_MAP_SETTINGS | CAPTURE_THE_FLAG" + newLine;
 		BWINI += ";           | GREED | SLAUGHTER | SUDDEN_DEATH | TEAM_MELEE | TEAM_FREE_FOR_ALL | TEAM_CAPTURE_THE_FLAG" + newLine;
 		BWINI += "game_type = " + bwapi.game_type + newLine + newLine;
+		
+		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		{
+			BWINI += "; game_type_extra = Text that appears in the drop-down list below the Game Type drop-down list." + newLine;
+			BWINI += "; If empty, the Starcraft default will be used." + newLine;
+			BWINI += "; The following are the game types that use this setting, and corresponding example values" + newLine;
+			BWINI += ";   TOP_VS_BOTTOM          3 vs 1 | 2 vs 2 | 1 vs 3 | # vs #" + newLine;
+			BWINI += ";   GREED                  2500 | 5000 | 7500 | 10000" + newLine;
+			BWINI += ";   SLAUGHTER              15 | 30 | 45 | 60" + newLine;
+			BWINI += ";   TEAM_MELEE             2 | 3 | 4 | 5 | 6 | 7 | 8" + newLine;
+			BWINI += ";   TEAM_FREE_FOR_ALL      2 | 3 | 4 | 5 | 6 | 7 | 8" + newLine;
+			BWINI += ";   TEAM_CAPTURE_THE_FLAG  2 | 3 | 4 | 5 | 6 | 7 | 8" + newLine;
+			BWINI += "game_type_extra = " + bwapi.game_type_extra + newLine + newLine;
+		}
 
 		BWINI += "; save_replay = path to save replay to" + newLine;
 		BWINI += "; Accepts all environment variables including custom variables. See wiki for more info." + newLine;

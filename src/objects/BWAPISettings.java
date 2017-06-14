@@ -18,6 +18,14 @@ public class BWAPISettings implements Serializable, Cloneable
 	 */
 	public String auto_menu;
 	/**
+	 * BWAPI_420 ONLY
+	 * character_name = FIRST | WAIT | <other>
+	 * if FIRST (default), use the first character in the list
+	 * if WAIT, stop at this screen
+	 * else the character with the given value is used/created
+	 */
+	public String character_name;
+	/**
 	 * pause_dbg = ON | OFF This specifies if auto_menu will pause until a
 	 * debugger is attached to the process. Only works in DEBUG mode.
 	 */
@@ -100,6 +108,18 @@ public class BWAPISettings implements Serializable, Cloneable
 	 */
 	public String game_type;
 	/**
+	 * BWAPI_420 ONLY
+	 * game_type_extra = Text that appears in the drop-down list below the Game
+	 * Type drop-down list. If empty, the Starcraft default will be used. The
+	 * following are the game types that use this setting, and corresponding
+	 * example values: TOP_VS_BOTTOM 3 vs 1 | 2 vs 2 | 1 vs 3 | # vs #
+	 * GREED 2500 | 5000 | 7500 | 10000 ; SLAUGHTER 15 | 30 | 45 | 60
+	 * TEAM_MELEE 2 | 3 | 4 | 5 | 6 | 7 | 8 
+	 * TEAM_FREE_FOR_ALL 2 | 3 | 4 | 5 | 6 | 7 | 8
+	 * TEAM_CAPTURE_THE_FLAG  2 | 3 | 4 | 5 | 6 | 7 | 8
+	 */
+	public String game_type_extra;
+	/**
 	 * save_replay = path to save replay to Accepts all environment variables
 	 * including custom variables. See wiki for more info.
 	 */
@@ -152,6 +172,7 @@ public class BWAPISettings implements Serializable, Cloneable
 	{
 		tournament = "";
 		auto_menu = "OFF";
+		character_name = "FIRST"; //BWAPI 420 version
 		pause_dbg = "OFF";
 		lan_mode = "Local Area Network (UDP)";
 		auto_restart = "OFF";
@@ -167,6 +188,7 @@ public class BWAPISettings implements Serializable, Cloneable
 		enemy_race_6 = "Default";
 		enemy_race_7 = "Default";
 		game_type = "MELEE";
+		game_type_extra = ""; //BWAPI 420 version
 		save_replay = "lol";
 		wait_for_min_players = 2;
 		wait_for_max_players = 8;
@@ -230,7 +252,11 @@ public class BWAPISettings implements Serializable, Cloneable
 		else if (token.equals("auto_menu")) 
 		{
 			this.auto_menu = value;
-		} 
+		}
+		else if (token.equals("character_name"))
+		{
+			this.character_name = value;
+		}
 		else if (token.equals("pause_dbg")) 
 		{
 			this.pause_dbg = value;
@@ -247,6 +273,10 @@ public class BWAPISettings implements Serializable, Cloneable
 		{
 			this.game_type = value;
 		} 
+		else if (token.equals("game_type_extra"))
+		{
+			this.game_type_extra = value;
+		}
 		else if (token.equals("holiday")) 
 		{
 			this.holiday = value;
@@ -307,6 +337,7 @@ public class BWAPISettings implements Serializable, Cloneable
 	
 		tournament + "\n" +
 		auto_menu + "\n" +
+		character_name + "\n" +
 		pause_dbg + "\n" +
 		lan_mode + "\n" +
 		auto_restart + "\n" +
@@ -322,6 +353,7 @@ public class BWAPISettings implements Serializable, Cloneable
 		enemy_race_6 + "\n" +
 		enemy_race_7 + "\n" +
 		game_type + "\n" +
+		game_type_extra + "\n" +
 		save_replay + "\n" +
 		wait_for_min_players + "\n" +
 		wait_for_max_players + "\n" +
@@ -344,6 +376,7 @@ public class BWAPISettings implements Serializable, Cloneable
 		BWAPISettings bwapi = new BWAPISettings();
 		bwapi.tournament = this.tournament;
 		bwapi.auto_menu = this.auto_menu;
+		bwapi.character_name = this.character_name;
 		bwapi.pause_dbg = this.pause_dbg;
 		bwapi.lan_mode = this.lan_mode;
 		bwapi.auto_restart = this.auto_restart;
@@ -359,6 +392,7 @@ public class BWAPISettings implements Serializable, Cloneable
 		bwapi.enemy_race_6 = this.enemy_race_6;
 		bwapi.enemy_race_7 = this.enemy_race_7;
 		bwapi.game_type = this.game_type;
+		bwapi.game_type_extra = this.game_type_extra;
 		bwapi.save_replay = this.save_replay;
 		bwapi.wait_for_min_players = this.wait_for_min_players;
 		bwapi.wait_for_max_players = this.wait_for_max_players;
