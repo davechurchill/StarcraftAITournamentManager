@@ -283,7 +283,7 @@ public class ClientCommands
 		BWINI += ";	will join the game called \"BWAPI\"" + newLine;
 		BWINI += ";	If the game does not exist and the \"map\" entry is not blank, then the game will be created instead" + newLine;
 		BWINI += ";	If this entry is blank, then it will follow the rules of the \"map\" entry" + newLine;
-		BWINI += "game = " + id + newLine + newLine; 
+		BWINI += "game = " + instructions.hostBot.getName() + newLine + newLine; 
 
 		BWINI += "; mapiteration =  RANDOM | SEQUENCE" + newLine;
 		BWINI += "; type of iteration that will be done on a map name with a wildcard" + newLine;
@@ -374,17 +374,18 @@ public class ClientCommands
 
 		BWINI += "; left, top" + newLine;
 		BWINI += "; Determines the position of the window" + newLine;
-		BWINI += "left = " + bwapi.left + newLine + newLine;
+		BWINI += "left = " + bwapi.left + newLine;
 		BWINI += "top  = " + bwapi.top + newLine + newLine;
 
 		BWINI += "; width, height" + newLine;
 		BWINI += "; Determines the width and height of the client area and not the window itself" + newLine;
-		BWINI += "width  = " + bwapi.width + newLine + newLine;
+		BWINI += "width  = " + bwapi.width + newLine;
 		BWINI += "height = " + bwapi.height + newLine + newLine;
 
 		BWINI += "[starcraft]" + newLine;
 		BWINI += "; Game sound engine = ON | OFF" + newLine;
-		BWINI += "sound = " + bwapi.sound + "" + newLine;
+		BWINI += "sound = " + bwapi.sound + "" + newLine + newLine;
+		
 		BWINI += "; Screenshot format = gif | pcx | tga | bmp" + newLine;
 		BWINI += "screenshots = " + bwapi.screenshots + newLine + newLine;
 
