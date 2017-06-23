@@ -36,7 +36,7 @@ public class Server  extends Thread
 		if (resumed)
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			games.removePlayedGames(rp);
+			games.removePlayedGames(rp.getGameIDs());
 		}
 		
         clients 	= new Vector<ServerClientThread>();
@@ -62,15 +62,15 @@ public class Server  extends Thread
 		}
 		
 		int neededClients = 2;
-		
-		Game nextGame = games.getNextGame();
 		int iterations = 0;
+		
+		Game nextGame = null;
 		
 		// keep trying to schedule games
 		while (true)
 		{
 			try
-			{
+			{		
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
 				writeHTMLFiles("index.html", iterations++);
@@ -78,26 +78,31 @@ public class Server  extends Thread
 				if (!games.hasMoreGames())
 				{
 					log("No more games in games list, please shut down tournament!");
+					continue;
 				}
 				
-				String gameString = "Game(" + nextGame.getGameID() + " / " + nextGame.getRound() + ")";
-			
 				// we can't start a game if we don't have enough clients
 				if (free.size() < neededClients) 
 				{
 					//log(gameString + " Can't start: Not Enough Clients\n");
 					continue;
 				}
-				// also don't start a game if a game is currently in the lobby
-				else if (isAnyGameStarting())
+				
+				// check if games are starting and get next game
+				Set<String> startingBots = getStartingHostBotNames();
+				nextGame = games.getNextGame(startingBots);
+				
+				if (nextGame == null)
 				{
-					//log(gameString + " Can't start: Another Game Starting\n");
+					//all games remaining in this round have host bot already starting match 
 					continue;
 				}
 				
+				String gameString = "Game(" + nextGame.getGameID() + " / " + nextGame.getRound() + ")";
+			
                 if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
                 {
-                    // put some polling code here to wait until all games from this round are free
+                    // wait until all games from this round are free
                     while (free.size() < clients.size())
                     {
                         log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
@@ -112,11 +117,6 @@ public class Server  extends Thread
 						
 				log(gameString + " SUCCESS: Starting Game\n");
 				start1v1Game(nextGame);
-				
-				if (games.hasMoreGames())
-				{
-					nextGame = games.getNextGame();
-				}
 			}
 			catch (Exception e)
 			{
@@ -139,7 +139,7 @@ public class Server  extends Thread
 			String footerHTML = rp.getFooterHTML();
 			String resultsHTML = rp.getResultsHTML();
 			
-			// if there are no clients, don't both writing the current scheduler info
+			// if there are no clients, don't bother writing the current scheduler info
 			if (clients.size() == 0)
 			{
 				schedulerHTML = "";
@@ -343,19 +343,20 @@ public class Server  extends Thread
 		return 2;
 	}
 	
-	private synchronized boolean isAnyGameStarting()
+	private synchronized Set<String> getStartingHostBotNames()
 	{
+		Set<String> hostNames = new HashSet<String>();
 		for (int i = 0; i < clients.size(); i++) 
 		{
 			ServerClientThread c = clients.get(i);
 			
 			if (c.getStatus() == ClientStatus.STARTING)
 			{
-				return true;
+				hostNames.add(c.lastInstructionSent.hostBot.getName());
 			}
 		}
 		
-		return false;
+		return hostNames;
 	}
 	
     /**
@@ -437,7 +438,7 @@ public class Server  extends Thread
 		{
 			log("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");				// EXCEPTION HERE
 			System.out.println("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");
-			Game g = games.lookupGame(game.getGameID(), game.getRound());
+			Game g = games.lookupGame(game.getGameID());
 			g.updateWithGame(game);
 			appendGameData(g);
 		}

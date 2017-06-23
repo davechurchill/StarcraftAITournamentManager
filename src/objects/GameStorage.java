@@ -1,60 +1,61 @@
 package objects;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
-
-import utility.ResultsParser;
+import java.util.TreeMap;
 
 public class GameStorage 
 {
-	private Vector<Game> allGames;
-	
-	private int currentGameIndex = 0;
+	private TreeMap<Integer, Game> gamesToPlay;
+	private HashMap<Integer, Game> allGames;
 	
 	public GameStorage()
 	{
-		allGames = new Vector<Game>();
+		gamesToPlay = new TreeMap<Integer, Game>();
+		allGames = new HashMap<Integer, Game>();
 	}
 	
-	public void addGame(Game game, int round)
+	public void addGame(Game game)
 	{
-		allGames.add(game);
+		gamesToPlay.put(game.getGameID(), game);
+		allGames.put(game.getGameID(), game);
 	}
 	
-	public void removePlayedGames(ResultsParser rp)
+	public void removePlayedGames(Collection<Integer> gameIDs)
 	{
-		Iterator<Game> it = allGames.iterator();
+		Iterator<Integer> it = gameIDs.iterator();
 		while (it.hasNext()) 
 		{
-		    if (rp.hasGameResult(it.next().getGameID())) 
-		    {
-		        it.remove();
-		    }
+			int id = it.next();
+		    gamesToPlay.remove(id);
+		    allGames.remove(id);
 		}
 	}
 	
 	public boolean hasMoreGames()
 	{
-		return currentGameIndex < allGames.size() - 1;
+		return !gamesToPlay.isEmpty();
 	}
 	
-	public Game getNextGame()
+	public Game getNextGame(Collection<String> currentHosts)
 	{
-		Game g = allGames.get(currentGameIndex);
-		currentGameIndex++;
-		return g;
+		//don't return a game if all games from previous rounds have not already been removed
+		int currentRound = gamesToPlay.get(gamesToPlay.firstKey()).getRound();
+		for (int i = gamesToPlay.firstKey(); gamesToPlay.get(i).getRound() == currentRound; i++)
+		{
+			if (currentHosts.contains(gamesToPlay.get(i).getHomebot().getName()))
+			{
+				continue;
+			}
+			return gamesToPlay.remove(i);
+		}
+		//returns null if no game can be started right now
+		return null;
 	}
 
-	public Game lookupGame(int gameID, int round) 
+	public Game lookupGame(int gameID) 
 	{
-		for(Game g : allGames)
-		{
-			if(g.getGameID() == gameID)
-			{
-				return g;
-			}
-		}
-		
-		return null;
+		return allGames.get(gameID);
 	}
 }

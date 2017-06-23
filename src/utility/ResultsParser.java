@@ -734,6 +734,10 @@ public class ResultsParser
 		return -1;
 	}
 	
+	public Set<Integer> getGameIDs() {
+		return gameIDs;
+	}
+	
 	public void parseLine(String line)
 	{
 		if (line.trim().length() > 0)
