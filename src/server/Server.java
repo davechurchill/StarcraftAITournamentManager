@@ -88,13 +88,27 @@ public class Server  extends Thread
 					continue;
 				}
 				
-				// check if games are starting and get next game
+				// check if previous games are still starting
 				Set<String> startingBots = getStartingHostBotNames();
-				nextGame = games.getNextGame(startingBots);
 				
-				if (nextGame == null)
+				if (ServerSettings.Instance().StartGamesSimul.equalsIgnoreCase("yes"))
 				{
-					//all games remaining in this round have host bot already starting match 
+					// we can start multiple games at same time
+					nextGame = games.getNextGame(startingBots);
+				}
+				else if (startingBots.isEmpty())
+				{
+					// can only start one game at a time, but none others are starting
+					nextGame = games.getNextGame();
+					if (nextGame == null)
+					{
+						//all games remaining in this round have host bot already starting match 
+						continue;
+					}
+				}
+				else
+				{
+					// need to wait for current starting game to finish starting
 					continue;
 				}
 				

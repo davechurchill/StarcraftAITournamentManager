@@ -25,6 +25,7 @@ public class ServerSettings
 	public String 			ClearResults	 	= "ask";
 	public String 			ResumeTournament 	= "ask";
 	public String			DetailedResults		= "no";
+	public String			StartGamesSimul		= "no";
 	public String			TournamentType		= "AllVsAll";
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
@@ -183,6 +184,10 @@ public class ServerSettings
 		else if (type.equalsIgnoreCase("DetailedResults"))
 		{
 			DetailedResults = st.nextToken();
+		}
+		else if (type.equalsIgnoreCase("StartGamesSimultaneously"))
+		{
+			StartGamesSimul = st.nextToken();
 		}
 		else if (type.equalsIgnoreCase("TournamentType"))
 		{

@@ -38,6 +38,7 @@ public class GameStorage
 		return !gamesToPlay.isEmpty();
 	}
 	
+	// Get the next game that isn't being hosted by a host listed in currentHosts
 	public Game getNextGame(Collection<String> currentHosts)
 	{
 		//don't return a game if all games from previous rounds have not already been removed
@@ -53,6 +54,12 @@ public class GameStorage
 		//returns null if no game can be started right now
 		return null;
 	}
+	
+	// get the unplayed game with smallest gameID
+	public Game getNextGame()
+	{
+		return gamesToPlay.remove(gamesToPlay.firstKey());
+	} 
 
 	public Game lookupGame(int gameID) 
 	{
