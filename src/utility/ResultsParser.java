@@ -372,7 +372,7 @@ public class ResultsParser
 					out.write("    <td>" + loserName + "</td>\n");
 				}
 				
-				out.write("    <td>" + r.crashName + "</td>\n");
+				out.write("    <td>" + (r.finalFrame == -1 ? "unknown" : r.crashName) + "</td>\n");
 				out.write("    <td>" + r.timeOutName + "</td>\n");
 				out.write("    <td>" + r.mapName.substring(r.mapName.indexOf(')') + 1, r.mapName.indexOf('.')) + "</td>\n");
 				
