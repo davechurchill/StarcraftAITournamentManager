@@ -77,7 +77,14 @@ public class Server  extends Thread
 				
 				if (!games.hasMoreGames())
 				{
-					log("No more games in games list, please shut down tournament!");
+					if (free.size() == clients.size())
+					{
+						log("No more games in games list, please shut down tournament!\n");
+					}
+					else
+					{
+						log("No more games in games list, please wait for all games to finish.\n");
+					}
 					continue;
 				}
 				
