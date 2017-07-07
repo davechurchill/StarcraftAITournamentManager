@@ -150,20 +150,6 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		}
 	}
 	
-	public void sendChaoslauncherFiles()
-	{
-		try
-		{
-			Message m = new DataMessage(DataType.CHAOSLAUNCHER, ServerSettings.Instance().ServerRequiredDir + "Chaoslauncher.zip");
-			sendMessage(m);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(-1);
-		}
-	}
-	
 	public void sendTournamentModuleSettings()
 	{
 		try

@@ -60,23 +60,6 @@ public class ClientCommands
 		WindowsCommandTools.RegEdit(sc64KeyName, "Program",     "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64KeyName, "GamePath",    "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64UserKeyName, "introX",      "REG_DWORD", "00000000");
-		
-		// Chaoslauncher Settings
-		String clKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\Launcher";
-		WindowsCommandTools.RegEdit(clKeyName,   "GameVersion",     "REG_SZ",    "Starcraft 1.16.1");
-		WindowsCommandTools.RegEdit(clKeyName,   "Width",           "REG_DWORD", "00000640");
-		WindowsCommandTools.RegEdit(clKeyName,   "Height",          "REG_DWORD", "00000480");
-		WindowsCommandTools.RegEdit(clKeyName,   "StartMinimized",  "REG_SZ",    "0");
-		WindowsCommandTools.RegEdit(clKeyName,   "MinimizeOnRun",   "REG_SZ",    "1");
-		WindowsCommandTools.RegEdit(clKeyName,   "RunScOnStartup",  "REG_SZ",    "1");
-		WindowsCommandTools.RegEdit(clKeyName,   "AutoUpdate",      "REG_SZ",    "0");
-		WindowsCommandTools.RegEdit(clKeyName,   "WarnNoAdmin",     "REG_SZ",    "0");
-		
-		// Chaoslauncher plugin settings
-		String clpKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\PluginsEnabled";
-		WindowsCommandTools.RegEdit(clpKeyName,  "BWAPI Injector (1.16.1) RELEASE", "REG_SZ", "1");
-		WindowsCommandTools.RegEdit(clpKeyName,  "W-MODE 1.02",                     "REG_SZ", "1");
-		WindowsCommandTools.RegEdit(clpKeyName,  "Chaosplugin for 1.16.1",          "REG_SZ", "0");
 	}	
 	
 	public static void Client_KillStarcraft()
@@ -88,20 +71,6 @@ public class ClientCommands
 			System.out.println("Killing Starcraft...  ");
 			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM StarCraft.exe", true, false);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
-		} 
-		
-		while (WindowsCommandTools.IsWindowsProcessRunning("Chaoslauncher.exe"))
-		{
-			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM Chaoslauncher.exe", true, false);
-			try { Thread.sleep(100); } catch (InterruptedException e) {}
-		}
-		
-		while (WindowsCommandTools.IsWindowsProcessRunning("\"Chaoslauncher - MultiInstance.exe\""))
-		{
-			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM \"Chaoslauncher - MultiInstance.exe\"", true, false);
-			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		}
 	}
 	
@@ -112,24 +81,6 @@ public class ClientCommands
 		// Kill any processes that weren't running before startcraft started
 		// This is helpful to kill any proxy bots or java threads that may still be going
 		WindowsCommandTools.KillExcessWindowsProccess(startingProc);
-	}
-	
-	public static void Client_DeleteChaoslauncherDirectory()
-	{
-		Client.log("      Client_DeleteChaoslauncherDirectory()\n");
-		
-		// Sleep for a second before deleting local directories
-		try 
-		{ 
-			Thread.sleep(2000); 
-		
-			// Delete local folders which now contain old data
-			FileUtils.DeleteDirectory(new File(ClientSettings.Instance().ClientChaoslauncherDir));
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	public static void Client_CleanStarcraftDirectory()
@@ -175,24 +126,8 @@ public class ClientCommands
 	{
 		Client.log("      Client_StartStarcraft()\n");
 		
-		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "DLLInjector.exe --lib \"bwapi-data/BWAPI.dll\" --launch \"Starcraft.exe\"", false, true);
-	}
-    
-    public static void Client_StartInsectLoader()
-	{
-		Client.log("      Client_StartInsectLoader()\n");
-		
-		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "InsectLoader.exe", false, true);
-	}
-    
-	public static void Client_StartChaoslauncher()
-	{
-		Client.log("      Client_StartChaoslauncher()\n");
-		
-		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientChaoslauncherDir, "Chaoslauncher.exe", false, true);
+		// Launch Starcraft, do not wait for this to finish, exit if it fails (false, true)
+		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "injectory.x86.exe --launch StarCraft.exe --inject bwapi-data\\BWAPI.dll", false, true);
 	}
 
 	public static void Client_WriteTournamentModuleSettings(TournamentModuleSettingsMessage tmSettings)  

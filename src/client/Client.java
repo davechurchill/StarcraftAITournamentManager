@@ -233,14 +233,6 @@ public class Client extends Thread
 				botFiles = dm;
 				log("Client: Bot files received\n");
 			}
-			else if (dm.type == DataType.CHAOSLAUNCHER)
-			{
-				log("Client: Chaoslauncher data received\n");
-				dm.write(ClientSettings.Instance().ClientChaoslauncherDir);
-				ClientCommands.Client_RegisterStarCraft();
-				haveChaoslauncher = true;
-				log("Client: Ready, waiting for Instructions from Server...\n");
-			}
 		}
 		else if (m instanceof StartGameMessage)
 		{
@@ -357,8 +349,8 @@ public class Client extends Thread
 				ClientCommands.Client_RunProxyScript();
 			}
 			
-			// Start loader and starcraft
-			ClientCommands.Client_StartChaoslauncher();
+			// Start starcraft
+			ClientCommands.Client_StartStarcraft();
 
 			// Record the time that we tried to start the game
 			startTime = System.currentTimeMillis();
