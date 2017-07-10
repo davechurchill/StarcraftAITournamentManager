@@ -43,7 +43,6 @@ public class Client extends Thread
 	
 	private DataMessage	requiredFiles			= null;
 	private DataMessage	botFiles				= null;
-	private boolean 	haveChaoslauncher		= false;
 	
 	private TournamentModuleSettingsMessage	tmSettings = null;
 	
