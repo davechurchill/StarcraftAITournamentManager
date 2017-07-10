@@ -216,8 +216,6 @@ public class ResultsParser
 	{
 		try
 		{
-			String html = "";
-			int[] allgames = new int[botNames.length];
 			int[] allwins = new int[botNames.length];
 			
 			for (int i=0; i<numBots; i++)
@@ -225,14 +223,13 @@ public class ResultsParser
 				for (int j=0; j<numBots; j++)
 				{
 					allwins[i] += wins[i][j];
-					allgames[i] += wins[i][j] + wins[j][i];
 				}
 			}
 			
 			Vector<ResultPair> allPairs = new Vector<ResultPair>();
 			for (int i=0; i<numBots; i++)
 			{
-				double winPercentage = (allgames[i] > 0 ? ((double)allwins[i]/allgames[i]) : 0);
+				double winPercentage = (games[i] > 0 ? ((double)allwins[i]/games[i]) : 0);
 				allPairs.add(new ResultPair(botNames[i], i, winPercentage));
 			}
 			
@@ -241,46 +238,53 @@ public class ResultsParser
 			BufferedWriter out = new BufferedWriter(new FileWriter("html/winpercentage.txt"));
 			BufferedWriter out2 = new BufferedWriter(new FileWriter("html/roundwins.txt"));
 			
-			String s = "";
+			out.write("//This object is assigned to a variable rather just a JSON file to make it easy to load from a local file\n");
+			out.write("winPercentage = [\n");
+			
 			for (int i=0; i<numBots; ++i)
 			{
-				int ii = allPairs.get(i).botIndex;
-				
-				out.write("{ name: '" + botNames[ii] + "', data: [");
-				out2.write("{ name: '" + botNames[ii] + "', data: [");
-				for (int j=0; j<gamesAfterRound.get(ii).size(); ++j)
+				// only write the stats for this bot if it has completed at least one game
+				if (games[i] > 0)
 				{
-					double winRate = (double)winsAfterRound.get(ii).get(j) / (double)gamesAfterRound.get(ii).get(j);
+					int ii = allPairs.get(i).botIndex;
 					
-					out.write(" " + winRate);
-					
-					int wins = winsAfterRound.get(ii).get(j);
-					if (j > 0)
+					out.write("{ name: '" + botNames[ii] + "', data: [");
+					out2.write("{ name: '" + botNames[ii] + "', data: [");
+					for (int j=0; j<gamesAfterRound.get(ii).size(); ++j)
 					{
-						wins -= winsAfterRound.get(ii).get(j-1);
+						double winRate = (double)winsAfterRound.get(ii).get(j) / (double)gamesAfterRound.get(ii).get(j);
+						
+						out.write(" " + winRate);
+						
+						int wins = winsAfterRound.get(ii).get(j);
+						if (j > 0)
+						{
+							wins -= winsAfterRound.get(ii).get(j-1);
+						}
+						
+						out2.write(" " + wins);
+						
+						if (j < gamesAfterRound.get(ii).size() - 1)
+						{
+							out.write(",");
+							out2.write(",");
+						}
 					}
+					out.write("] }");
+					out2.write("] }");
 					
-					out2.write(" " + wins);
-					
-					if (j < gamesAfterRound.get(ii).size() - 1)
+					if (i < numBots - 1)
 					{
 						out.write(",");
 						out2.write(",");
 					}
+					
+					out.write("\n");
+					out2.write("\n");
 				}
-				out.write("] }");
-				out2.write("] }");
-				
-				if (i < numBots - 1)
-				{
-					out.write(",");
-					out2.write(",");
-				}
-				
-				out.write("\n");
-				out2.write("\n");
 			}
-		
+			
+			out.write("]");
 			out.close();
 			out2.close();
 		}
@@ -504,6 +508,7 @@ public class ResultsParser
 		long resultsHTMLSize = resultsHTML.exists() ? resultsHTML.length() : 0;
 		File resultsTXT = new File("html/detailed_results.txt");
 		long resultsTXTSize = resultsTXT.exists() ? resultsTXT.length() : 0;
+		html += "<p style=\"font: 16px/1.5em Verdana\">Win Percentage Over Time Graph: <a href=\"win_percentage_graph.html\">html5</a> </p>\n";
 		html += "<p style=\"font: 16px/1.5em Verdana\">Detailed Game Results: <a href=\"results.html\">html table</a> (" + resultsHTMLSize/1000  + " kB) or <a href=\"detailed_results.txt\">plaintext</a> (" + resultsTXTSize/1000  + " kB)</p>\n";
 		
 		html += "<table cellpadding=2 rules=all style=\"font: 14px/1.5em Verdana\" id=\"resultsTable\" class=\"tablesorter\">\n";
@@ -525,7 +530,6 @@ public class ResultsParser
 		for (int i=0; i<numBots; ++i)
 		{
 			int ii = allPairs.get(i).botIndex;
-			String color = ((i%2) == 1 ? "#ffffff" : "#E8E8E8");
 			
 			html += "  <tr>\n";
 			html += "    <td bgcolor=" + botColors[ii] + ">"+ botNames[ii] + "</td>\n"; 
