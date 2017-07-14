@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<title>Win Percentage Over Time</title>
-	
-	<script type='text/javascript' src='javascript/jquery-1.10.2.min.js'></script>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/style.css">
+	<script src='javascript/jquery-1.10.2.min.js'></script>
 	<script src="javascript/highcharts.js"></script>
 	<script src="winpercentage.txt"></script>
-	<script type='text/javascript'>
+	<script>
 		$(function() {
-			$('#container').highcharts({
+			$('#winPercentageGraph').highcharts({
 				chart: {
 					zoomType: 'xy'
 				},
@@ -82,7 +82,7 @@
 	</script>
 </head>
 <body>
-	<div id="container" style="width: 95vw; height: 95vh;"></div>
+	<div id="winPercentageGraph"></div>
 </body>
 </html>
 

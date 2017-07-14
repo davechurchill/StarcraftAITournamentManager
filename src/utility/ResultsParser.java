@@ -13,12 +13,11 @@ public class ResultsParser
 	
 	Vector<GameResult> results 		= new Vector<GameResult>();
 	Set<Integer> gameIDs 			= new HashSet<Integer>();
-	Map<String, String> raceColor   = new HashMap<String, String>();
 	
 	private int numBots 			= ServerSettings.Instance().BotVector.size();
 	private int numMaps 			= ServerSettings.Instance().MapVector.size();
 	
-	private String[] botColors		= new String[numBots];
+	//private String[] botColors		= new String[numBots];
 	private String[] botNames 		= new String[numBots];
 	private String[] shortBotNames 	= new String[numBots];
 	private String[] mapNames 		= new String[numMaps];
@@ -41,10 +40,6 @@ public class ResultsParser
 	
 	public ResultsParser(String filename)
 	{
-		raceColor.put("Protoss", "#f1c232");
-		raceColor.put("Zerg", "#c27ba0");
-		raceColor.put("Terran", "#6fa8dc");
-		raceColor.put("Random", "#cccccc");
 		
 		// set the bot names and map names
 		for (int i=0; i<botNames.length; ++i)
@@ -52,7 +47,7 @@ public class ResultsParser
 			elo[i] = 1200;
 			botNames[i] = ServerSettings.Instance().BotVector.get(i).getName();
 			shortBotNames[i] = botNames[i].substring(0, Math.min(4, botNames[i].length()));
-			botColors[i] = raceColor.get(ServerSettings.Instance().BotVector.get(i).getRace());
+			//botColors[i] = raceColor.get(ServerSettings.Instance().BotVector.get(i).getRace());
 		}
 		
 		for (int i=0; i<mapNames.length; ++i)
@@ -308,37 +303,40 @@ public class ResultsParser
 			BufferedWriter outtxt = new BufferedWriter(new FileWriter("html/detailed_results.txt"));
 			
 			int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
-			int width = 89;
-			out.write("<html><head>\n");
-			out.write("<script type=\"text/javascript\" src=\"javascript/jquery-1.10.2.min.js\"></script>	<script type=\"text/javascript\" src=\"javascript/jquery.tablesorter.js\"></script> <style> td { text-align:center; } </style>\n");
-			out.write("<link rel=\"stylesheet\" href=\"javascript/themes/blue/style.css\" type=\"text/css\" media=\"print, projection, screen\" />\n");
-			out.write("<script type=\"text/javascript\"> $(function() { $(\"#resultsTable\").tablesorter({widgets: ['zebra']}); });</script>\n");
-			out.write("</head>\n"); 
-			out.write("<p style=\"font: 16px/1.5em Verdana\">Go To: <a href=\"index.html\">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>\n");
-			out.write("<table cellpadding=2 rules=all style=\"font: 10px/1.5em Verdana\" id=\"resultsTable\" class=\"tablesorter\">\n");
+			out.write("<!DOCTYPE html>\n");
+			out.write("<html>\n<head>\n");
+			out.write("<title>Detailed Results</title>\n");
+			out.write("<meta charset=\"UTF-8\">\n");
+			out.write("<script src=\"javascript/jquery-1.10.2.min.js\"></script>\n<script src=\"javascript/jquery.tablesorter.js\"></script>\n");
+			out.write("<link rel=\"stylesheet\" href=\"javascript/themes/blue/style.css\">\n");
+			out.write("<link rel=\"stylesheet\" href=\"css/style.css\">\n");
+			out.write("<script> $(function() { $(\"#detailedResultsTable\").tablesorter(); });</script>\n");
+			out.write("</head>\n");
+			out.write("<p>Go To: <a href=\"index.html\">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>\n");
+			out.write("<table id=\"detailedResultsTable\" class=\"tablesorter\">\n");
 			out.write("  <thead><tr>\n");
-			out.write("    <th width=" + 130 + ">Round/Game</td>\n");
-			out.write("    <th width=" + 100 + ">Winner</td>\n");
-			out.write("    <th width=" + 100 + ">Loser</td>\n");
-			out.write("    <th width=" + 100 + ">Crash</td>\n");
-			out.write("    <th width=" + 100 + ">Timeout</td>\n");
-			out.write("    <th width=" + 100 + ">Map</td>\n");
-			out.write("    <th width=" + 100 + ">Duration</td>\n");
-			out.write("    <th width=" + 100 + ">W Score</td>\n");
-			out.write("    <th width=" + 100 + ">L Score</td>\n");
-			out.write("    <th width=" + 100 + ">(W-L)/Max</td>\n");
+			out.write("    <th>Round/Game</th>\n");
+			out.write("    <th>Winner</th>\n");
+			out.write("    <th>Loser</th>\n");
+			out.write("    <th>Crash</th>\n");
+			out.write("    <th>Timeout</th>\n");
+			out.write("    <th>Map</th>\n");
+			out.write("    <th>Duration</th>\n");
+			out.write("    <th>W Score</th>\n");
+			out.write("    <th>L Score</th>\n");
+			out.write("    <th>(W-L)/Max</th>\n");
 			for (int t=0; t<numTimers; ++t)
 			{
-				out.write("    <th width=" + width + ">W " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</td>\n");
+				out.write("    <th>W " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</th>\n");
 			}
 			for (int t=0; t<numTimers; ++t)
 			{
-				out.write("    <th width=" + width + ">L " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</td>\n");
+				out.write("    <th>L " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</th>\n");
 			}
-			out.write("    <th width=" + 100 + ">Win Addr</td>\n");
-			out.write("    <th width=" + 100 + ">Lose Addr</td>\n");
-			out.write("    <th width=" + 100 + ">Start</td>\n");
-			out.write("    <th width=" + 100 + ">Finish</td>\n");
+			out.write("    <th>Win Addr</th>\n");
+			out.write("    <th>Lose Addr</th>\n");
+			out.write("    <th>Start</th>\n");
+			out.write("    <th>Finish</th>\n");
 			out.write("  </tr></thead><tbody>\n");
 					
 			//Collections.sort(results, new GameResultIDComparator());
@@ -360,7 +358,7 @@ public class ResultsParser
 				
 				if (new File("replays\\" + winnerReplayName).exists())
 				{
-					out.write("    <td>" + "<a href=\"replays/" + winnerReplayName + "\">" + winnerName + "</a></td>\n");
+					out.write("    <td>" + "<a href=\"replays/" + winnerReplayName.replace("\\", "/") + "\">" + winnerName + "</a></td>\n");
 				}
 				else
 				{
@@ -369,7 +367,7 @@ public class ResultsParser
 				
 				if (new File("replays\\" + loserReplayName).exists())
 				{
-					out.write("    <td>" + "<a href=\"replays/" + loserReplayName + "\">" + loserName + "</a></td>\n");
+					out.write("    <td>" + "<a href=\"replays/" + loserReplayName.replace("\\", "/") + "\">" + loserName + "</a></td>\n");
 				}
 				else
 				{
@@ -417,7 +415,7 @@ public class ResultsParser
 			}
 			
 			out.write("</tbody></table>\n");
-			out.write("<br></html>\n");
+			out.write("</html>\n");
 			out.close();
 			outtxt.close();
 		}
@@ -429,46 +427,25 @@ public class ResultsParser
 	
 	public String getHeaderHTML()
 	{
-		String html = "<html>\n";
+		String html = "<!DOCTYPE html>\n";
+		html += "<html>\n";
 		html += "<head>\n";
 		html += "<title>StarCraft AI Competition Results</title>\n";
-		html += "<script type=\"text/javascript\" src=\"javascript/jquery-1.10.2.min.js\"></script>	<script type=\"text/javascript\" src=\"javascript/jquery.tablesorter.js\"></script>\n";
-		html += "<link rel=\"stylesheet\" href=\"javascript/themes/blue/style.css\" type=\"text/css\" media=\"print, projection, screen\" />\n";
-		html += "<script type=\"text/javascript\"> $(function() { $(\"#resultsTable\").tablesorter({widgets: ['zebra']}); });</script>\n";
-		html += "<script type=\"text/javascript\"> $(function() { $(\"#resultsPairTable\").tablesorter({widgets: ['zebra']}); });</script>\n";
-		html += "<script type=\"text/javascript\"> $(function() { $(\"#resultsMapTable\").tablesorter({widgets: ['zebra']}); });</script>\n";
+		html += "<meta charset=\"UTF-8\">";
+		html += "<script src=\"javascript/jquery-1.10.2.min.js\"></script>\n<script src=\"javascript/jquery.tablesorter.js\"></script>\n";
+		html += "<link rel=\"stylesheet\" href=\"javascript/themes/blue/style.css\">\n";
+		html += "<link rel=\"stylesheet\" href=\"css/style.css\">\n";
+		html += "<script> $(function() { $(\"#resultsTable\").tablesorter(); });</script>\n";
+		html += "<script> $(function() { $(\"#resultsPairTable\").tablesorter(); });</script>\n";
+		html += "<script> $(function() { $(\"#resultsMapTable\").tablesorter(); });</script>\n";
 		html += "</head>\n";
-		html += "<body alink=\"#0000FF\" vlink=\"#0000FF\" link=\"#0000FF\">\n";
 		
 		return html;
 	}
 	
-	public String getEntrantsHTML()
-	{
-		String html = "";
-	
-		try
-		{
-			BufferedReader br = new BufferedReader(new FileReader("..\\html\\entrants.html"));
-			String line;
-			
-			while ((line = br.readLine()) != null)
-			{
-				html += line + "\n";
-			}
-			html += "<br>\n";
-			br.close();
-			return html;
-		}
-		catch (Exception e)
-		{
-			return "";
-		}
-	}
-	
 	public String getFooterHTML()
 	{
-		String timeStamp = "<p style=\"font: 10px/1.5em Verdana\">Last Updated: " + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "</p>\n";
+		String timeStamp = "<p class=\"footer\">Last Updated: " + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "</p>\n";
 		String html = timeStamp;
 		html += "</body>\n";
 		html += "</html>\n";
@@ -500,29 +477,29 @@ public class ResultsParser
 		}
 		Collections.sort(allPairs, new ResultPairComparator());
 		
-		/////////////////////////////////////////
-		// EXTRA STATS
-		/////////////////////////////////////////
-		int width = 80;
 		File resultsHTML = new File("html/results.html");
 		long resultsHTMLSize = resultsHTML.exists() ? resultsHTML.length() : 0;
 		File resultsTXT = new File("html/detailed_results.txt");
 		long resultsTXTSize = resultsTXT.exists() ? resultsTXT.length() : 0;
-		html += "<p style=\"font: 16px/1.5em Verdana\">Win Percentage Over Time Graph: <a href=\"win_percentage_graph.html\">html5</a> </p>\n";
-		html += "<p style=\"font: 16px/1.5em Verdana\">Detailed Game Results: <a href=\"results.html\">html table</a> (" + resultsHTMLSize/1000  + " kB) or <a href=\"detailed_results.txt\">plaintext</a> (" + resultsTXTSize/1000  + " kB)</p>\n";
+		html += "<p>Win Percentage Over Time Graph: <a href=\"win_percentage_graph.html\">html5</a> </p>\n";
+		html += "<p>Detailed Game Results: <a href=\"results.html\">html table</a> (" + resultsHTMLSize/1000  + " kB) or <a href=\"detailed_results.txt\">plaintext</a> (" + resultsTXTSize/1000  + " kB)</p>\n";
 		
-		html += "<table cellpadding=2 rules=all style=\"font: 14px/1.5em Verdana\" id=\"resultsTable\" class=\"tablesorter\">\n";
+		
+		/////////////////////////////////////////
+		// Results Table
+		/////////////////////////////////////////
+		html += "<table id=\"resultsTable\" class=\"tablesorter\">\n";
 		html += "  <thead><tr>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Bot</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Games</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Win</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Loss</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Win %</td>\n";
-		//html += "    <td bgcolor=#CCCCCC align=center width=" + width + ">Elo (K=" + eloK + ")</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">AvgTime</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Hour</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Crash</td>\n";
-		html += "    <th bgcolor=#CCCCCC align=center width=" + width + ">Timeout</td>\n";
+		html += "    <th>Bot</th>\n";
+		html += "    <th>Games</th>\n";
+		html += "    <th>Win</th>\n";
+		html += "    <th>Loss</th>\n";
+		html += "    <th>Win %</th>\n";
+		//html += "    <th>Elo (K=\" + eloK + \")</th>\n";
+		html += "    <th>AvgTime</th>\n";
+		html += "    <th>Hour</th>\n";
+		html += "    <th>Crash</th>\n";
+		html += "    <th>Timeout</th>\n";
 		html += "  </tr></thead>\n";
 		
 		int[] dataTotals = {0, 0, 0, 0, 0, 0, 0, 0};
@@ -532,7 +509,7 @@ public class ResultsParser
 			int ii = allPairs.get(i).botIndex;
 			
 			html += "  <tr>\n";
-			html += "    <td bgcolor=" + botColors[ii] + ">"+ botNames[ii] + "</td>\n"; 
+			html += "    <td class=\"race-" + ServerSettings.Instance().BotVector.get(ii).getRace().toLowerCase() + "\">"+ botNames[ii] + "</td>\n"; 
 			html += "    <td >" + allgames[ii] + "</td>\n";
 			dataTotals[0] += allgames[ii];			
 			html += "    <td>" + allwins[ii] + "</td>\n";
@@ -553,29 +530,31 @@ public class ResultsParser
 		}
 		
 		html += "  <tfoot><tr>\n";
-		html += "    <td align=center bgcolor=#CCCCCC><b>Total</b></td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + (dataTotals[0]/2) + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + (dataTotals[1]) + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + (dataTotals[2]) + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + "N/A" + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + getTime((dataTotals[4]/botNames.length)) + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + (dataTotals[5]/2) + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + (dataTotals[6]) + "</td>\n";
-		html += "    <td align=center bgcolor=#CCCCCC>" + (dataTotals[7]) + "</td>\n";
+		html += "    <td><b>Total</b></td>\n";
+		html += "    <td>" + (dataTotals[0]/2) + "</td>\n";
+		html += "    <td>" + (dataTotals[1]) + "</td>\n";
+		html += "    <td>" + (dataTotals[2]) + "</td>\n";
+		html += "    <td>" + "N/A" + "</td>\n";
+		html += "    <td>" + getTime((dataTotals[4]/botNames.length)) + "</td>\n";
+		html += "    <td>" + (dataTotals[5]/2) + "</td>\n";
+		html += "    <td>" + (dataTotals[6]) + "</td>\n";
+		html += "    <td>" + (dataTotals[7]) + "</td>\n";
 		html += "  </tr></tfoot>\n";
 		
 		html += "</table>\n";
-		html += "<br>\n";
 		
-		html += "<table cellpadding=2 rules=all style=\"font: 14px/1.5em Verdana\"  id=\"resultsPairTable\" class=\"tablesorter\">\n";
+		/////////////////////////////////////////
+		// Result Pairs Table
+		/////////////////////////////////////////
+		html += "<table id=\"resultsPairTable\" class=\"tablesorter\">\n";
 		html += "  <thead><tr>\n";
-		html += "    <th width=100 align=center bgcolor=#CCCCCC>Bot</td>\n";
-		html += "    <th width=71 align=center bgcolor=#CCCCCC>Win %</td>\n";
+		html += "    <th>Bot</th>\n";
+		html += "    <th>Win %</th>\n";
 		
 		for (int i=0; i<numBots; ++i)
 		{
 			int ii = allPairs.get(i).botIndex;
-			html += "    <th width=50 align=left bgcolor=" + botColors[ii] + ">" + shortBotNames[ii] + "</td>\n";
+			html += "    <th class=\"race-" + ServerSettings.Instance().BotVector.get(ii).getRace().toLowerCase() + "\">" + shortBotNames[ii] + "</th>\n";
 		}
 		html += "  </tr></thead>\n";
 		
@@ -584,9 +563,8 @@ public class ResultsParser
 			int ii = allPairs.get(i).botIndex;
 			html += "  <tr>\n";
 			
-			String color = ((i%2) == 1 ? "#ffffff" : "#E8E8E8");
-			html += "    <td width=100 align=center  bgcolor=" + botColors[ii] + ">" + botNames[ii] + "</td>\n";
-			html += "    <td width=50 align=center bgcolor=" + color + ">" + new DecimalFormat("##.##").format(allPairs.get(i).win*100) + "</td>\n";
+			html += "    <td class=\"race-" + ServerSettings.Instance().BotVector.get(ii).getRace().toLowerCase() + "\">" + botNames[ii] + "</td>\n";
+			html += "    <td>" + new DecimalFormat("##.##").format(allPairs.get(i).win*100) + "</td>\n";
 			
 			
 			for (int j=0; j<numBots; j++)
@@ -594,7 +572,7 @@ public class ResultsParser
 				int jj = allPairs.get(j).botIndex;
 				if (ii == jj)
 				{
-					html += "    <td align=center bgcolor=#ffffff>" + "-" + "</td>\n";
+					html += "    <td style=\"background-color: #ffffff\">-</td>\n";
 				}
 				else
 				{
@@ -619,25 +597,24 @@ public class ResultsParser
 						cellColor = "rgb(" + (255) + "," + (c) + "," + (c) + ")";
 					}
 					
-					html += "    <td align=center style=\"background-color:" + cellColor + "\">" + String.format("%02d", wins[ii][jj]) + "/" + String.format("%02d", (int)g) + "</td>\n";
+					html += "    <td style=\"background-color:" + cellColor + "\">" + String.format("%02d", wins[ii][jj]) + "/" + String.format("%02d", (int)g) + "</td>\n";
 				}
 			}
 			html += "  </tr>\n";
 		}
 		
 		html += "</table>\n";		
-		html += "<br>\n";
 			
 		/////////////////////////////////////////
 		// MAP WINS TABLE
 		/////////////////////////////////////////
-		html += "<table cellpadding=2 rules=all style=\"font: 12px/1.5em Verdana\" id=\"resultsMapTable\" class=\"tablesorter\">\n";
+		html += "<table id=\"resultsMapTable\" class=\"tablesorter\">\n";
 		html += "  <thead><tr>\n";
 		
-		html += "    <th width=63 align=center bgcolor=#CCCCCC style=\"font: 11px/1.5em Verdana\">Bot</td>\n";
+		html += "    <th>Bot</th>\n";
 		for (int i=0; i<numMaps; ++i)
 		{
-			html += "    <th width=63 align=center bgcolor=#CCCCCC style=\"font: 11px/1.5em Verdana\">" + mapNames[i].substring(3, Math.min(10, mapNames[i].length()-4)) + "</td>\n";
+			html += "    <th>" + mapNames[i].substring(3, Math.min(10, mapNames[i].length()-4)) + "</th>\n";
 		}
 		
 		html += "  </tr></thead>\n";
@@ -646,8 +623,7 @@ public class ResultsParser
 		{
 			int ii = allPairs.get(i).botIndex;
 			html += "  <tr>\n";
-			
-			html += "    <td width=100 align=center  bgcolor=" + botColors[ii] + ">" + botNames[ii] + "</td>\n";
+			html += "    <td class=\"race-" + ServerSettings.Instance().BotVector.get(ii).getRace().toLowerCase() + "\">" + botNames[ii] + "</td>\n";
 			
 			
 			for (int j=0; j<numMaps; j++)
@@ -673,7 +649,7 @@ public class ResultsParser
 					cellColor = "rgb(" + (255) + "," + (c) + "," + (c) + ")";
 				}
 				
-				html += "    <td align=center style=\"background-color:" + cellColor + "\">" + String.format("%03d", mapWins[ii][j]) + "/" + String.format("%03d", mapGames[ii][j]) + "</td>\n";
+				html += "    <td style=\"background-color:" + cellColor + "\">" + String.format("%03d", mapWins[ii][j]) + "/" + String.format("%03d", mapGames[ii][j]) + "</td>\n";
 				
 			}
 			html += "  </tr>\n";
@@ -681,9 +657,6 @@ public class ResultsParser
 		
 		
 		html += "</table>\n";
-		html += "<br>\n";
-		
-		
 		
 		return html;
 	}

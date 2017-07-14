@@ -73,7 +73,7 @@ public class Server  extends Thread
 			{		
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
-				writeHTMLFiles("index.html", iterations++);
+				writeHTMLFiles(iterations++);
 				
 				if (!games.hasMoreGames())
 				{
@@ -148,14 +148,13 @@ public class Server  extends Thread
 		}
 	}
 	
-	public synchronized void writeHTMLFiles(String filename, int iter) throws Exception
+	public synchronized void writeHTMLFiles(int iter) throws Exception
 	{
 		try
 		{			
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 			
 			String schedulerHTML = gui.getHTML();
-			String entrantsHTML = rp.getEntrantsHTML();
 			String headerHTML = rp.getHeaderHTML();
 			String footerHTML = rp.getFooterHTML();
 			String resultsHTML = rp.getResultsHTML();
@@ -174,7 +173,7 @@ public class Server  extends Thread
 				log("Generating All Results File Complete!\n");
 			}
 			
-			writeHTMLFile(headerHTML + entrantsHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
+			writeHTMLFile(headerHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
 		}
 		catch (Exception e)
 		{
@@ -586,20 +585,33 @@ class FileCopyThread extends Thread
 
 		FileChannel source = null;
 		FileChannel destination = null;
+		FileInputStream inputStream = null;
+		FileOutputStream outputStream = null;
 
 		try 
 		{
-			source = new FileInputStream(sourceFile).getChannel();
-			destination = new FileOutputStream(destFile).getChannel();
+			inputStream = new FileInputStream(sourceFile);
+			source = inputStream.getChannel();
+			outputStream = new FileOutputStream(destFile);
+			destination = outputStream.getChannel();
 			destination.transferFrom(source, 0, source.size());
+			
 		}
 		finally 
 		{
-			if(source != null) 
+			if (inputStream != null)
+			{
+				inputStream.close();
+			}
+			if (source != null) 
 			{
 				source.close();
 			}
-			if(destination != null) 
+			if (outputStream != null)
+			{
+				outputStream.close();
+			}
+			if (destination != null) 
 			{
 				destination.close();
 			}
