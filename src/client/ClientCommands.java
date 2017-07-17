@@ -127,7 +127,7 @@ public class ClientCommands
 		Client.log("      Client_StartStarcraft()\n");
 		
 		// Launch Starcraft, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "injectory.x86.exe --launch StarCraft.exe --inject bwapi-data\\BWAPI.dll", false, true);
+		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "injectory.x86.exe --launch StarCraft.exe --inject bwapi-data\\BWAPI.dll --set-flags SEM_NOGPFAULTERRORBOX", false, true);
 	}
 
 	public static void Client_WriteTournamentModuleSettings(TournamentModuleSettingsMessage tmSettings)  
