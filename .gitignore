@@ -33,8 +33,9 @@ server/bots/Yarmouk
 server/winpercentage.txt
 server/results.txt
 server/games.txt
-server/html/index.html
-server/html/results.html
 server/html/*.txt
+!server/html/index.html
+!server/html/results.html
+!server/html/win_percentage_graph.html
 *.project
 .classpath

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Detailed Results</title>
+	<meta charset="UTF-8">
+	
+	<script src="detailed_results_json.txt"></script>
+	<script src="javascript/jquery-1.10.2.min.js"></script>
+	<script src="javascript/detailed_results.js"></script>
+	<script src="javascript/jquery.tablesorter.js"></script>
+	<link rel="stylesheet" href="javascript/themes/blue/style.css">
+	<link rel="stylesheet" href="css/style.css">
+	<script> $(function() { $("#detailedResultsTable").tablesorter(); });</script>
+</head>
+<body>
+	<p>Go To: <a href="index.html">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>
+	<table id="detailedResultsTable" class="tablesorter">
+		<thead><tr>
+			<th>Round/Game</th>
+			<th>Winner</th>
+			<th>Loser</th>
+			<th>Crash</th>
+			<th>Timeout</th>
+			<th>Map</th>
+			<th>Duration</th>
+			<th>W Score</th>
+			<th>L Score</th>
+			<th>(W-L)/Max</th>
+			<th>W 55</th>
+			<th>W 1000</th>
+			<th>W 10000</th>
+			<th>L 55</th>
+			<th>L 1000</th>
+			<th>L 10000</th>
+			<th>Win Addr</th>
+			<th>Lose Addr</th>
+			<th>Start</th>
+			<th>Finish</th>
+		</tr></thead>
+		<tbody>
+		</tbody>
+	</table>
+	</body>
+</html>

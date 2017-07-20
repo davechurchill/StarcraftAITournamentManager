@@ -152,28 +152,28 @@ public class Server  extends Thread
 	{	
 		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 		
-		String schedulerHTML = gui.getHTML();
-		String headerHTML = rp.getHeaderHTML();
-		String footerHTML = rp.getFooterHTML();
-		String resultsHTML = rp.getResultsHTML();
+		//String schedulerHTML = gui.getHTML();
+		//String headerHTML = rp.getHeaderHTML();
+		//String footerHTML = rp.getFooterHTML();
+		//String resultsHTML = rp.getResultsHTML();
 		
 		// if there are no clients, don't bother writing the current scheduler info
-		if (clients.size() == 0)
-		{
-			schedulerHTML = "";
-		}
+		//if (clients.size() == 0)
+		//{
+		//	schedulerHTML = "";
+		//}
 		
 		// only write the all results file every 30 reschedules, saves time
 		if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
 		{
 			log("Generating All Results File...\n");
-			rp.writeDetailedResultsHTML();
+			rp.writeDetailedResultsJSON();
 			log("Generating All Results File Complete!\n");
 		}
 		
 		rp.writeWinPercentageGraph();
-		//FileUtils.writeToFile(rp.getResultsJSON(), "html/results_summary_json.txt");
-		FileUtils.writeToFile(headerHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
+		FileUtils.writeToFile(rp.getResultsJSON(), "html/results_summary_json.txt");
+		//FileUtils.writeToFile(headerHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost)
