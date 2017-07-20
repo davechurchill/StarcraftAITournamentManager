@@ -104,7 +104,6 @@ function fillMapsTable(data, maps)
 		
 		for (var j=0; j<maps.length; j++)
 		{
-			console.log(data[i]);
 			html += getWinGameRatioCell(data[i].mapResults[j].Wins, data[i].mapResults[j].Games)	
 		}
 		html += "</tr>";
