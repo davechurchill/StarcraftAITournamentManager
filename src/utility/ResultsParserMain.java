@@ -28,15 +28,8 @@ public class ResultsParserMain
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 			
-			//String headerHTML = rp.getHeaderHTML();
-			//String footerHTML = rp.getFooterHTML();
-			//String resultsHTML = rp.getResultsHTML();
-			
-			//FileUtils.writeToFile(headerHTML + resultsHTML + footerHTML, "html/index.html");
 			FileUtils.writeToFile(rp.getResultsJSON(), "html/results_summary_json.txt");
-			
 			rp.writeWinPercentageGraph();
-			//rp.writeDetailedResultsHTML();
 			rp.writeDetailedResultsJSON();
 			
 		}

@@ -80,7 +80,7 @@ public class ServerGUI
     				{
     					ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
     					logText(getTimeStamp() + " Generating All Results File...\n");
-    					rp.writeDetailedResultsHTML();
+    					rp.writeDetailedResultsJSON();
     					logText(getTimeStamp() + " Generating All Results File Complete!\n");
     				}
     				catch (Exception ex)
@@ -277,43 +277,6 @@ public class ServerGUI
 	public static String getTimeStamp()
 	{
 		return new SimpleDateFormat("[HH:mm:ss]").format(Calendar.getInstance().getTime());
-	}
-	
-	public synchronized String getHTML() throws Exception
-	{
-		String table = "<table cellpadding=2 rules=all style=\"font: 12px/1.5em Verdana\">\n";
-		table += "  <tr>\n";
-		table += "    <td colspan=11 bgcolor=#CCCCCC align=center style=\"font: 16px/1.5em Verdana\">Current Real-Time Client Scheduler / Status</td>\n";
-		table += "  </tr>\n";
-		table += "  <tr>\n";
-		for (int c=0; c<columnNames.length; ++c)
-		{
-			table += "    <td bgcolor=#cccccc width=67><center>";
-			table += columnNames[c];
-			table += "    </center></td>\n";
-		}
-		table += "  </tr>\n";
-		
-		for (int r=0; r<mainTable.getRowCount(); ++r)
-		{
-			String colour = "#FFFFFF";
-			if (mainTable.getValueAt(r,1).equals("RUNNING")) colour = "#00FF00";
-			if (mainTable.getValueAt(r,1).equals("STARTING")) colour = "#FFFF00";
-			if (mainTable.getValueAt(r,1).equals("SENDING")) colour = "#FFA500";
-			
-			table += "  <tr bgcolor=" + colour + ">\n";
-			for (int c=0; c<mainTable.getColumnCount(); ++c)
-			{
-				table += "    <td><center>";
-				String s = (String)mainTable.getValueAt(r,c);
-				table += s.substring(0, Math.min(8, s.length()));
-				table += "    </center></td>\n";
-			}
-			table += "  </tr>\n";
-		}
-		table += "</table><br>\n";
-		
-		return table;
 	}
 	
 	public synchronized void UpdateClient(String name, String status, String num, String host, String join)
