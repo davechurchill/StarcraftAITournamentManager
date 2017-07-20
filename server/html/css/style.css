@@ -1,30 +1,36 @@
-p {
-	font: 16px/1.5em Verdana;
+/* FONTS */
+
+body, table.tablesorter {
+	font-family: Verdana;
+	line-height: 1.5em;
 }
 
-p.footer {
-	font: 10px/1.5em Verdana;
-}
-
-/* TABLE FONTS */
-
-#resultsTable, #resultsPairTable {
-	font: 14px/1.5em Verdana;
-}
-
-#resultsMapTable {
-	font: 12px/1.5em Verdana;
+p#footer, #detailedResultsTable {
+	font-size: 10px
 }
 
 #resultsMapTable th {
-	font: 11px/1.5em Verdana;
+	font-size: 11px;
+	font-weight: bold;
 }
 
-#detailedResultsTable {
-	font: 10px/1.5em Verdana;
+#resultsMapTable {
+	font-size: 12px;
 }
 
-/* TABLE WIDTHS AND ALIGNMENT */
+#resultsTable, #resultsPairTable {
+	font-size: 14px;
+}
+
+p {
+	font-size: 16px;
+}
+
+#resultsTable tfoot {
+	font-weight: bold;
+}
+
+/* TABLE CELL WIDTHS AND TEXT ALIGNMENT */
 
 #detailedResultsTable th {
 	width: 100px;
@@ -39,8 +45,8 @@ p.footer {
 }
 
 #resultsPairTable th {
-	width: 50px;
-	text-align: left;
+	width: 60px;
+	text-align: center;
 }
 
 #resultsPairTable th:first-child {
@@ -54,8 +60,8 @@ p.footer {
 }
 
 #resultsMapTable th {
-	width: 63px;
-	text-align: left;
+	width: 80px;
+	text-align: center;
 }
 
 #resultsMapTable th:first-child {
@@ -99,19 +105,11 @@ tr td:last-child, tr th:last-child, table.tablesorter tr th:last-child {
 
 /* TABLE ZEBRA COLORS */
 
-#resultsTable tbody tr:nth-child(odd), #detailedResultsTable tbody tr:nth-child(odd) {
+#resultsTable tbody tr:nth-child(odd), #detailedResultsTable tbody tr:nth-child(odd), #resultsPairTable tbody tr:nth-child(odd) td:nth-child(2) {
 	background-color: #e8e8e8;
 }
 
-#resultsTable tbody tr:nth-child(even), #detailedResultsTable tbody tr:nth-child(even) {
-	background-color: #ffffff;
-}
-
-#resultsPairTable tbody tr:nth-child(odd) td:nth-child(2) {
-	background-color: #e8e8e8;
-}
-
-#resultsPairTable tbody tr:nth-child(even) td:nth-child(2) {
+#resultsTable tbody tr:nth-child(even), #detailedResultsTable tbody tr:nth-child(even), #resultsPairTable tbody tr:nth-child(even) td:nth-child(2) {
 	background-color: #ffffff;
 }
 

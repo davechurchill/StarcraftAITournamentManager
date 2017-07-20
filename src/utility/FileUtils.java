@@ -1,8 +1,11 @@
 package utility;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -12,6 +15,29 @@ import java.nio.file.StandardCopyOption;
 public class FileUtils 
 {
 
+	public static void writeToFile(String data, String filename)
+	{
+		try
+		{
+			File file = new File(filename);
+			if (!file.exists())
+			{
+				file.createNewFile();
+			}
+
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(data);
+			bw.close();
+			fw.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
+	
 	private static void DeleteRecursive(File f) 
 	{
 		try

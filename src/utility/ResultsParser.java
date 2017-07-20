@@ -178,8 +178,6 @@ public class ResultsParser
 			
 			winsAfterRound.get(winner).set(result.roundID, winsAfterRound.get(winner).get(result.roundID) + 1);	
 		}
-		
-		printWinPercentageGraph();
 	}
 	
 	private void updateElo(int b1, int b2, boolean win)
@@ -196,97 +194,79 @@ public class ResultsParser
 		elo[b2] = newElo2;
 	}
 	
-	public String getRawDataHTML()
+	public void writeWinPercentageGraph()
 	{
-		String data = "";
-		for (int i=0; i<results.size(); i++)
+		int[] allwins = new int[botNames.length];
+		
+		for (int i=0; i<numBots; i++)
 		{
-			data += results.get(i).toString();
+			for (int j=0; j<numBots; j++)
+			{
+				allwins[i] += wins[i][j];
+			}
 		}
 		
-		return data;
-	}
-	
-	public void printWinPercentageGraph()
-	{
-		try
+		Vector<ResultPair> allPairs = new Vector<ResultPair>();
+		for (int i=0; i<numBots; i++)
 		{
-			int[] allwins = new int[botNames.length];
-			
-			for (int i=0; i<numBots; i++)
+			double winPercentage = (games[i] > 0 ? ((double)allwins[i]/games[i]) : 0);
+			allPairs.add(new ResultPair(botNames[i], i, winPercentage));
+		}
+		
+		Collections.sort(allPairs, new ResultPairComparator());
+		
+		StringBuilder winPercentage = new StringBuilder();
+		StringBuilder roundWins = new StringBuilder();
+		
+		winPercentage.append("var winPercentage = [\n");
+		
+		for (int i=0; i<numBots; ++i)
+		{
+			// only write the stats for this bot if it has completed at least one game
+			if (games[i] > 0)
 			{
-				for (int j=0; j<numBots; j++)
+				int ii = allPairs.get(i).botIndex;
+				
+				winPercentage.append("{ name: '" + botNames[ii] + "', data: [");
+				roundWins.append("{ name: '" + botNames[ii] + "', data: [");
+				for (int j=0; j<gamesAfterRound.get(ii).size(); ++j)
 				{
-					allwins[i] += wins[i][j];
-				}
-			}
-			
-			Vector<ResultPair> allPairs = new Vector<ResultPair>();
-			for (int i=0; i<numBots; i++)
-			{
-				double winPercentage = (games[i] > 0 ? ((double)allwins[i]/games[i]) : 0);
-				allPairs.add(new ResultPair(botNames[i], i, winPercentage));
-			}
-			
-			Collections.sort(allPairs, new ResultPairComparator());
-			
-			BufferedWriter out = new BufferedWriter(new FileWriter("html/winpercentage.txt"));
-			BufferedWriter out2 = new BufferedWriter(new FileWriter("html/roundwins.txt"));
-			
-			out.write("//This object is assigned to a variable rather just a JSON file to make it easy to load from a local file\n");
-			out.write("winPercentage = [\n");
-			
-			for (int i=0; i<numBots; ++i)
-			{
-				// only write the stats for this bot if it has completed at least one game
-				if (games[i] > 0)
-				{
-					int ii = allPairs.get(i).botIndex;
+					double winRate = (double)winsAfterRound.get(ii).get(j) / (double)gamesAfterRound.get(ii).get(j);
 					
-					out.write("{ name: '" + botNames[ii] + "', data: [");
-					out2.write("{ name: '" + botNames[ii] + "', data: [");
-					for (int j=0; j<gamesAfterRound.get(ii).size(); ++j)
-					{
-						double winRate = (double)winsAfterRound.get(ii).get(j) / (double)gamesAfterRound.get(ii).get(j);
-						
-						out.write(" " + winRate);
-						
-						int wins = winsAfterRound.get(ii).get(j);
-						if (j > 0)
-						{
-							wins -= winsAfterRound.get(ii).get(j-1);
-						}
-						
-						out2.write(" " + wins);
-						
-						if (j < gamesAfterRound.get(ii).size() - 1)
-						{
-							out.write(",");
-							out2.write(",");
-						}
-					}
-					out.write("] }");
-					out2.write("] }");
+					winPercentage.append(" " + winRate);
 					
-					if (i < numBots - 1)
+					int wins = winsAfterRound.get(ii).get(j);
+					if (j > 0)
 					{
-						out.write(",");
-						out2.write(",");
+						wins -= winsAfterRound.get(ii).get(j-1);
 					}
 					
-					out.write("\n");
-					out2.write("\n");
+					roundWins.append(" " + wins);
+					
+					if (j < gamesAfterRound.get(ii).size() - 1)
+					{
+						winPercentage.append(",");
+						roundWins.append(",");
+					}
 				}
+				winPercentage.append("] }");
+				roundWins.append("] }");
+				
+				if (i < numBots - 1)
+				{
+					winPercentage.append(",");
+					roundWins.append(",");
+				}
+				
+				winPercentage.append("\n");
+				roundWins.append("\n");
 			}
-			
-			out.write("]");
-			out.close();
-			out2.close();
 		}
-		catch (Exception e)
-		{
-			
-		}
+		
+		winPercentage.append("];");
+		
+		FileUtils.writeToFile(winPercentage.toString(), "html/winpercentage.txt");
+		FileUtils.writeToFile(roundWins.toString(), "html/roundwins.txt");
 	}
 	
 	public boolean hasGameResult(int gameID)
@@ -294,135 +274,335 @@ public class ResultsParser
 		return gameIDs.contains(gameID);
 	}
 	
-	public void writeDetailedResultsHTML(String filename)
+	public void writeDetailedResultsJSON()
 	{
-		try
-		{
-			System.out.println("Writing detailed results html");
-			BufferedWriter out = new BufferedWriter(new FileWriter(filename));
-			BufferedWriter outtxt = new BufferedWriter(new FileWriter("html/detailed_results.txt"));
+		StringBuilder out = new StringBuilder();
+		StringBuilder outtxt = new StringBuilder();
+		
+		out.append("var detailedResults = [\n");
+		
+		for (int i=0; i<results.size(); i++)
+		{				
+			GameResult r = results.get(i);
+			
+			out.append("{");
+			
+			String idString = "" + r.gameID;
+			while (idString.length() < 5) { idString = "0" + idString; }
+			out.append("\"Round/Game\": \"" + r.roundID + " / " + idString + "\", ");
+			
+			String winnerReplayName = r.hostWon ? r.getHostReplayName() : r.getAwayReplayName();
+			String loserReplayName = r.hostWon ? r.getAwayReplayName() : r.getHostReplayName();
+			String winnerName = r.hostWon ? r.hostName : r.awayName;
+			String loserName = r.hostWon ? r.awayName : r.hostName;
+			
+			out.append("\"WinnerName\": \"" + winnerName + "\", ");
+			out.append("\"LoserName\": \"" + loserName + "\", ");
+			
+			if (new File("replays\\" + winnerReplayName).exists())
+			{
+				out.append("\"WinnerReplay\": \"" + winnerReplayName.replace("\\", "/") + "\", ");
+			}
+			else
+			{
+				out.append("\"WinnerReplay\": \"\", ");
+			}
+			
+			if (new File("replays\\" + loserReplayName).exists())
+			{
+				out.append("\"LoserReplay\": \"" + loserReplayName.replace("\\", "/") + "\", ");
+			}
+			else
+			{
+				out.append("\"LoserReplay\": \"\", ");
+			}
+			
+			out.append("\"Crash\": \"" + (r.finalFrame == -1 ? "unknown" : r.crashName) + "\", ");
+			out.append("\"Timeout\": \"" + r.timeOutName + "\", ");
+			out.append("\"Map\": \"" + r.mapName.substring(r.mapName.indexOf(')') + 1, r.mapName.indexOf('.')) + "\", ");
+			
+			String hours   = "" + r.finalFrame/(24*60*60); while (hours.length() < 2) { hours = "0" + hours; }
+			String minutes = "" + (r.finalFrame % (24*60*60))/(24*60); while (minutes.length() < 2) { minutes = "0" + minutes; }
+			String seconds = "" + (r.finalFrame % (24*60))/(24); while (seconds.length() < 2) { seconds = "0" + seconds; }
+			
+			out.append("\"Duration\": \"" + hours + ":" + minutes + ":" + seconds + "\", ");
+			out.append("\"W Score\": " + (r.hostWon ? r.hostScore : r.awayScore) + ", ");
+			out.append("\"L Score\": " + (r.hostWon ? r.awayScore : r.hostScore) + ", ");
+			
+			double maxScore = Math.max(r.hostScore, r.awayScore) + 1;
+			double closeNess = (r.hostWon ?  (r.hostScore - r.awayScore)/(maxScore) : (r.awayScore - r.hostScore)/(maxScore));
+			closeNess = (double)Math.round(closeNess * 100000) / 100000;
+			out.append("\"(W-L)/Max\": " + closeNess + ", ");
 			
 			int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
-			out.write("<!DOCTYPE html>\n");
-			out.write("<html>\n<head>\n");
-			out.write("<title>Detailed Results</title>\n");
-			out.write("<meta charset=\"UTF-8\">\n");
-			out.write("<script src=\"javascript/jquery-1.10.2.min.js\"></script>\n<script src=\"javascript/jquery.tablesorter.js\"></script>\n");
-			out.write("<link rel=\"stylesheet\" href=\"javascript/themes/blue/style.css\">\n");
-			out.write("<link rel=\"stylesheet\" href=\"css/style.css\">\n");
-			out.write("<script> $(function() { $(\"#detailedResultsTable\").tablesorter(); });</script>\n");
-			out.write("</head>\n");
-			out.write("<p>Go To: <a href=\"index.html\">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>\n");
-			out.write("<table id=\"detailedResultsTable\" class=\"tablesorter\">\n");
-			out.write("  <thead><tr>\n");
-			out.write("    <th>Round/Game</th>\n");
-			out.write("    <th>Winner</th>\n");
-			out.write("    <th>Loser</th>\n");
-			out.write("    <th>Crash</th>\n");
-			out.write("    <th>Timeout</th>\n");
-			out.write("    <th>Map</th>\n");
-			out.write("    <th>Duration</th>\n");
-			out.write("    <th>W Score</th>\n");
-			out.write("    <th>L Score</th>\n");
-			out.write("    <th>(W-L)/Max</th>\n");
+			out.append("\"WinnerTimers\": [");
 			for (int t=0; t<numTimers; ++t)
 			{
-				out.write("    <th>W " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</th>\n");
+				out.append("{\"Limit\": " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + ", \"Count\": " + (r.hostWon ? r.hostTimers.get(t) : r.awayTimers.get(t)) + "}");
+				if (t != numTimers - 1)
+				{
+					out.append(", ");
+				}
 			}
+			out.append("], ");
+			
+			out.append("\"LoserTimers\": [");
 			for (int t=0; t<numTimers; ++t)
 			{
-				out.write("    <th>L " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</th>\n");
+				out.append("{\"Limit\": " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + ", \"Count\": " + (r.hostWon ? r.awayTimers.get(t) : r.hostTimers.get(t)) + "}");
+				if (t != numTimers - 1)
+				{
+					out.append(", ");
+				}
 			}
-			out.write("    <th>Win Addr</th>\n");
-			out.write("    <th>Lose Addr</th>\n");
-			out.write("    <th>Start</th>\n");
-			out.write("    <th>Finish</th>\n");
-			out.write("  </tr></thead><tbody>\n");
-					
-			//Collections.sort(results, new GameResultIDComparator());
+			out.append("], ");
 			
-			for (int i=0; i<results.size(); i++)
-			{				
-				GameResult r = results.get(i);
-				out.write("  <tr>\n");
-				
-				String idString = "" + r.gameID;
-				while (idString.length() < 5) { idString = "0" + idString; }
-				
-				out.write("    <td>" + ( r.roundID + " / " + idString) + "</td>\n");
-				
-				String winnerReplayName = r.hostWon ? r.getHostReplayName() : r.getAwayReplayName();
-				String loserReplayName = r.hostWon ? r.getAwayReplayName() : r.getHostReplayName();
-				String winnerName = r.hostWon ? r.hostName : r.awayName;
-				String loserName = r.hostWon ? r.awayName : r.hostName;
-				
-				if (new File("replays\\" + winnerReplayName).exists())
-				{
-					out.write("    <td>" + "<a href=\"replays/" + winnerReplayName.replace("\\", "/") + "\">" + winnerName + "</a></td>\n");
-				}
-				else
-				{
-					out.write("    <td>" + winnerName + "</td>\n");
-				}
-				
-				if (new File("replays\\" + loserReplayName).exists())
-				{
-					out.write("    <td>" + "<a href=\"replays/" + loserReplayName.replace("\\", "/") + "\">" + loserName + "</a></td>\n");
-				}
-				else
-				{
-					out.write("    <td>" + loserName + "</td>\n");
-				}
-				
-				out.write("    <td>" + (r.finalFrame == -1 ? "unknown" : r.crashName) + "</td>\n");
-				out.write("    <td>" + r.timeOutName + "</td>\n");
-				out.write("    <td>" + r.mapName.substring(r.mapName.indexOf(')') + 1, r.mapName.indexOf('.')) + "</td>\n");
-				
-				String hours   = "" + r.finalFrame/(24*60*60); while (hours.length() < 2) { hours = "0" + hours; }
-				String minutes = "" + (r.finalFrame % (24*60*60))/(24*60); while (minutes.length() < 2) { minutes = "0" + minutes; }
-				String seconds = "" + (r.finalFrame % (24*60))/(24); while (seconds.length() < 2) { seconds = "0" + seconds; }
-				
-				out.write("    <td>00:" + minutes + ":" + seconds + "</td>\n");
-				out.write("    <td>" + (r.hostWon ? r.hostScore : r.awayScore) + "</td>\n");
-				out.write("    <td>" + (r.hostWon ? r.awayScore : r.hostScore) + "</td>\n");
-				
-				double maxScore = Math.max(r.hostScore, r.awayScore) + 1;
-				double maxSq = (double)maxScore;// * (double)maxScore;
-				double hostSq = (double)r.hostScore;// * (double)r.hostScore;
-				double awaySq = (double)r.awayScore;// * (double)r.awayScore;
-				double closeNess = (r.hostWon ?  (hostSq-awaySq)/(maxSq) : (awaySq-hostSq)/(maxSq));
-				closeNess = (double)Math.round(closeNess * 100000) / 100000;
-				out.write("    <td>" + closeNess + "</td>\n");
-				
-				for (int t=0; t<numTimers; ++t)
-				{
-					out.write("    <td>" + (r.hostWon ? r.hostTimers.get(t) : r.awayTimers.get(t)) + "</td>\n");
-				}
-				
-				for (int t=0; t<numTimers; ++t)
-				{
-					out.write("    <td>" + (r.hostWon ? r.awayTimers.get(t) : r.hostTimers.get(t)) + "</td>\n");
-				}
-				
-				out.write("    <td>" + (r.hostWon ? r.hostAddress : r.awayAddress) + "</td>\n");
-				out.write("    <td>" + (r.hostWon ? r.awayAddress : r.hostAddress) + "</td>\n");
-				out.write("    <td>" + (r.startDate) + "</td>\n");
-				out.write("    <td>" + (r.finishDate) + "</td>\n");
-				out.write("  </tr>\n");
-				
-				outtxt.write(r.getResultString());
-				outtxt.write("\n");
+			out.append("\"Win Addr\": \"" + (r.hostWon ? r.hostAddress : r.awayAddress) + "\", ");
+			out.append("\"Lose Addr\": \"" + (r.hostWon ? r.awayAddress : r.hostAddress) + "\", ");
+			out.append("\"Start\": \"" + (r.startDate) + "\", ");
+			out.append("\"Finish\": \"" + (r.finishDate) + "\"}");
+			
+			if (i != results.size() - 1)
+			{
+				out.append(",");
 			}
+			out.append("\n");
 			
-			out.write("</tbody></table>\n");
-			out.write("</html>\n");
-			out.close();
-			outtxt.close();
+			outtxt.append(r.getResultString() + "\n");
 		}
-		catch (IOException e)
+		
+		out.append("]");
+		
+		FileUtils.writeToFile(out.toString(), "html/detailed_results_json.txt");
+		FileUtils.writeToFile(outtxt.toString(), "html/detailed_results.txt");
+	}
+	
+	public void writeDetailedResultsHTML()
+	{
+		System.out.println("Writing detailed results html");
+		
+		StringBuilder out = new StringBuilder();
+		StringBuilder outtxt = new StringBuilder();
+		
+		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
+		out.append("<!DOCTYPE html>\n");
+		out.append("<html>\n<head>\n");
+		out.append("<title>Detailed Results</title>\n");
+		out.append("<meta charset=\"UTF-8\">\n");
+		out.append("<script src=\"javascript/jquery-1.10.2.min.js\"></script>\n<script src=\"javascript/jquery.tablesorter.js\"></script>\n");
+		out.append("<link rel=\"stylesheet\" href=\"javascript/themes/blue/style.css\">\n");
+		out.append("<link rel=\"stylesheet\" href=\"css/style.css\">\n");
+		out.append("<script> $(function() { $(\"#detailedResultsTable\").tablesorter(); });</script>\n");
+		out.append("</head>\n");
+		out.append("<p>Go To: <a href=\"index.html\">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>\n");
+		out.append("<table id=\"detailedResultsTable\" class=\"tablesorter\">\n");
+		out.append("  <thead><tr>\n");
+		out.append("    <th>Round/Game</th>\n");
+		out.append("    <th>Winner</th>\n");
+		out.append("    <th>Loser</th>\n");
+		out.append("    <th>Crash</th>\n");
+		out.append("    <th>Timeout</th>\n");
+		out.append("    <th>Map</th>\n");
+		out.append("    <th>Duration</th>\n");
+		out.append("    <th>W Score</th>\n");
+		out.append("    <th>L Score</th>\n");
+		out.append("    <th>(W-L)/Max</th>\n");
+		for (int t=0; t<numTimers; ++t)
 		{
-			System.out.println(e.getStackTrace());			
+			out.append("    <th>W " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</th>\n");
 		}
+		for (int t=0; t<numTimers; ++t)
+		{
+			out.append("    <th>L " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + "</th>\n");
+		}
+		out.append("    <th>Win Addr</th>\n");
+		out.append("    <th>Lose Addr</th>\n");
+		out.append("    <th>Start</th>\n");
+		out.append("    <th>Finish</th>\n");
+		out.append("  </tr></thead><tbody>\n");
+				
+		//Collections.sort(results, new GameResultIDComparator());
+		
+		for (int i=0; i<results.size(); i++)
+		{				
+			GameResult r = results.get(i);
+			out.append("  <tr>\n");
+			
+			String idString = "" + r.gameID;
+			while (idString.length() < 5) { idString = "0" + idString; }
+			
+			out.append("    <td>" + ( r.roundID + " / " + idString) + "</td>\n");
+			
+			String winnerReplayName = r.hostWon ? r.getHostReplayName() : r.getAwayReplayName();
+			String loserReplayName = r.hostWon ? r.getAwayReplayName() : r.getHostReplayName();
+			String winnerName = r.hostWon ? r.hostName : r.awayName;
+			String loserName = r.hostWon ? r.awayName : r.hostName;
+			
+			if (new File("replays\\" + winnerReplayName).exists())
+			{
+				out.append("    <td>" + "<a href=\"replays/" + winnerReplayName.replace("\\", "/") + "\">" + winnerName + "</a></td>\n");
+			}
+			else
+			{
+				out.append("    <td>" + winnerName + "</td>\n");
+			}
+			
+			if (new File("replays\\" + loserReplayName).exists())
+			{
+				out.append("    <td>" + "<a href=\"replays/" + loserReplayName.replace("\\", "/") + "\">" + loserName + "</a></td>\n");
+			}
+			else
+			{
+				out.append("    <td>" + loserName + "</td>\n");
+			}
+			
+			out.append("    <td>" + (r.finalFrame == -1 ? "unknown" : r.crashName) + "</td>\n");
+			out.append("    <td>" + r.timeOutName + "</td>\n");
+			out.append("    <td>" + r.mapName.substring(r.mapName.indexOf(')') + 1, r.mapName.indexOf('.')) + "</td>\n");
+			
+			String hours   = "" + r.finalFrame/(24*60*60); while (hours.length() < 2) { hours = "0" + hours; }
+			String minutes = "" + (r.finalFrame % (24*60*60))/(24*60); while (minutes.length() < 2) { minutes = "0" + minutes; }
+			String seconds = "" + (r.finalFrame % (24*60))/(24); while (seconds.length() < 2) { seconds = "0" + seconds; }
+			
+			out.append("    <td>00:" + minutes + ":" + seconds + "</td>\n");
+			out.append("    <td>" + (r.hostWon ? r.hostScore : r.awayScore) + "</td>\n");
+			out.append("    <td>" + (r.hostWon ? r.awayScore : r.hostScore) + "</td>\n");
+			
+			double maxScore = Math.max(r.hostScore, r.awayScore) + 1;
+			double maxSq = (double)maxScore;// * (double)maxScore;
+			double hostSq = (double)r.hostScore;// * (double)r.hostScore;
+			double awaySq = (double)r.awayScore;// * (double)r.awayScore;
+			double closeNess = (r.hostWon ?  (hostSq-awaySq)/(maxSq) : (awaySq-hostSq)/(maxSq));
+			closeNess = (double)Math.round(closeNess * 100000) / 100000;
+			out.append("    <td>" + closeNess + "</td>\n");
+			
+			for (int t=0; t<numTimers; ++t)
+			{
+				out.append("    <td>" + (r.hostWon ? r.hostTimers.get(t) : r.awayTimers.get(t)) + "</td>\n");
+			}
+			
+			for (int t=0; t<numTimers; ++t)
+			{
+				out.append("    <td>" + (r.hostWon ? r.awayTimers.get(t) : r.hostTimers.get(t)) + "</td>\n");
+			}
+			
+			out.append("    <td>" + (r.hostWon ? r.hostAddress : r.awayAddress) + "</td>\n");
+			out.append("    <td>" + (r.hostWon ? r.awayAddress : r.hostAddress) + "</td>\n");
+			out.append("    <td>" + (r.startDate) + "</td>\n");
+			out.append("    <td>" + (r.finishDate) + "</td>\n");
+			out.append("  </tr>\n");
+			
+			outtxt.append(r.getResultString() + "\n");
+		}
+		
+		out.append("</tbody></table>\n");
+		out.append("</html>\n");
+		
+		FileUtils.writeToFile(out.toString(), "html/results.html");
+		FileUtils.writeToFile(outtxt.toString(), "html/detailed_results.txt");
+	}
+	
+	public String getResultsJSON()
+	{	
+		int[] allgames = new int[botNames.length];
+		int[] allwins = new int[botNames.length];
+		
+		for (int i=0; i<numBots; i++)
+		{
+			for (int j=0; j<numBots; j++)
+			{
+				allwins[i] += wins[i][j];
+				allgames[i] += wins[i][j] + wins[j][i];
+			}
+		}
+		
+		Vector<ResultPair> allPairs = new Vector<ResultPair>();
+		for (int i=0; i<numBots; i++)
+		{
+			double winPercentage = (allgames[i] > 0 ? ((double)allwins[i]/allgames[i]) : 0);
+			allPairs.add(new ResultPair(botNames[i], i, winPercentage));
+		}
+		Collections.sort(allPairs, new ResultPairComparator());
+		
+		StringBuilder json = new StringBuilder();
+		
+		File resultsTXT = new File("html/detailed_results.txt");
+		json.append("var resultsTXTSize = " + (resultsTXT.exists() ? resultsTXT.length() : 0) + ";\n");
+		json.append("var lastUpdateTime = '" + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "';\n");
+		json.append("var maps = [");
+		for (int i=0; i<numMaps; i++)
+		{
+			json.append("'" + mapNames[i] + "'");
+			if (i != numMaps - 1)
+			{
+				json.append(",");
+			}
+		}
+		json.append("]\n");
+		
+		json.append("var resultsSummary = [\n");
+		
+		for (int i=0; i<numBots; ++i)
+		{
+			int ii = allPairs.get(i).botIndex;
+			
+			json.append("\t{\"BotName\": \"" + botNames[ii] + "\", ");
+			json.append("\"Rank\": " + i + ", ");
+			json.append("\"Race\": \"" + ServerSettings.Instance().BotVector.get(ii).getRace() + "\", ");
+			json.append("\"Games\": " + allgames[ii] + ", ");
+			json.append("\"Wins\": " + allwins[ii] + ", ");
+			json.append("\"Losses\": " + (allgames[ii] - allwins[ii]) + ", ");
+			json.append("\"Score\": " + new DecimalFormat("##.##").format(allPairs.get(i).win*100) + ", ");
+			json.append("\"ELO\": " + (int)elo[ii] + ", "); 
+			json.append("\"AvgTime\": " + (allgames[ii] > 0 ? frames[ii]/games[ii] : "0") + ", ");
+			json.append("\"Hour\": " + hour[ii] + ", ");
+			json.append("\"Crash\": " + crash[ii] + ", ");
+			json.append("\"Timeout\": " + timeout[ii] + ", ");
+			
+			json.append("\"resultPairs\": [");
+			
+			for (int j=0; j<numBots; j++)
+			{
+				int jj = allPairs.get(j).botIndex;
+				
+				json.append("{\"Opponent\": \"" + botNames[jj] + "\", ");
+				json.append("\"Wins\": " + wins[ii][jj] + ", ");
+				json.append("\"Games\": " + (wins[ii][jj] + wins[jj][ii]) + "}");
+				
+				if (j != numBots - 1)
+				{
+					json.append(", ");
+				}
+			}
+			json.append("], ");
+			
+			json.append("\"mapResults\": [");
+			
+			for (int j=0; j<numMaps; j++)
+			{
+				json.append("{\"Map\": \"" + mapNames[j] + "\", ");
+				json.append("\"Wins\": " + mapWins[ii][j] + ", ");
+				json.append("\"Games\": " + mapGames[ii][j] + "}");
+				
+				if (j != numMaps - 1)
+				{
+					json.append(", ");
+				}
+			}
+			
+			json.append("]}");
+			
+			if (i != numBots - 1)
+			{
+				json.append(", ");
+			}
+			
+			json.append("\n");
+		}
+		
+		json.append("];");
+		
+		return json.toString();
 	}
 	
 	public String getHeaderHTML()
@@ -445,13 +625,12 @@ public class ResultsParser
 	
 	public String getFooterHTML()
 	{
-		String timeStamp = "<p class=\"footer\">Last Updated: " + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "</p>\n";
+		String timeStamp = "<p id=\"footer\">Last Updated: " + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "</p>\n";
 		String html = timeStamp;
 		html += "</body>\n";
 		html += "</html>\n";
 		return html;
 	}
-	
 	
 	public String getResultsHTML()
 	{	
@@ -518,7 +697,7 @@ public class ResultsParser
 			dataTotals[2] += (allgames[ii] - allwins[ii]);			
 			html += "    <td>" + new DecimalFormat("##.##").format(allPairs.get(i).win*100) + "</td>\n";
 			//html += "    <td>"+ (int)elo[ii] + "</td>\n"; 
-			html += "    <td>" + (allgames[ii] > 0 ? getTime(frames[ii]/games[ii]) : "0") + "</td>\n"; 	;
+			html += "    <td>" + (allgames[ii] > 0 ? getTime(frames[ii]/games[ii]) : "0") + "</td>\n";
 			dataTotals[4] += (allgames[ii] > 0 ? frames[ii]/games[ii] : 0);
 			html += "    <td>" + hour[ii] + "</td>\n";
 			dataTotals[5] += hour[ii];
@@ -659,20 +838,6 @@ public class ResultsParser
 		html += "</table>\n";
 		
 		return html;
-	}
-	
-	public void writeToFile(String s, String filename) throws Exception
-	{
-		File file = new File(filename);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(s);
-		bw.close();
-		fw.close();
 	}
 	
 	public String getTime(int frames)

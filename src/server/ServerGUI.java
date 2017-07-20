@@ -15,9 +15,7 @@ import utility.GameListGenerator;
 import utility.ResultsParser;
 
 import java.awt.event.*;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -37,7 +35,7 @@ public class ServerGUI
     private 	JMenuItem	sendClientCommandMenuItem;
     private		JMenuItem	viewClientScreenMenuItem;
     
-    private String [] 		columnNames = {"Client", "Status", "Game #", "Self", "Enemy", "Map", "Duration", "Win"};	
+    private String [] 		columnNames = {"Client", "Status", "Game #", "Self", "Enemy", "Map", "Duration", "Win"};
 	private Object [][] 	data = 	{ };
 
 	private boolean resumedTournament = false;
@@ -82,7 +80,7 @@ public class ServerGUI
     				{
     					ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
     					logText(getTimeStamp() + " Generating All Results File...\n");
-    					rp.writeDetailedResultsHTML("html/results.html");
+    					rp.writeDetailedResultsHTML();
     					logText(getTimeStamp() + " Generating All Results File Complete!\n");
     				}
     				catch (Exception ex)
@@ -171,19 +169,6 @@ public class ServerGUI
     			}     
             }
 	    });
-	}
-	
-	public void writeHTMLFile(String html, String filename) throws Exception
-	{
-		File file = new File(filename);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(html);
-		bw.close();
-		fw.close();
 	}
 	
 	public void handleFileDialogues()

@@ -149,49 +149,31 @@ public class Server  extends Thread
 	}
 	
 	public synchronized void writeHTMLFiles(int iter) throws Exception
-	{
-		try
-		{			
-			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			
-			String schedulerHTML = gui.getHTML();
-			String headerHTML = rp.getHeaderHTML();
-			String footerHTML = rp.getFooterHTML();
-			String resultsHTML = rp.getResultsHTML();
-			
-			// if there are no clients, don't bother writing the current scheduler info
-			if (clients.size() == 0)
-			{
-				schedulerHTML = "";
-			}
-			
-			// only write the all results file every 30 reschedules, saves time
-			if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
-			{
-				log("Generating All Results File...\n");
-				rp.writeDetailedResultsHTML("html/results.html");
-				log("Generating All Results File Complete!\n");
-			}
-			
-			writeHTMLFile(headerHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
-		}
-		catch (Exception e)
+	{	
+		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
+		
+		String schedulerHTML = gui.getHTML();
+		String headerHTML = rp.getHeaderHTML();
+		String footerHTML = rp.getFooterHTML();
+		String resultsHTML = rp.getResultsHTML();
+		
+		// if there are no clients, don't bother writing the current scheduler info
+		if (clients.size() == 0)
 		{
-			
+			schedulerHTML = "";
 		}
-	}
-	
-	public void writeHTMLFile(String html, String filename) throws Exception
-	{
-		File file = new File(filename);
-		if (!file.exists()) {
-			file.createNewFile();
+		
+		// only write the all results file every 30 reschedules, saves time
+		if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
+		{
+			log("Generating All Results File...\n");
+			rp.writeDetailedResultsHTML();
+			log("Generating All Results File Complete!\n");
 		}
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(html);
-		bw.close();
-		fw.close();
+		
+		rp.writeWinPercentageGraph();
+		//FileUtils.writeToFile(rp.getResultsJSON(), "html/results_summary_json.txt");
+		FileUtils.writeToFile(headerHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost)
