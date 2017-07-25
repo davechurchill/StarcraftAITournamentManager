@@ -279,6 +279,9 @@ public class ResultsParser
 		StringBuilder out = new StringBuilder();
 		StringBuilder outtxt = new StringBuilder();
 		
+		//replay dir on local machine, easy to change by editing the output file
+		out.append("var replayPath = '../replays/';\n");
+		
 		out.append("var detailedResults = [\n");
 		
 		for (int i=0; i<results.size(); i++)
@@ -424,6 +427,22 @@ public class ResultsParser
 			json.append("\t{\"BotName\": \"" + botNames[ii] + "\", ");
 			json.append("\"Rank\": " + i + ", ");
 			json.append("\"Race\": \"" + ServerSettings.Instance().BotVector.get(ii).getRace() + "\", ");
+			
+			//parse BWAPI version to go from "BWAPI_412" -> "4.1.2"
+			String version = ServerSettings.Instance().BotVector.get(ii).getBWAPIVersion();
+			version = version.replaceFirst("BWAPI_", "");
+			String versionNum = "";
+			for (int j = 0; j < version.length(); j++)
+			{
+				versionNum += version.charAt(j);
+				if (j != version.length() - 1)
+				{
+					versionNum += ".";
+				}
+			}
+			json.append("\"BWAPIVersion\": \"" + versionNum + "\", ");
+			
+			json.append("\"BotType\": \"" + ServerSettings.Instance().BotVector.get(ii).getType() + "\", ");
 			json.append("\"Games\": " + allgames[ii] + ", ");
 			json.append("\"Wins\": " + allwins[ii] + ", ");
 			json.append("\"Losses\": " + (allgames[ii] - allwins[ii]) + ", ");

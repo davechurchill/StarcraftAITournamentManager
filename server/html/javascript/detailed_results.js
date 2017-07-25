@@ -1,10 +1,10 @@
 $(function()
 {
 	//these arguments are declared in another file output by the Tournament Manager
-	fillDetailedResultsTable(detailedResults);
+	fillDetailedResultsTable(detailedResults, replayPath);
 });
 
-function fillDetailedResultsTable(data)
+function fillDetailedResultsTable(data, replayDir)
 {
 	var html = "";
 	
@@ -36,7 +36,7 @@ function fillDetailedResultsTable(data)
 		
 		if (data[i].WinnerReplay != "")
 		{
-			html += "<td><a href='" + data[i].WinnerReplay + "'>" + data[i].WinnerName + "</a></td>";
+			html += "<td><a href='" + replayDir + data[i].WinnerReplay + "'>" + data[i].WinnerName + "</a></td>";
 		}
 		else
 		{
@@ -45,7 +45,7 @@ function fillDetailedResultsTable(data)
 		
 		if (data[i].LoserReplay != "")
 		{
-			html += "<td><a href='" + data[i].LoserReplay + "'>" + data[i].LoserName + "</a></td>";
+			html += "<td><a href='" + replayDir + data[i].LoserReplay + "'>" + data[i].LoserName + "</a></td>";
 		}
 		else
 		{
