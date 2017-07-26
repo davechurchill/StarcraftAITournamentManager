@@ -29,7 +29,6 @@ public class GameStorage
 		{
 			int id = it.next();
 		    gamesToPlay.remove(id);
-		    allGames.remove(id);
 		}
 	}
 	
@@ -64,5 +63,15 @@ public class GameStorage
 	public Game lookupGame(int gameID) 
 	{
 		return allGames.get(gameID);
+	}
+	
+	public int getNumGamesRemaining()
+	{
+		return gamesToPlay.size();
+	}
+	
+	public int getNumTotalGames()
+	{
+		return allGames.size();
 	}
 }

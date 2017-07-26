@@ -51,8 +51,12 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 			}
 			catch (Exception e) 
 			{
-				server.log("Excpetion in ManagerClientThread, removing client\n");
-				e.printStackTrace();
+				//don't print exception notice if stopThread() was called
+				if (run)
+				{
+					server.log("Exception in ManagerClientThread, removing client: " + getAddress().toString().replaceFirst("^.*/", "") + "\n");
+					e.printStackTrace();
+				}
 				server.removeClient(this);
 				run = false;
 			}
@@ -138,7 +142,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 
 	public synchronized void sendMessage(Message m) throws Exception
 	{
-		server.log("Sending Message to Client " + server.getClientIndex(this) + " : " + m.toString() + "\n");
+		server.log("Sending Message to Client " + getAddress().toString().replaceFirst("^.*/", "") + ": " + m.toString() + "\n");
 		
 		oos.writeObject(m);
 		oos.flush();
@@ -220,6 +224,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		}
 		
 		run = false;
+		
 	}
 
 	public synchronized void setStatus(ClientStatus status) 

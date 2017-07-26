@@ -272,7 +272,7 @@ public class Client extends Thread
 			log("Server told us to execute command: " + ((ClientCommandMessage)m).getCommand() + "\n");
 			WindowsCommandTools.RunWindowsCommandAsync(((ClientCommandMessage)m).getCommand());
 		}
-		else if (m instanceof ServerShutdownMessage)
+		else if (m instanceof ServerShutdownMessage || m instanceof ClientShutdownMessage)
 		{
 			shutDown();
 		}

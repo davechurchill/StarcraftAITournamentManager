@@ -36,7 +36,12 @@ public class Server  extends Thread
 		if (resumed)
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
+			gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
 			games.removePlayedGames(rp.getGameIDs());
+		}
+		else
+		{
+			gui.updateServerStatus(games.getNumTotalGames(), 0);
 		}
 		
         clients 	= new Vector<ServerClientThread>();
@@ -73,7 +78,7 @@ public class Server  extends Thread
 			{		
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
-				writeHTMLFiles(iterations++);
+				updateResults(iterations++);
 				
 				if (!games.hasMoreGames())
 				{
@@ -119,25 +124,30 @@ public class Server  extends Thread
 					continue;
 				}
 				
-				String gameString = "Game(" + nextGame.getGameID() + " / " + nextGame.getRound() + ")";
-			
-                if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
-                {
-                    // wait until all games from this round are free
-                    while (free.size() < clients.size())
-                    {
-                        log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
-                        Thread.sleep(gameRescheduleTimer);
-                    }
-                    
-                    log("Moving Write Directory to Read Directory");
-                    
-                    // move the write dir to the read dir
-                    ServerCommands.Server_MoveWriteToRead();
-                }
+				String gameString = "Next Game: (" + nextGame.getGameID() + " / " + nextGame.getRound() + ")\n";
+				
+				//only wait for round completion in AllvsAll tournament
+				if(ServerSettings.Instance().TournamentType.equalsIgnoreCase("AllVsAll")) {
+					
+					if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
+	                {
+	                    // wait until all games from this round are free
+	                    while (free.size() < clients.size())
+	                    {
+	                        log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
+	                        Thread.sleep(gameRescheduleTimer);
+	                    }
+	                    
+	                    log("Moving Write Directory to Read Directory");
+	                    
+	                    // move the write dir to the read dir
+	                    ServerCommands.Server_MoveWriteToRead();
+	                }
+				}
 						
-				log(gameString + " SUCCESS: Starting Game\n");
+				log(gameString);
 				start1v1Game(nextGame);
+				previousScheduledGame = nextGame;
 			}
 			catch (Exception e)
 			{
@@ -148,10 +158,11 @@ public class Server  extends Thread
 		}
 	}
 	
-	public synchronized void writeHTMLFiles(int iter) throws Exception
+	public synchronized void updateResults(int iter) throws Exception
 	{	
 		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 		
+		gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
 				
 		// only write the all results file every 30 reschedules, saves time
 		if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
@@ -233,6 +244,28 @@ public class Server  extends Thread
     		log("There was an error sending the client command message");
     	}
 	}
+	
+	public synchronized void sendCommandToClient(String client, String command)
+	{
+		ClientCommandMessage message = new ClientCommandMessage(command);
+		
+		log("Sending command " + message.getCommand() + " to client: " + client + "\n");
+		
+		try
+    	{
+	        for (int i = 0; i < clients.size(); i++) 
+			{
+	        	if (clients.get(i).getAddress().toString().contains(client))
+	        	{
+	        		clients.get(i).sendMessage(message);
+	        	}    
+	        }
+    	}
+    	catch (Exception e)
+    	{
+    		log("There was an error sending the client command message");
+    	}
+	}
 		
 	public synchronized void updateStatusTable()
 	{
@@ -275,14 +308,9 @@ public class Server  extends Thread
 		}
 	}
 	
-	public static String getTimeStamp()
-	{
-		return new SimpleDateFormat("[HH:mm:ss]").format(Calendar.getInstance().getTime());
-	}
-	
 	public synchronized void log(String s)
 	{
-		gui.logText(getTimeStamp() + " " + s);
+		gui.logText(ServerGUI.getTimeStamp() + " " + s);
 	}
 	
 	private synchronized void removeNonFreeClientsFromFreeList() 
@@ -354,8 +382,6 @@ public class Server  extends Thread
      */
     private synchronized void start1v1Game(Game game) throws Exception
 	{	
-    	previousScheduledGame = game;
-    	
 		// get the clients and their instructions
 		ServerClientThread hostClient = free.get(0);
 		ServerClientThread awayClient = free.get(1);
@@ -483,23 +509,35 @@ public class Server  extends Thread
 		gui.RemoveClient(c.toString());
 		updateStatusTable();
     }
-
+    
     synchronized public void killClient(String ip) 
 	{
         System.out.println("Attempting to kill client: " + ip);
         for (int i = 0; i < clients.size(); i++) 
 		{
-            if (clients.get(i).getAddress().toString().contentEquals(ip)) 
+            if (clients.get(i).getAddress().toString().contains(ip)) 
 			{
-                System.out.println("Client Found and Stopped\n");
-                free.remove(clients.get(i));
-                clients.get(i).stopThread();
-                clients.remove(i);
+            	System.out.println("Client Found\n");
+                try
+				{
+					clients.get(i).sendMessage(new ClientShutdownMessage());
+					clients.get(i).stopThread();
+					free.remove(clients.get(i));
+	                	                clients.remove(i);
+					System.out.println("Client Found and Stopped\n");
+					gui.RemoveClient(ip);
+					log("Client removed: " + ip.replaceFirst("^.*/", "") + "\n");
+				}
+                catch (Exception e)
+				{
+					e.printStackTrace();
+				}
                 return;
             }
         }
     }
 }
+
 class FileCopyThread extends Thread
 {
 	String source;
