@@ -120,18 +120,22 @@ public class ServerGUI
         {
         	public void actionPerformed(ActionEvent e)
 			{
-        		//get IP addresses before deleting rows (clients) from table
-        		String[] addresses = new String[mainTable.getSelectedRowCount()];
-        		int i = 0;
-        		for (int r : mainTable.getSelectedRows())
-				{
-        			addresses[i++] = (String) mainTable.getValueAt(r, 0);
-				}
-        		
-        		for (String ip : addresses)
-        		{
-        			server.killClient(ip);
-        		}
+        		int confirmed = JOptionPane.showConfirmDialog(mainFrame, "Kill Selected Client(s): Are you sure?", "Kill Client(s) Confirmation", JOptionPane.YES_NO_OPTION);
+    			if (confirmed == JOptionPane.YES_OPTION)
+    			{
+    				//get IP addresses before deleting rows (clients) from table
+            		String[] addresses = new String[mainTable.getSelectedRowCount()];
+            		int i = 0;
+            		for (int r : mainTable.getSelectedRows())
+    				{
+            			addresses[i++] = (String) mainTable.getValueAt(r, 0);
+    				}
+            		
+            		for (String ip : addresses)
+            		{
+            			server.killClient(ip);
+            		}
+    			}
 			}
         });
         popup.add(popupKillClientMenuItem);
@@ -417,7 +421,6 @@ public class ServerGUI
 			public void actionPerformed(ActionEvent e)
 			{
 				long diff = Calendar.getInstance().getTime().getTime() - startTime.getTime();
-				//diff += 86400000;
 				long days = TimeUnit.MILLISECONDS.toDays(diff);
 				long hours = TimeUnit.MILLISECONDS.toHours(diff) - TimeUnit.DAYS.toHours(days);
 				long minutes = TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.DAYS.toMinutes(days) - TimeUnit.HOURS.toMinutes(hours);
@@ -426,7 +429,6 @@ public class ServerGUI
 				time += hours > 0 || days > 0 ? (hours != 1 ? (hours + " hours, ") : (hours + " hour, ")) : "";
 				time += minutes > 0 || hours > 0 || days > 0 ? (minutes != 1 ? (minutes + " minutes, ") : (" 1 minute, ")) : "";
 				time += seconds > 1 ? (seconds + " seconds") : seconds + " second";
-				//String time = String.format("%d Days, %d Hours, %d Minutes, %d Seconds", days, hours, minutes, seconds);
 				uptime.setText(time);
 			}
 		});
@@ -518,7 +520,6 @@ public class ServerGUI
 	{
 		bottomText.append(s);
 		bottomText.setCaretPosition(bottomText.getDocument().getLength());
-		//model.addElement(s);
 	}
 	
 	public int NumRows()
