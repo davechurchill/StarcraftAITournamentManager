@@ -1,0 +1,6 @@
+{
+	"ClientStarcraftDir"  : "C:\\TM\\Starcraft\\",
+	"DefaultBWAPISettings": "BWAPI.ini",
+	"TournamentModule"    : "bwapi-data/TournamentModule.dll",
+	"ServerAddress"       : "192.168.1.100:1337" 
+}

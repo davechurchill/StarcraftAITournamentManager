@@ -1,0 +1,54 @@
+{
+	"bots": [
+		{"BotName": "UAlbertaBot", "Race": "Random", "BotType": "dll", "BWAPIVersion": "BWAPI_412"},
+		{"BotName": "UAlbertaBotEXE", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420"},
+		{"BotName": "Aiur", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "MegaBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "Ximp", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "Skynet", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "IceBot", "Race": "Terran", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "Iron", "Race": "Terran", "BotType": "dll", "BWAPIVersion": "BWAPI_412"},
+		{"BotName": "LetaBot", "Race": "Terran", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "tscmoo", "Race": "Zerg", "BotType": "proxy", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "ZZZKBot", "Race": "Zerg", "BotType": "dll", "BWAPIVersion": "BWAPI_412"}
+	],
+	
+	"maps": 
+	[
+	    { "mapFile": "maps/aiide/(2)Benzene.scx" },
+		{ "mapFile": "maps/aiide/(2)Destination.scx" },
+		{ "mapFile": "maps/aiide/(2)HeartbreakRidge.scx" },
+		{ "mapFile": "maps/aiide/(3)Aztec.scx"	},
+		{ "mapFile": "maps/aiide/(3)TauCross.scx" },
+		{ "mapFile": "maps/aiide/(4)Andromeda.scx"	},
+		{ "mapFile": "maps/aiide/(4)CircuitBreaker.scx" },
+		{ "mapFile": "maps/aiide/(4)EmpireoftheSun.scm" },
+		{ "mapFile": "maps/aiide/(4)Fortress.scx" },
+		{ "mapFile": "maps/aiide/(4)Python.scx" }
+	],
+	
+	"gamesListFile"				:	"games.txt",
+	"resultsFile"				: 	"results.txt",
+	"detailedResults"			: 	false,
+	"serverPort"				: 	1337,
+	"clearResults"				: 	"ask",
+	"resumeTournament"			: 	"ask",
+	"startGamesSimultaneously"	:	false,
+	"tournamentType"			:	"AllVsAll",
+	
+	"tournamentModuleSettings":
+	{
+		"localSpeed"		: 0,
+		"frameSkip"			: 256,
+		"gameFrameLimit"	: 85714,
+		"timeoutLimits"		:
+		[
+			{ "timeInMS"	: 55,	"frameCount": 320 },
+			{ "timeInMS"	: 1000,	"frameCount": 10 },
+			{ "timeInMS"	: 10000,"frameCount": 1 }
+		],
+		"drawBotNames"		: true,
+		"drawTournamentInfo": true,
+		"drawUnitInfo"		: true	
+	}
+}

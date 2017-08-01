@@ -1,1 +1,1 @@
-java -jar results_parser.jar server_settings.ini
+java -jar results_parser.jar server_settings.json

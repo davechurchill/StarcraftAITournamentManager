@@ -1,0 +1,93 @@
+Edit server settings in server/server_settings.json. The file must parse as valid JSON.
+
+Name: bots
+Desc: array of json objects for each bot in the tournament
+WARNING: server/required/Required_BWAPIVersion.zip must exist
+If BotType is "proxy" then client will run the script server/bots/BotName/AI/run_proxy.bat before BW starts
+	BotName	- Any string - cannont contain spaces
+	Race - "Random" | "Terran" | "Zerg" | "Protoss"
+	BotType - "dll" | "proxy"
+	BWAPIVersion - "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"
+
+Name: maps
+Desc: array of json objects for each map in the tournament
+Allowed values: objects with: {"mapFile": string} 
+Note: mapFile is relative to the Starcraft directory; no spaces
+	
+Name: gamesListFile
+Desc: Location of file with list of games to be played, relative to server.jar
+Allowed values: string; cannot contain spaces
+
+Name: resultsFile
+Desc: Location of tournament results file, relative to server.jar
+Allowed values: string; cannot contain spaces
+
+Name: DetailedResults
+Desc: Auto Generate Detailed Results every 1 minute?
+Allowed values: true | false
+Note - Generating detailed results gets very slow for large
+       tournaments, so default is no/false. You can manually
+       generate the results from the Actions menu in the
+       serever, which is recommended
+
+Name: serverPort
+Desc: Port to listen for clients on
+Allowed values: number
+
+Name: clearResults
+Desc: Clear existing results on server start?
+Allowed values: "yes" | "no" | "ask"
+
+Name: resumeTournament
+Desc: Resume tournament if results exist?
+Allowed values: "yes" | "no" | "ask"
+
+Name: startGamesSimultaneously
+Desc: Start games while other games still starting.
+Allowed values: true | false
+WARNING - Only usable with ALL BWAPI version 4.2.0 bots
+
+#################################################################
+# Tournament Module Settings Below
+# These settings get applied to the tournament module running
+# on each client machine.
+#################################################################
+
+Name: localSpeed
+Desc: BWAPI Local Speed; Calls BWAPI::Broodwar->setLocalSpeed(SpeedValue)
+Allowed values: number
+
+Name: frameSkip
+Desc: BWAPI Frame Skip; Calls BWAPI::Broodwar->setFrameSkip(SkipValue)
+Allowed values: number
+Note: This does nothing unless LocalSpeed is 0
+
+Name: gameFrameLimit
+Desc: Game Frame Time Limit; Game stops when BWAPI::Broodwar->getFrameCount() > FrameLimit
+Allowed values: number
+Note: If gameFrameLimit is 0, no frame limit is used
+
+Name: tournamentType
+Allowed values: "AllVsAll" | "1VsAll"
+AllVsAll - Standard round robin tournament
+1VsAll   - First bot will play all the others, no waiting 
+         for rounds to end or copying write/read folders. 
+         Usefull for testing changes to your bot
+
+Name: timeoutLimits
+Desc: Game loss if timeinMS time limit is reached in frameCount frames.
+Allowed values: array of json objects with timeInMS, frameCount, both numbers
+Note: Specifying no timeouts makes bots never time out
+Example: { "timeInMS": 55, "frameCount": 320 }
+
+Name: drawBotNames
+Desc: Draws bot names on game screen
+Allowed values: true | false
+
+Name: drawTournamentInfo
+Desc: Draws tournament info on game screen
+Allowed values: true | false
+
+Name: drawUnitInfo
+Desc: Draws unit info on game screen
+Allowed values: true | false

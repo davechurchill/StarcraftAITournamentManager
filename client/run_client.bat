@@ -1,1 +1,1 @@
-java -jar client.jar client_settings.ini
+java -jar client.jar client_settings.json
