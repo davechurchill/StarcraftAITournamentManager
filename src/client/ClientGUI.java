@@ -35,9 +35,11 @@ public class ClientGUI
 	
 	public void CreateGUI()
 	{
-		mainTable 	= new JTable(new DefaultTableModel(data, columnNames));
+		mainTable 	= new JTable(new MainTableModel(data, columnNames));
 		mainTable.setDefaultRenderer(Object.class, new MyRenderer());
+		mainTable.getTableHeader().setReorderingAllowed(false);
 		textArea	= new JTextArea();
+		textArea.setEditable(false);
 		mainFrame 	= new JFrame("StarCraft AI Tournament");
 		mainFrame.setLayout(new GridLayout(2,0));
 		
@@ -216,4 +218,18 @@ public class ClientGUI
 		}
 	}
 	
+	class MainTableModel extends DefaultTableModel
+	{
+		private static final long serialVersionUID = -442677410640547796L;
+
+		public MainTableModel(Object[][] data, String[] columnNames)
+		{
+			super(data, columnNames);
+		}
+
+		public boolean isCellEditable(int row, int column)
+		{
+			return false;
+		}
+	}
 }
