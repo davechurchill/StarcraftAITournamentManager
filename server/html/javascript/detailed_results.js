@@ -1,11 +1,59 @@
 $(function()
 {
-	//these arguments are declared in another file output by the Tournament Manager
+	//these arguments are declared in two other files output by the Tournament Manager
+	fillFilters(resultsSummary, maps);
+	
 	fillDetailedResultsTable(detailedResults, replayPath);
+	$("#detailedResultsTable").tablesorter();
+	
+	$(".filter").change(function()
+	{
+		fillDetailedResultsTable(detailedResults, replayPath);
+		$("#detailedResultsTable").tablesorter();
+	});
 });
+
+function fillFilters(resultsSummary, maps)
+{
+	for (var i = 0; i < resultsSummary.length; i++)
+	{
+		$("#bots").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
+	}
+	
+	for (var i = 0; i < maps.length; i++)
+	{
+		$("#maps").append("<option value='" + maps[i] + "'>" + maps[i] + "</option>");
+	}
+}
+
+function filterResult(result, crashFilter, botFilter, mapFilter)
+{
+	if (crashFilter == "only-crashes" && result.Crash == "")
+	{
+		return false;
+	}
+	if (crashFilter == "no-crashes" && result.Crash != "")
+	{
+		return false;
+	}
+	if (botFilter != "all" && botFilter != result.WinnerName && botFilter != result.LoserName)
+	{
+		return false;
+	}
+	if (mapFilter != "all" && mapFilter != result.Map)
+	{
+		return false;
+	}
+	return true;
+}
 
 function fillDetailedResultsTable(data, replayDir)
 {
+	var crashFilter = $("#crashes").val();
+	var botFilter = $("#bots").val();
+	var mapFilter = $("#maps").val();
+	var unfilteredGames = 0;
+	
 	var html = "";
 	
 	var winnerTimerHeaders = "";
@@ -31,6 +79,13 @@ function fillDetailedResultsTable(data, replayDir)
 	
 	for (var i=0; i<numResults; ++i)
 	{
+		//check filters
+		if (!filterResult(data[i], crashFilter, botFilter, mapFilter))
+		{
+			continue;
+		}
+		unfilteredGames += 1;
+		
 		html += "<tr>";
 		html += "<td>"+ data[i]['Round/Game'] + "</td>"; 
 		
@@ -76,5 +131,7 @@ function fillDetailedResultsTable(data, replayDir)
 		
 		html += "</tr>";
 	}
+	
+	$("#gameCount").html("Games: " + unfilteredGames);
 	$("#detailedResultsTable tbody").html(html);
 }

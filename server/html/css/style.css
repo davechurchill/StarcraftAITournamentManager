@@ -1,4 +1,4 @@
-/* FONTS */
+/* FONTS*/
 
 body, table.tablesorter {
 	font-family: Verdana;
@@ -67,6 +67,15 @@ p {
 #resultsMapTable th:first-child {
 	text-align: center;
 	width: 100px;
+}
+
+/* OTHER LAYOUT */
+select.filter {
+	margin-right: 15px;
+}
+
+#gameCount {
+	display: inline-block;
 }
 
 /* TABLE BORDERS */

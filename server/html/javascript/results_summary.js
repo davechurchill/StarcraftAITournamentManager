@@ -91,7 +91,7 @@ function fillMapsTable(data, maps)
 	var html = "<th>Bot</th>";
 	for (var i=0; i<maps.length; i++)
 	{
-		html += "<th>" + maps[i].substring(3, Math.min(10, maps[i].length-4)) + "</th>";
+		html += "<th>" + maps[i].substring(0, Math.min(7, maps[i].length)) + "</th>";
 	}
 	
 	$("#resultsMapTable thead tr").html(html);

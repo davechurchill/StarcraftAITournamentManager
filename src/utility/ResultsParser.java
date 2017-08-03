@@ -410,7 +410,7 @@ public class ResultsParser
 		json.append("var maps = [");
 		for (int i=0; i<numMaps; i++)
 		{
-			json.append("'" + mapNames[i] + "'");
+			json.append("'" + mapNames[i].substring(mapNames[i].indexOf(')') + 1, mapNames[i].indexOf('.')) + "'");
 			if (i != numMaps - 1)
 			{
 				json.append(",");
@@ -474,7 +474,7 @@ public class ResultsParser
 			
 			for (int j=0; j<numMaps; j++)
 			{
-				json.append("{\"Map\": \"" + mapNames[j] + "\", ");
+				json.append("{\"Map\": \"" + mapNames[j].substring(mapNames[j].indexOf(')') + 1, mapNames[j].indexOf('.')) + "\", ");
 				json.append("\"Wins\": " + mapWins[ii][j] + ", ");
 				json.append("\"Games\": " + mapGames[ii][j] + "}");
 				
