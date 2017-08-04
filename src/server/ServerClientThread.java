@@ -91,7 +91,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 				
 				if (dm.type == DataType.REPLAY)
 				{
-					server.log("Message from Client " + server.getClientIndex(this) + " : " + m.toString() + "\n");
+					server.log("Message from Client " + this.toString() + " : " + m.toString() + "\n");
 					dm.write(ServerSettings.Instance().ServerReplayDir);
 				}
 				else if (dm.type == DataType.WRITE_DIR)

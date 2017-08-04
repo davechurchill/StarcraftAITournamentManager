@@ -85,10 +85,15 @@ public class Server  extends Thread
 					if (free.size() == clients.size())
 					{
 						log("No more games in games list, please shut down tournament!\n");
+						break;
 					}
 					else
 					{
 						log("No more games in games list, please wait for all games to finish.\n");
+						while (free.size() < clients.size())
+	                    {
+	                        Thread.sleep(gameRescheduleTimer);
+	                    }
 					}
 					continue;
 				}
@@ -124,17 +129,16 @@ public class Server  extends Thread
 					continue;
 				}
 				
-				String gameString = "Next Game: (" + nextGame.getGameID() + " / " + nextGame.getRound() + ")\n";
-				
 				//only wait for round completion in AllvsAll tournament
 				if(ServerSettings.Instance().TournamentType.equalsIgnoreCase("AllVsAll")) {
 					
 					if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
 	                {
-	                    // wait until all games from this round are free
+						log("Next Game: (" + nextGame.getGameID() + " / " + nextGame.getRound() + ") Can't start: Waiting for Previous Round to Finish\n");
+	                    
+						// wait until all games from this round are free
 	                    while (free.size() < clients.size())
 	                    {
-	                        log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
 	                        Thread.sleep(gameRescheduleTimer);
 	                    }
 	                    
@@ -144,8 +148,7 @@ public class Server  extends Thread
 	                    ServerCommands.Server_MoveWriteToRead();
 	                }
 				}
-						
-				log(gameString);
+				
 				start1v1Game(nextGame);
 				previousScheduledGame = nextGame;
 			}
