@@ -17,9 +17,7 @@ public class ResultsParser
 	private int numBots 			= ServerSettings.Instance().BotVector.size();
 	private int numMaps 			= ServerSettings.Instance().MapVector.size();
 	
-	//private String[] botColors		= new String[numBots];
 	private String[] botNames 		= new String[numBots];
-	private String[] shortBotNames 	= new String[numBots];
 	private String[] mapNames 		= new String[numMaps];
 	
 	private int[][] wins 			= new int[numBots][numBots];
@@ -38,16 +36,22 @@ public class ResultsParser
 	private Vector<Vector<Integer>> winsAfterRound = new Vector<Vector<Integer>>();
 	private Vector<Vector<Integer>> gamesAfterRound = new Vector<Vector<Integer>>();
 	
+	private String excludedBotNames = "";
+	
 	public ResultsParser(String filename)
 	{
-		
+		//filter for excluded bots
+		for (String excludedBot : ServerSettings.Instance().ExcludeFromResults)
+		{
+			excludedBotNames += excludedBot + " ";
+		}
+				
 		// set the bot names and map names
 		for (int i=0; i<botNames.length; ++i)
 		{
 			elo[i] = 1200;
 			botNames[i] = ServerSettings.Instance().BotVector.get(i).getName();
-			shortBotNames[i] = botNames[i].substring(0, Math.min(4, botNames[i].length()));
-			//botColors[i] = raceColor.get(ServerSettings.Instance().BotVector.get(i).getRace());
+			
 		}
 		
 		for (int i=0; i<mapNames.length; ++i)
@@ -533,10 +537,15 @@ public class ResultsParser
 	{
 		if (line.trim().length() > 0)
 		{
-			Vector<String> data = new Vector<String>(Arrays.asList(line.trim().split(" +")));
-					
-			int gameID = Integer.parseInt(data.get(0));
+			String[] data = line.trim().split(" +");
+			
+			int gameID = Integer.parseInt(data[0]);
 			gameIDs.add(gameID);
+			
+			if (excludedBotNames.contains(data[2]) || excludedBotNames.contains(data[3]))
+			{
+				return;
+			}
 			
 			if (gameResults.containsKey(gameID))
 			{

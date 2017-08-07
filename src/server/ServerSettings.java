@@ -31,6 +31,7 @@ public class ServerSettings
 	public String			DetailedResults		= "no";
 	public String			StartGamesSimul		= "no";
 	public String			TournamentType		= "AllVsAll";
+	public Vector<String>	ExcludeFromResults	= new Vector<String>();
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
 	
@@ -92,6 +93,13 @@ public class ServerSettings
 			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean() ? "yes" : "no";
 			TournamentType = jo.get("tournamentType").asString();
 			
+			JsonArray excludedBots = jo.get("excludeFromResults").asArray();
+			for (JsonValue excludedBot : excludedBots)
+			{
+				JsonObject exclude = excludedBot.asObject();
+				ExcludeFromResults.add(exclude.get("BotName").asString());
+			}
+					
 			JsonObject tmSettingsJO = jo.get("tournamentModuleSettings").asObject();
 			tmSettings.LocalSpeed = tmSettingsJO.get("localSpeed").asInt();
 			tmSettings.FrameSkip = tmSettingsJO.get("frameSkip").asInt();

@@ -47,6 +47,18 @@ Desc: Start games while other games still starting.
 Allowed values: true | false
 WARNING - Only usable with ALL BWAPI version 4.2.0 bots
 
+Name: tournamentType
+Allowed values: "AllVsAll" | "1VsAll"
+AllVsAll - Standard round robin tournament
+1VsAll   - First bot will play all the others, no waiting 
+         for rounds to end or copying write/read folders. 
+         Usefull for testing changes to your bot
+		 
+Name: excludeFromResults
+Desc: Array of bots to be excluded from results parsing
+Allowed values: objects with: {"BotName": string} 
+Note: Games with these bots will still be played, but not counted in results
+
 #################################################################
 # Tournament Module Settings Below
 # These settings get applied to the tournament module running
@@ -66,13 +78,6 @@ Name: gameFrameLimit
 Desc: Game Frame Time Limit; Game stops when BWAPI::Broodwar->getFrameCount() > FrameLimit
 Allowed values: number
 Note: If gameFrameLimit is 0, no frame limit is used
-
-Name: tournamentType
-Allowed values: "AllVsAll" | "1VsAll"
-AllVsAll - Standard round robin tournament
-1VsAll   - First bot will play all the others, no waiting 
-         for rounds to end or copying write/read folders. 
-         Usefull for testing changes to your bot
 
 Name: timeoutLimits
 Desc: Game loss if timeinMS time limit is reached in frameCount frames.

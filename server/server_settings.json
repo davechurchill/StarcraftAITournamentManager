@@ -46,6 +46,7 @@
 	"resumeTournament"			: 	"ask",
 	"startGamesSimultaneously"	:	false,
 	"tournamentType"			:	"AllVsAll",
+	"excludeFromResults"		:	[{"BotName": "ExampleExcludedBot"}],
 	
 	"tournamentModuleSettings":
 	{
