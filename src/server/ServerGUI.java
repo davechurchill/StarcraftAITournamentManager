@@ -4,6 +4,7 @@ package server;
 import java.awt.*;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 
 import objects.Bot;
@@ -16,7 +17,10 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerGUI 
 {
@@ -24,7 +28,7 @@ public class ServerGUI
 	
     private 	JFrame			mainFrame;
     private 	JTable			mainTable;
-    private 	JTextArea		bottomText;	
+    private 	JTextArea		bottomText;
     private 	JPanel			bottomPanel;
     private		JPanel			statusPanel;
     private		JProgressBar	progressBar;
@@ -41,6 +45,9 @@ public class ServerGUI
     private String [] 		columnNames = {"Client", "Status", "Game / Round #", "Self", "Enemy", "Map", "Duration", "Win"};
 	private Object [][] 	data = 	{ };
 	private Date startTime;
+	private String filter = "";
+	private	Vector<String> log;
+    private	JComboBox<String> filterSelect;
 
 	private boolean resumedTournament = false;
 	
@@ -61,16 +68,31 @@ public class ServerGUI
 		mainFrame.setLayout(new GridBagLayout());
 		
 		statusPanel = new JPanel();
-		statusPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+		statusPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
 		statusPanel.add(new JLabel("Tournament progress: "));
 		progressBar = new JProgressBar(0, 100);
+		progressBar.setFont(new Font(progressBar.getFont().getFamily(), Font.PLAIN, progressBar.getFont().getSize()));
 		statusPanel.add(progressBar);
+		
 		statusPanel.add(new JLabel(" Server uptime: "));
 		uptime = new JLabel("");
+		uptime.setFont(new Font(uptime.getFont().getFamily(), Font.PLAIN, uptime.getFont().getSize()));
 		statusPanel.add(uptime);
+		
+		statusPanel.add(Box.createHorizontalGlue());
+		
+		statusPanel.add(new JLabel("Filter Log: "));
+		filterSelect = new JComboBox<String>();
+		filterSelect.setFont(new Font(filterSelect.getFont().getFamily(), Font.PLAIN, filterSelect.getFont().getSize()));
+		filterSelect.addItem("All");
+		filterSelect.addItem("Server");
+		statusPanel.add(filterSelect);
 		
 		bottomText = new JTextArea();
 		bottomText.setEditable(false);
+		log = new Vector<String>();
 		
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1,0));
@@ -140,6 +162,17 @@ public class ServerGUI
         });
         popup.add(popupKillClientMenuItem);
         
+        JMenuItem popupFilterLog = new JMenuItem("Filter Log by Client");
+        popupFilterLog.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+			{
+        		filter = (String) mainTable.getValueAt(mainTable.getSelectedRow(), 0);
+        		filterLog();
+			}
+        });
+        popup.add(popupFilterLog);
+        
         class PopupListener extends MouseAdapter {
         	
         	public void mousePressed(MouseEvent e)
@@ -174,6 +207,16 @@ public class ServerGUI
         MouseListener popupListener = new PopupListener();
         mainTable.addMouseListener(popupListener);
 	
+        filterSelect.addActionListener(new ActionListener()
+        		{
+					public void actionPerformed(ActionEvent arg0)
+					{
+						filter = (String) filterSelect.getSelectedItem();
+						filterLog();
+					}
+        		}
+        );
+        
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
@@ -426,9 +469,13 @@ public class ServerGUI
 				long minutes = TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.DAYS.toMinutes(days) - TimeUnit.HOURS.toMinutes(hours);
 				long seconds = TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.DAYS.toSeconds(days) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
 				String time = days > 0 ? (days > 1 ? (days + " days, ") : (days + " day, ")) : "";
-				time += hours > 0 || days > 0 ? (hours != 1 ? (hours + " hours, ") : (hours + " hour, ")) : "";
-				time += minutes > 0 || hours > 0 || days > 0 ? (minutes != 1 ? (minutes + " minutes, ") : (" 1 minute, ")) : "";
-				time += seconds > 1 ? (seconds + " seconds") : seconds + " second";
+				//time += hours > 0 || days > 0 ? (hours != 1 ? (hours + " hours, ") : (hours + " hour, ")) : "";
+				//time += minutes > 0 || hours > 0 || days > 0 ? (minutes != 1 ? (minutes + " minutes, ") : (" 1 minute, ")) : "";
+				//time += seconds > 1 ? (seconds + " seconds") : seconds + " second";
+				time += hours >= 10 ? hours + ":"  : "0" + hours + ":";
+				time += minutes >= 10 ? minutes + ":"  : "0" + minutes + ":";
+				time += seconds >= 10 ? seconds : "0" + seconds;
+				
 				uptime.setText(time);
 			}
 		});
@@ -468,6 +515,7 @@ public class ServerGUI
 		else
 		{
 			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", ""});
+			filterSelect.addItem(name);
 		}
 	}
 	
@@ -514,12 +562,76 @@ public class ServerGUI
 		{
 			GetModel().removeRow(row);
 		}
+		for (int i = 0; i < filterSelect.getModel().getSize(); i++)
+		{
+			if (filterSelect.getItemAt(i).equalsIgnoreCase(name))
+			{
+				filterSelect.removeItemAt(i);
+			}
+		}
 	}
 	
-	public void logText(String s)
+	public synchronized void logText(String s)
 	{
-		bottomText.append(s);
-		bottomText.setCaretPosition(bottomText.getDocument().getLength());
+		log.add(s);
+		if (filter.equalsIgnoreCase("all"))
+		{
+			bottomText.append(s);
+			bottomText.setCaretPosition(bottomText.getDocument().getLength());
+		}
+		else if (filter.equalsIgnoreCase("server"))
+		{
+			Pattern pattern = Pattern.compile(".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*");
+			Matcher matcher = pattern.matcher(s);
+			if (!matcher.find() || s.toLowerCase().contains("server"))
+			{
+				bottomText.append(s);
+				bottomText.setCaretPosition(bottomText.getDocument().getLength());
+			}
+		}
+		else if (s.contains(filter))
+		{
+			bottomText.append(s);
+			bottomText.setCaretPosition(bottomText.getDocument().getLength());
+		}
+	}
+	
+	public void filterLog()
+	{
+		StringBuilder filtered = new StringBuilder();
+		
+		if (filter.equalsIgnoreCase("all"))
+		{
+			for (int i = 0; i < log.size(); i++)
+			{
+				filtered.append(log.get(i));
+			}
+		}
+		else if (filter.equalsIgnoreCase("server"))
+		{
+			//excludes all lines that have an ip address
+			Pattern pattern = Pattern.compile(".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*");
+			for (int i = 0; i < log.size(); i++)
+			{
+				Matcher matcher = pattern.matcher(log.get(i));
+				if (!matcher.find() || log.get(i).toLowerCase().contains("server"))
+				{
+					filtered.append(log.get(i));
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < log.size(); i++)
+			{
+				if (log.get(i).contains(filter))
+				{
+					filtered.append(log.get(i));
+				}
+			}
+		}
+		
+		bottomText.setText(filtered.toString());
 	}
 	
 	public int NumRows()
@@ -582,9 +694,6 @@ public class ServerGUI
 	
 	class MainTableModel extends DefaultTableModel
 	{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 8886359636823991784L;
 
 		public MainTableModel(Object[][] data, String[] columnNames)
