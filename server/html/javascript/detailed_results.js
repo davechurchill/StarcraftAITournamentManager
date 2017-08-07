@@ -17,7 +17,8 @@ function fillFilters(resultsSummary, maps)
 {
 	for (var i = 0; i < resultsSummary.length; i++)
 	{
-		$("#bots").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
+		$("#winner").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
+		$("#loser").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
 	}
 	
 	for (var i = 0; i < maps.length; i++)
@@ -26,7 +27,7 @@ function fillFilters(resultsSummary, maps)
 	}
 }
 
-function filterResult(result, crashFilter, botFilter, mapFilter)
+function filterResult(result, crashFilter, winnerFilter, loserFilter, mapFilter)
 {
 	if (crashFilter == "only-crashes" && result.Crash == "")
 	{
@@ -36,7 +37,11 @@ function filterResult(result, crashFilter, botFilter, mapFilter)
 	{
 		return false;
 	}
-	if (botFilter != "all" && botFilter != result.WinnerName && botFilter != result.LoserName)
+	if (winnerFilter != "all" && winnerFilter != result.WinnerName)
+	{
+		return false;
+	}
+	if (loserFilter != "all" && loserFilter != result.LoserName)
 	{
 		return false;
 	}
@@ -50,7 +55,8 @@ function filterResult(result, crashFilter, botFilter, mapFilter)
 function fillDetailedResultsTable(data, replayDir)
 {
 	var crashFilter = $("#crashes").val();
-	var botFilter = $("#bots").val();
+	var winnerFilter = $("#winner").val();
+	var loserFilter = $("#loser").val();
 	var mapFilter = $("#maps").val();
 	var unfilteredGames = 0;
 	
@@ -80,7 +86,7 @@ function fillDetailedResultsTable(data, replayDir)
 	for (var i=0; i<numResults; ++i)
 	{
 		//check filters
-		if (!filterResult(data[i], crashFilter, botFilter, mapFilter))
+		if (!filterResult(data[i], crashFilter, winnerFilter, loserFilter, mapFilter))
 		{
 			continue;
 		}
