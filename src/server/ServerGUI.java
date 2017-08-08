@@ -168,7 +168,13 @@ public class ServerGUI
         	public void actionPerformed(ActionEvent e)
 			{
         		filter = (String) mainTable.getValueAt(mainTable.getSelectedRow(), 0);
-        		filterLog();
+        		for (int i = 0; i < filterSelect.getModel().getSize(); i++)
+        		{
+        			if (filterSelect.getItemAt(i).equalsIgnoreCase(filter))
+        			{
+        				filterSelect.setSelectedIndex(i);
+        			}
+        		}
 			}
         });
         popup.add(popupFilterLog);

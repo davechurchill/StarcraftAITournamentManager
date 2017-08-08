@@ -3,20 +3,21 @@ $(function()
 	//these arguments are declared in two other files output by the Tournament Manager
 	fillFilters(resultsSummary, maps);
 	
-	fillDetailedResultsTable(detailedResults, replayPath);
-	$("#detailedResultsTable").tablesorter();
-	
-	$(".filter").change(function()
+	$("select.filter").change(function()
 	{
 		fillDetailedResultsTable(detailedResults, replayPath);
 		$("#detailedResultsTable").tablesorter();
 	});
+	
+	fillDetailedResultsTable(detailedResults, replayPath);
+	$("#detailedResultsTable").tablesorter();
 });
 
 function fillFilters(resultsSummary, maps)
 {
 	for (var i = 0; i < resultsSummary.length; i++)
 	{
+		$("#bots").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
 		$("#winner").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
 		$("#loser").append("<option value='" + resultsSummary[i].BotName + "'>" + resultsSummary[i].BotName + "</option>");
 	}
@@ -27,13 +28,17 @@ function fillFilters(resultsSummary, maps)
 	}
 }
 
-function filterResult(result, crashFilter, winnerFilter, loserFilter, mapFilter)
+function filterResult(result, crashFilter, botFilter, winnerFilter, loserFilter, mapFilter)
 {
 	if (crashFilter == "only-crashes" && result.Crash == "")
 	{
 		return false;
 	}
 	if (crashFilter == "no-crashes" && result.Crash != "")
+	{
+		return false;
+	}
+	if (botFilter != "all" && botFilter != result.WinnerName && botFilter != result.LoserName)
 	{
 		return false;
 	}
@@ -55,6 +60,7 @@ function filterResult(result, crashFilter, winnerFilter, loserFilter, mapFilter)
 function fillDetailedResultsTable(data, replayDir)
 {
 	var crashFilter = $("#crashes").val();
+	var botFilter = $("#bots").val();
 	var winnerFilter = $("#winner").val();
 	var loserFilter = $("#loser").val();
 	var mapFilter = $("#maps").val();
@@ -86,7 +92,7 @@ function fillDetailedResultsTable(data, replayDir)
 	for (var i=0; i<numResults; ++i)
 	{
 		//check filters
-		if (!filterResult(data[i], crashFilter, winnerFilter, loserFilter, mapFilter))
+		if (!filterResult(data[i], crashFilter, botFilter, winnerFilter, loserFilter, mapFilter))
 		{
 			continue;
 		}
