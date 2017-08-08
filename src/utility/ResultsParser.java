@@ -36,16 +36,8 @@ public class ResultsParser
 	private Vector<Vector<Integer>> winsAfterRound = new Vector<Vector<Integer>>();
 	private Vector<Vector<Integer>> gamesAfterRound = new Vector<Vector<Integer>>();
 	
-	private String excludedBotNames = "";
-	
 	public ResultsParser(String filename)
 	{
-		//filter for excluded bots
-		for (String excludedBot : ServerSettings.Instance().ExcludeFromResults)
-		{
-			excludedBotNames += excludedBot + " ";
-		}
-				
 		// set the bot names and map names
 		for (int i=0; i<botNames.length; ++i)
 		{
@@ -542,9 +534,13 @@ public class ResultsParser
 			int gameID = Integer.parseInt(data[0]);
 			gameIDs.add(gameID);
 			
-			if (excludedBotNames.contains(data[2]) || excludedBotNames.contains(data[3]))
+			//filter for excluded bots
+			for (String excludedBot : ServerSettings.Instance().ExcludeFromResults)
 			{
-				return;
+				if (excludedBot.equals(data[2]) || excludedBot.equals(data[3]))
+				{
+					return;
+				}
 			}
 			
 			if (gameResults.containsKey(gameID))

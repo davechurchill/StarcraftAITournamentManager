@@ -8,7 +8,6 @@
 		{"BotName": "Skynet", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "Xelnaga", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "Ximp", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
-		{"BotName": "Skynet", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "IceBot", "Race": "Terran", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "Iron", "Race": "Terran", "BotType": "dll", "BWAPIVersion": "BWAPI_412"},
 		{"BotName": "LetaBot", "Race": "Terran", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
