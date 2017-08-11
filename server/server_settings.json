@@ -18,7 +18,7 @@
 		{"BotName": "Cimex", "Race": "Zerg", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "GarmBot", "Race": "Zerg", "BotType": "proxy", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "JiaBot", "Race": "Zerg", "BotType": "dll", "BWAPIVersion": "BWAPI_412"},
-		{"BotName": "Overkill", "Race": "Zerg", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "Overkill", "Race": "Zerg", "BotType": "dll", "BWAPIVersion": "BWAPI_412"},
 		{"BotName": "tscmoo", "Race": "Zerg", "BotType": "proxy", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "ZZZKBot", "Race": "Zerg", "BotType": "dll", "BWAPIVersion": "BWAPI_412"}
 	],
