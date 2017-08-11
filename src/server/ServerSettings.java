@@ -74,7 +74,22 @@ public class ServerSettings
 			for (JsonValue botValue : bots)
 			{
 				JsonObject bot = botValue.asObject();
-				BotVector.add(new Bot(bot.get("BotName").asString(),bot.get("Race").asString(), bot.get("BotType").asString(), bot.get("BWAPIVersion").asString()));
+				JsonValue reqArray = bot.get("ClientRequirements");
+				Vector<String> requirements = new Vector<String>();
+				if (reqArray != null)
+				{
+					JsonArray reqs = reqArray.asArray();
+					if (reqs.size() > 0)
+					{
+						for (JsonValue reqObject : reqs)
+						{
+							JsonObject req = reqObject.asObject();
+							requirements.add(req.get("Property").asString());
+						}
+						
+					}
+				}
+				BotVector.add(new Bot(bot.get("BotName").asString(),bot.get("Race").asString(), bot.get("BotType").asString(), bot.get("BWAPIVersion").asString(), requirements));
 			}
 			
 			JsonArray maps = jo.get("maps").asArray();

@@ -1,9 +1,9 @@
 {
 	"bots": [
-		{"BotName": "UAlbertaBot", "Race": "Random", "BotType": "dll", "BWAPIVersion": "BWAPI_412"},
-		{"BotName": "Aiur", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
-		{"BotName": "CruzBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
-		{"BotName": "MegaBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
+		{"BotName": "UAlbertaBot", "Race": "Random", "BotType": "dll", "BWAPIVersion": "BWAPI_412", "ClientRequirements": [{"Property": "Extra RAM"}, {"Property": "GPU"}]},
+		{"BotName": "Aiur", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374", "ClientRequirements": [{"Property": "GPU"}]},
+		{"BotName": "CruzBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374", "ClientRequirements": [{"Property": "Extra RAM"}]},
+		{"BotName": "MegaBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374", "ClientRequirements": [{"Property": "GPU"}]},
 		{"BotName": "NUSBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "Skynet", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},
 		{"BotName": "Xelnaga", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_374"},

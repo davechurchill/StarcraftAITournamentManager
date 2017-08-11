@@ -108,15 +108,18 @@ public class Server  extends Thread
 				// check if previous games are still starting
 				Set<String> startingBots = getStartingHostBotNames();
 				
+				//get lists of client properties
+				Vector<Vector<String>> freeClientProperties = getFreeClientProperties();
+				
 				if (ServerSettings.Instance().StartGamesSimul.equalsIgnoreCase("yes"))
 				{
 					// we can start multiple games at same time
-					nextGame = games.getNextGame(startingBots);
+					nextGame = games.getNextGame(startingBots, freeClientProperties);
 				}
 				else if (startingBots.isEmpty())
 				{
 					// can only start one game at a time, but none others are starting
-					nextGame = games.getNextGame();
+					nextGame = games.getNextGame(null, freeClientProperties);
 					if (nextGame == null)
 					{
 						//all games remaining in this round have host bot already starting match 
@@ -291,6 +294,19 @@ public class Server  extends Thread
 			String hostBotName = "";
 			String awayBotName = "";
 			
+			String properties = "";
+			if (c.getProperties() != null)
+			{
+				for (int i = 0; i < c.getProperties().size(); i++)
+				{
+					properties += c.getProperties().get(i);
+					if (i != c.getProperties().size() - 1)
+					{
+						properties += ", ";
+					}
+				}
+			}
+			
 			InstructionMessage ins = c.lastInstructionSent;
 			
 			if (ins != null)
@@ -307,7 +323,7 @@ public class Server  extends Thread
 				awayBotName = "";
 			}
 		
-			gui.UpdateClient(client, status, gameNumber, hostBotName, awayBotName);
+			gui.UpdateClient(client, status, gameNumber, hostBotName, awayBotName, properties);
 		}
 	}
 	
@@ -358,11 +374,6 @@ public class Server  extends Thread
 		
         return true;
     }
-    
-    public synchronized int getNeededClients(Game game) 
-	{
-		return 2;
-	}
 	
 	private synchronized Set<String> getStartingHostBotNames()
 	{
@@ -380,14 +391,97 @@ public class Server  extends Thread
 		return hostNames;
 	}
 	
+	private Vector<Vector<String>> getFreeClientProperties()
+	{
+		Vector<Vector<String>> properties = new Vector<Vector<String>>(); 
+		
+		//properties are null if the client has none
+		for (ServerClientThread freeClient: free)
+		{
+			if (freeClient.getProperties() == null)
+			{
+				properties.add(new Vector<String>());
+			}
+			else
+			{
+				properties.add(freeClient.getProperties());
+			}
+		}
+		return properties;
+	}
+	
+	// this function assumes that there exist two suitable clients for the game
+	// that is tested in the GameStorage class
+	private int[] getClientsForGame(Game game)
+	{
+		//{home, away}
+		int[] clientsForGame = new int[2];
+		
+		// sort free clients according to number of properties so that
+		// clients with the least number of properties are used first 
+		free.sort(new Comparator<ServerClientThread>()
+		{
+			public int compare(ServerClientThread client1, ServerClientThread client2)
+			{
+				if (client1.getProperties().size() < client2.getProperties().size())
+				{
+					return -1;
+				}
+				else if (client1.getProperties().size() > client2.getProperties().size())
+				{
+					return 1;
+				}
+				return 0;
+			}
+		});
+		
+		clientsForGame[0] = findClientWithRequirements(free, game.getHomebot().getRequirements(), -1);
+		clientsForGame[1] = findClientWithRequirements(free, game.getAwaybot().getRequirements(), clientsForGame[0]);
+		
+		// in some cases where clients have multiple properties the home bot could have taken the only client
+		// acceptable for the away bot, so we have to let away bot pick first
+		if (clientsForGame[1] == -1)
+		{
+			clientsForGame[1] = findClientWithRequirements(free, game.getAwaybot().getRequirements(), -1);
+			clientsForGame[0] = findClientWithRequirements(free, game.getHomebot().getRequirements(), clientsForGame[1]);
+		}
+				
+		return clientsForGame;
+	}
+	
+	private int findClientWithRequirements(Vector<ServerClientThread> clients, Vector<String> requirements, int exclude)
+	{
+		for (int i = 0; i < clients.size(); i++)
+		{
+			if (exclude == -1 || i != exclude)
+			{
+				boolean hasAllProperties = true;
+				for (String requirement : requirements)
+				{
+					if (!clients.get(i).getProperties().contains(requirement))
+					{
+						hasAllProperties = false;
+						break;
+					}
+				}
+				if (hasAllProperties)
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+	
     /**
      * Handles all of the code needed to start a 1v1 game
      */
     private synchronized void start1v1Game(Game game) throws Exception
 	{	
 		// get the clients and their instructions
-		ServerClientThread hostClient = free.get(0);
-		ServerClientThread awayClient = free.get(1);
+    	int[] gameClients = getClientsForGame(game);
+		ServerClientThread hostClient = free.get(gameClients[0]);
+		ServerClientThread awayClient = free.get(gameClients[1]);
 		InstructionMessage hostInstructions = new InstructionMessage(ServerSettings.Instance().bwapi, true, game);
 		InstructionMessage awayInstructions = new InstructionMessage(ServerSettings.Instance().bwapi, false, game);
 		

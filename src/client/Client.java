@@ -116,6 +116,11 @@ public class Client extends Thread
 		setStatus(s, null);
 	}
 	
+	public synchronized void sendProperties(Vector<String> properties)
+	{
+		listener.sendMessageToServer(new ClientPropertyMessage(properties));
+	}
+	
 	public void run()
 	{
 	

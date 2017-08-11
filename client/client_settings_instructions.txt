@@ -15,3 +15,7 @@ Allowed values: string; no spaces; forward slashes allowed
 Name: ServerAddress
 Desc: IP address and port of server
 Allowed values: string with format "[address]:[port]"
+
+Name: ClientProperties
+Desc: Features of this client that a bot can take advantage of if property matches to ClientRequirements in server settings
+Allowed values: array of json objects with required property: {"Property": string}

@@ -8,6 +8,11 @@ If BotType is "proxy" then client will run the script server/bots/BotName/AI/run
 	Race - "Random" | "Terran" | "Zerg" | "Protoss"
 	BotType - "dll" | "proxy"
 	BWAPIVersion - "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"
+	(OPTIONAL) ClientRequirements - array of json objects with required property: {"Property": string}
+	
+	Example: {"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420", "ClientRequirements": [{"Property": "Extra RAM"}, {"Property": "GPU"}]}
+	
+***Client Requirements have to match a client in the tournament. (See Client Settings)
 
 Name: maps
 Desc: array of json objects for each map in the tournament

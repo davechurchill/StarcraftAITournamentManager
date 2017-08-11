@@ -42,7 +42,7 @@ public class ServerGUI
     private		JMenuItem		viewClientScreenMenuItem;
     private		JPopupMenu		popup;
     
-    private String [] 		columnNames = {"Client", "Status", "Game / Round #", "Self", "Enemy", "Map", "Duration", "Win"};
+    private String [] 		columnNames = {"Client", "Status", "Game / Round #", "Self", "Enemy", "Map", "Duration", "Win", "Properties"};
 	private Object [][] 	data = 	{ };
 	private Date startTime;
 	private String filter = "";
@@ -493,7 +493,7 @@ public class ServerGUI
 		return new SimpleDateFormat("[MMM d, HH:mm:ss]").format(Calendar.getInstance().getTime());
 	}
 	
-	public synchronized void UpdateClient(String name, String status, String num, String host, String join)
+	public synchronized void UpdateClient(String name, String status, String num, String host, String join, String properties)
 	{
 		int row = GetClientRow(name);
 		if (row != -1)
@@ -501,6 +501,7 @@ public class ServerGUI
 			GetModel().setValueAt(status, row, 1);
 			GetModel().setValueAt(name, row, 0);
 			GetModel().setValueAt(num, row, 2);
+			GetModel().setValueAt(properties, row, 8);
 			
 			if (!status.equals("READY") && !status.equals("SENDING"))
 			{
@@ -520,7 +521,7 @@ public class ServerGUI
 		}
 		else
 		{
-			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", ""});
+			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", "", properties});
 			filterSelect.addItem(name);
 		}
 	}

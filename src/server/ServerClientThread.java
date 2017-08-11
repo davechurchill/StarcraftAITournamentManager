@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import objects.*;
@@ -22,6 +23,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 	private Socket 				con;
 	private ClientStatus 		status;
 	private Server 				server;
+	private Vector<String>		properties;
 	
 	private ObjectInputStream 	ois = null;
 	private ObjectOutputStream 	oos = null;
@@ -114,7 +116,10 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 				
 				}
 			}
-			
+			else if (m instanceof ClientPropertyMessage)
+			{
+				this.properties = ((ClientPropertyMessage) m).properties;
+			}
 		}
 	}
 	
@@ -208,6 +213,11 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 	public synchronized ClientStatus getStatus() 
 	{
 		return status;
+	}
+	
+	public synchronized Vector<String> getProperties()
+	{
+		return properties;
 	}
 
 	public void stopThread() 
