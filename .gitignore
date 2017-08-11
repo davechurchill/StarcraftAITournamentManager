@@ -1,7 +1,4 @@
 *.class
-client/client.jar
-server/server.jar
-server/results_parser.jar
 server/bots/Aiur
 server/bots/Bonjwa
 server/bots/BTHAI
