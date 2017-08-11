@@ -71,6 +71,10 @@ public class Server  extends Thread
 		
 		Game nextGame = null;
 		
+		//only one message of each kind is logged per instance
+		boolean notEnoughClients = false;
+		boolean requirementsNotMet = false;
+		
 		// keep trying to schedule games
 		while (true)
 		{
@@ -101,7 +105,11 @@ public class Server  extends Thread
 				// we can't start a game if we don't have enough clients
 				if (free.size() < neededClients) 
 				{
-					//log(gameString + " Can't start: Not Enough Clients\n");
+					if (!notEnoughClients)
+					{
+						log("Not enough clients to start next game. Waiting for more free clients.\n");
+						notEnoughClients = true;
+					}
 					continue;
 				}
 				
@@ -115,6 +123,16 @@ public class Server  extends Thread
 				{
 					// we can start multiple games at same time
 					nextGame = games.getNextGame(startingBots, freeClientProperties);
+					if (nextGame == null)
+					{
+						//can't start a game because of bot requirements or round
+						if (!requirementsNotMet)
+						{
+							log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							requirementsNotMet = true;
+						}
+						continue;
+					}
 				}
 				else if (startingBots.isEmpty())
 				{
@@ -122,13 +140,18 @@ public class Server  extends Thread
 					nextGame = games.getNextGame(null, freeClientProperties);
 					if (nextGame == null)
 					{
-						//all games remaining in this round have host bot already starting match 
+						//all games remaining in this round can not be started now (bot requirements)
+						if (!requirementsNotMet)
+						{
+							log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							requirementsNotMet = true;
+						}
 						continue;
 					}
 				}
 				else
 				{
-					// need to wait for current starting game to finish starting
+					// need to wait for current starting game(s) to finish starting
 					continue;
 				}
 				
@@ -152,6 +175,8 @@ public class Server  extends Thread
 	                }
 				}
 				
+				notEnoughClients = false;
+				requirementsNotMet = false;
 				start1v1Game(nextGame);
 				previousScheduledGame = nextGame;
 			}
