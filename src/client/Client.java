@@ -73,7 +73,18 @@ public class Client extends Thread
 	
 	private void updateGUI(String currentStatus, String haveState, String scRun, String func, String data)
 	{
-		gui.UpdateClient(listener.getAddress(), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data);		
+		String properties = "";
+		for (int i = 0; i < ClientSettings.Instance().ClientProperties.size(); i++)
+		{
+			properties += ClientSettings.Instance().ClientProperties.get(i);
+			if (i != ClientSettings.Instance().ClientProperties.size() - 1)
+			{
+				properties += ",";
+			}
+			properties += " ";
+		}
+		
+		gui.UpdateClient(listener.getAddress(), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data, properties);		
 	}
 	
 	public void setListener(ClientListenerThread l)

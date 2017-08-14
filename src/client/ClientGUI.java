@@ -21,7 +21,7 @@ public class ClientGUI
 	
 	static JPanel		rightPanel;
 	
-	String [] columnNames = {"Client", "Status", "State", "StarCraft", "Function", "Data"};
+	String [] columnNames = {"Client", "Status", "State", "StarCraft", "Function", "Data", "Properties"};
 	
 	Object [][] data = 	{
 							
@@ -75,7 +75,7 @@ public class ClientGUI
 		client.shutDown();
 	}
 	
-	public void UpdateClient(String name, String status, String num, String host, String join, String data)
+	public void UpdateClient(String name, String status, String num, String host, String join, String data, String properties)
 	{
 		int row = GetClientRow(name);
 		
@@ -88,11 +88,12 @@ public class ClientGUI
 			GetModel().setValueAt(host, row, 3);
 			GetModel().setValueAt(join, row, 4);
 			GetModel().setValueAt(data, row, 5);
+			GetModel().setValueAt(properties, row, 6);
 		}
 		// otherwise add a new row
 		else
 		{
-			GetModel().addRow(new Object[]{name, status, num, host, join, "", data});
+			GetModel().addRow(new Object[]{name, status, num, host, join, data, properties});
 		}
 		
 		mainTable.scrollRectToVisible(mainTable.getCellRect(mainTable.getRowCount()-1, 0, true));

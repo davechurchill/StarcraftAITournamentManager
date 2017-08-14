@@ -311,7 +311,7 @@ public class ServerGUI
         actionsMenu.add(viewClientScreenMenuItem);
         
         mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	    mainFrame.setSize(800,600);
+	    mainFrame.setSize(900,600);
 	    mainFrame.setJMenuBar(menuBar);
 	    
 	    GridBagConstraints c = new GridBagConstraints();
