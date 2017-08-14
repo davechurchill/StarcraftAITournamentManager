@@ -143,7 +143,7 @@ public class Server  extends Thread
 						//all games remaining in this round can not be started now (bot requirements)
 						if (!requirementsNotMet)
 						{
-							log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							log ("Waiting for clients with needed properties.\n");
 							requirementsNotMet = true;
 						}
 						continue;
