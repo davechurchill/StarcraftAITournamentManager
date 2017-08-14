@@ -168,7 +168,7 @@ public class Server  extends Thread
 	                        Thread.sleep(gameRescheduleTimer);
 	                    }
 	                    
-	                    log("Moving Write Directory to Read Directory");
+	                    log("Moving Write Directory to Read Directory\n");
 	                    
 	                    // move the write dir to the read dir
 	                    ServerCommands.Server_MoveWriteToRead();

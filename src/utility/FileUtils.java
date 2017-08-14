@@ -73,6 +73,15 @@ public class FileUtils
 		}
 	}
 	
+	public static void CreateDirectory(String dir)
+	{
+		File f = new File(dir); 
+		if (!f.exists())
+		{
+			f.mkdirs();
+		}
+	}
+	
 	public static void DeleteDirectory(File f) 
 	{
 		System.out.println("Deleting directory:" + f.getAbsolutePath());

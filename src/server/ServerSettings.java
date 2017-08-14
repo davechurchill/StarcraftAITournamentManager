@@ -2,6 +2,8 @@ package server;
 
 import java.io.*;
 import objects.TournamentModuleSettingsMessage;
+import utility.FileUtils;
+
 import java.util.Vector;
 
 import com.eclipsesource.json.Json;
@@ -18,6 +20,7 @@ public class ServerSettings
 	public Vector<Bot> 		BotVector 			= new Vector<Bot>();
 	public Vector<Map> 		MapVector 			= new Vector<Map>();
 	
+	//The following 4 paths are hard coded here and not options in the settings file
 	public String			ServerDir			= "./";
 	public String			ServerReplayDir		= "replays/";
 	public String			ServerRequiredDir	= "required/";
@@ -171,7 +174,15 @@ public class ServerSettings
 		}
 		
 		// check if all required files are present
-		if (!new File(ServerReplayDir).exists()) 	{ System.err.println("ServerSettings: Replay Dir (" + ServerReplayDir + ") does not exist"); valid = false; }
+		if (!new File(ServerReplayDir).exists())
+		{
+			FileUtils.CreateDirectory(ServerReplayDir);
+			if (!new File(ServerReplayDir).isDirectory())
+			{
+				System.err.println("ServerSettings: Replay Dir (" + ServerReplayDir + ") does not exist and could not be created");
+				valid = false;
+			}
+		}
 		if (!new File(ServerBotDir).exists()) 		{ System.err.println("ServerSettings: Bot Dir (" + ServerBotDir + ") does not exist"); valid = false; }
 		if (!new File(ServerRequiredDir).exists()) 	{ System.err.println("ServerSettings: Required Files Dir (" + ServerRequiredDir + ") does not exist"); valid = false; }
 		
