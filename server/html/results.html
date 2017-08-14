@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Detailed Results</title>
+	<meta charset="UTF-8">
+	
+	<script src="results/detailed_results_json.js"></script>
+	<script src="results/results_summary_json.js"></script>
+	<script src="javascript/jquery-1.10.2.min.js"></script>
+	<script src="javascript/detailed_results.js"></script>
+	<script src="javascript/jquery.tablesorter.js"></script>
+	<link rel="stylesheet" href="javascript/themes/blue/style.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<p>Go To: <a href="index.html">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>
+	<label for="crashes" class="filter">Crashes</label>
+	<select id="crashes" class="filter">
+		<option value="all">All Games</option>
+		<option value="only-crashes">Only Crashes</option>
+		<option value="no-crashes">No Crashes</option>
+	</select>
+	<label for="bots" class="filter">Bots</label>
+	<select id="bots" class="filter">
+		<option value="all">All Bots</option>
+	</select>
+	<label for="winner" class="filter">Winner</label>
+	<select id="winner" class="filter">
+		<option value="all">All Bots</option>
+	</select>
+	<label for="loser" class="filter">Loser</label>
+	<select id="loser" class="filter">
+		<option value="all">All Bots</option>
+	</select>
+	<label for="maps" class="filter">Maps</label>
+	<select id="maps" class="filter">
+		<option value="all">All Maps</option>
+	</select>
+	<div id="gameCount"> Games: 0</div>
+	<table id="detailedResultsTable" class="tablesorter">
+		<thead><tr>
+			<th>Round/Game</th>
+			<th>Winner</th>
+			<th>Loser</th>
+			<th>Crash</th>
+			<th>Timeout</th>
+			<th>Map</th>
+			<th>Duration</th>
+			<th>W Score</th>
+			<th>L Score</th>
+			<th>(W-L)/Max</th>
+			<th>W 55</th>
+			<th>W 1000</th>
+			<th>W 10000</th>
+			<th>L 55</th>
+			<th>L 1000</th>
+			<th>L 10000</th>
+			<th>Win Addr</th>
+			<th>Lose Addr</th>
+			<th>Start</th>
+			<th>Finish</th>
+		</tr></thead>
+		<tbody>
+		</tbody>
+	</table>
+	</body>
+</html>

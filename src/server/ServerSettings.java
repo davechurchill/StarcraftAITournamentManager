@@ -2,8 +2,14 @@ package server;
 
 import java.io.*;
 import objects.TournamentModuleSettingsMessage;
+import utility.FileUtils;
+
 import java.util.Vector;
-import java.util.StringTokenizer;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import objects.BWAPISettings;
 import objects.Bot;
@@ -14,6 +20,7 @@ public class ServerSettings
 	public Vector<Bot> 		BotVector 			= new Vector<Bot>();
 	public Vector<Map> 		MapVector 			= new Vector<Map>();
 	
+	//The following 4 paths are hard coded here and not options in the settings file
 	public String			ServerDir			= "./";
 	public String			ServerReplayDir		= "replays/";
 	public String			ServerRequiredDir	= "required/";
@@ -25,7 +32,9 @@ public class ServerSettings
 	public String 			ClearResults	 	= "ask";
 	public String 			ResumeTournament 	= "ask";
 	public String			DetailedResults		= "no";
+	public String			StartGamesSimul		= "no";
 	public String			TournamentType		= "AllVsAll";
+	public Vector<String>	ExcludeFromResults	= new Vector<String>();
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
 	
@@ -55,37 +64,76 @@ public class ServerSettings
 		
 		return null;
 	}
-	
+		
 	public void parseSettingsFile(String filename)
-	{
+	{	
 		try
 		{
-			boolean error = false;
-			BufferedReader br = new BufferedReader(new FileReader(filename));
-			String line;
-			
-			while ((line = br.readLine()) != null)
-			{
-				line = line.trim();
-				
-				if (line.startsWith("#") || line.length() == 0)
-				{
-					continue;
-				}
-				
-				// if parseLine is false there was an error
-				if (!parseLine(line))
-				{
-					error = true;
-				}
-			}
-			
+			BufferedReader br = new BufferedReader(new FileReader("server_settings.JSON"));
+			JsonObject jo = Json.parse(br).asObject();
 			br.close();
 			
-			if (error)
+			JsonArray bots = jo.get("bots").asArray();
+			for (JsonValue botValue : bots)
 			{
-				System.exit(-1);
+				JsonObject bot = botValue.asObject();
+				JsonValue reqArray = bot.get("ClientRequirements");
+				Vector<String> requirements = new Vector<String>();
+				if (reqArray != null)
+				{
+					JsonArray reqs = reqArray.asArray();
+					if (reqs.size() > 0)
+					{
+						for (JsonValue reqObject : reqs)
+						{
+							JsonObject req = reqObject.asObject();
+							requirements.add(req.get("Property").asString());
+						}
+						
+					}
+				}
+				BotVector.add(new Bot(bot.get("BotName").asString(),bot.get("Race").asString(), bot.get("BotType").asString(), bot.get("BWAPIVersion").asString(), requirements));
 			}
+			
+			JsonArray maps = jo.get("maps").asArray();
+			for (JsonValue mapValue : maps)
+			{
+				JsonObject map = mapValue.asObject();
+				MapVector.add(new Map(map.get("mapFile").asString()));
+			}
+			
+			GamesListFile = jo.get("gamesListFile").asString();
+			ResultsFile = jo.get("resultsFile").asString();
+			DetailedResults = jo.get("detailedResults").asBoolean() ? "yes" : "no"; 
+			ServerPort = jo.get("serverPort").asInt();
+			ClearResults = jo.get("clearResults").asString();
+			ResumeTournament = jo.get("resumeTournament").asString();
+			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean() ? "yes" : "no";
+			TournamentType = jo.get("tournamentType").asString();
+			
+			JsonArray excludedBots = jo.get("excludeFromResults").asArray();
+			for (JsonValue excludedBot : excludedBots)
+			{
+				JsonObject exclude = excludedBot.asObject();
+				ExcludeFromResults.add(exclude.get("BotName").asString());
+			}
+					
+			JsonObject tmSettingsJO = jo.get("tournamentModuleSettings").asObject();
+			tmSettings.LocalSpeed = tmSettingsJO.get("localSpeed").asInt();
+			tmSettings.FrameSkip = tmSettingsJO.get("frameSkip").asInt();
+			tmSettings.GameFrameLimit = tmSettingsJO.get("gameFrameLimit").asInt();
+			tmSettings.DrawBotNames = tmSettingsJO.get("drawBotNames").asBoolean() ? "true" : "false";
+			tmSettings.DrawTournamentInfo = tmSettingsJO.get("drawTournamentInfo").asBoolean() ? "true" : "false";
+			tmSettings.DrawUnitInfo = tmSettingsJO.get("drawUnitInfo").asBoolean() ? "true" : "false";
+			
+			JsonArray limits = tmSettingsJO.get("timeoutLimits").asArray();
+			for (JsonValue limitValue : limits)
+			{
+				JsonObject limit = limitValue.asObject();
+				tmSettings.TimeoutLimits.add(limit.get("timeInMS").asInt());
+				tmSettings.TimeoutBounds.add(limit.get("frameCount").asInt());
+			}
+			
 		}
 		catch (Exception e)
 		{
@@ -96,11 +144,11 @@ public class ServerSettings
 		
 		if (!checkValidSettings())
 		{
-			System.err.println("\n\nError in server set-up, please check documentation: http://webdocs.cs.ualberta.ca/~cdavid/starcraftaicomp/tm.shtml#ss");
+			System.err.println("\n\nError in server set-up, please check documentation: http://www.cs.mun.ca/~dchurchill/starcraftaicomp/tm.shtml#ss");
 			System.exit(0);
 		}
 	}
-	
+		
 	private boolean checkValidSettings()
 	{
 		boolean valid = true;
@@ -113,8 +161,28 @@ public class ServerSettings
 		if (ResultsFile == null)		{ System.err.println("ServerSettings: ResultsFile must be specified in settings file"); valid = false; }
 		if (ServerPort == -1)			{ System.err.println("ServerSettings: ServerPort must be specified as an integer in settings file"); valid = false; }
 		
+		if (!ResumeTournament.equalsIgnoreCase("yes") && !ResumeTournament.equalsIgnoreCase("no") && !ResumeTournament.equalsIgnoreCase("ask"))
+		{
+			System.err.println("ServerSettings: ResumeTournament invalid option: " + ResumeTournament);
+			valid = false;
+		}
+		
+		if (!ClearResults.equalsIgnoreCase("yes") && !ClearResults.equalsIgnoreCase("no") && !ClearResults.equalsIgnoreCase("ask"))
+		{
+			System.err.println("ServerSettings: ClearResultsFile invalid option: " + ClearResults);
+			valid = false;
+		}
+		
 		// check if all required files are present
-		if (!new File(ServerReplayDir).exists()) 	{ System.err.println("ServerSettings: Replay Dir (" + ServerReplayDir + ") does not exist"); valid = false; }
+		if (!new File(ServerReplayDir).exists())
+		{
+			FileUtils.CreateDirectory(ServerReplayDir);
+			if (!new File(ServerReplayDir).isDirectory())
+			{
+				System.err.println("ServerSettings: Replay Dir (" + ServerReplayDir + ") does not exist and could not be created");
+				valid = false;
+			}
+		}
 		if (!new File(ServerBotDir).exists()) 		{ System.err.println("ServerSettings: Bot Dir (" + ServerBotDir + ") does not exist"); valid = false; }
 		if (!new File(ServerRequiredDir).exists()) 	{ System.err.println("ServerSettings: Required Files Dir (" + ServerRequiredDir + ") does not exist"); valid = false; }
 		
@@ -154,169 +222,6 @@ public class ServerSettings
 				System.err.println("Map Error: " + m.getMapName() + " file does not exist at specified location: " + mapLocation); valid = false;
 			}
 		}*/
-		
-		return valid;
-	}
-	
-	private boolean parseLine(String line) throws Exception
-	{
-		boolean valid = true;
-		StringTokenizer st = new StringTokenizer(line, " +");	
-		String type = st.nextToken();
-		
-		if (type.equalsIgnoreCase("Bot"))
-		{
-			BotVector.add(new Bot(st.nextToken(), st.nextToken(), st.nextToken(), st.nextToken()));
-		}
-		else if (type.equalsIgnoreCase("Map"))
-		{
-			MapVector.add(new Map(st.nextToken()));
-		}
-		else if (type.equalsIgnoreCase("GamesListFile"))
-		{
-			GamesListFile = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("ResultsFile"))
-		{
-			ResultsFile = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("DetailedResults"))
-		{
-			DetailedResults = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("TournamentType"))
-		{
-			TournamentType = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("ResumeTournament"))
-		{
-			String resume = st.nextToken();
-			
-			if (!resume.equalsIgnoreCase("yes") && !resume.equalsIgnoreCase("no") && !resume.equalsIgnoreCase("ask"))
-			{
-				System.err.println("ServerSettings: ClearResultsFile invalid option: " + resume);
-				valid = false;
-			}
-			
-			ResumeTournament = resume;
-		}
-		else if (type.equalsIgnoreCase("ClearResults"))
-		{
-			String clear = st.nextToken();
-			
-			if (!clear.equalsIgnoreCase("yes") && !clear.equalsIgnoreCase("no") && !clear.equalsIgnoreCase("ask"))
-			{
-				System.err.println("ServerSettings: ClearResultsFile invalid option: " + clear);
-				valid = false;
-			}
-			
-			ClearResults = clear;
-		}
-		else if (type.equalsIgnoreCase("ServerPort"))
-		{
-			try
-			{
-				ServerPort = Integer.parseInt(st.nextToken());
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: ServerPort option must be a valid integer port on your system");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMLocalSpeed"))
-		{
-			try
-			{
-				tmSettings.LocalSpeed = Integer.parseInt(st.nextToken());
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMLocalSpeed must be an integer");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMFrameSkip"))
-		{
-			try
-			{
-				tmSettings.FrameSkip = Integer.parseInt(st.nextToken());
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMFrameSkip must be an integer");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMGameFrameLimit"))
-		{
-			try
-			{
-				tmSettings.GameFrameLimit = Integer.parseInt(st.nextToken());
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMGameFrameLimit must be an integer");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMTimeout"))
-		{
-			try
-			{
-				int limit = Integer.parseInt(st.nextToken());
-				int bound = Integer.parseInt(st.nextToken());
-				
-				tmSettings.TimeoutLimits.add(limit);
-				tmSettings.TimeoutBounds.add(bound);
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMTimeout must be two integers");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMDrawBotNames"))
-		{
-			try
-			{
-				tmSettings.DrawBotNames = st.nextToken();
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMDrawBotNames must true or false");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMDrawTournamentInfo"))
-		{
-			try
-			{
-				tmSettings.DrawTournamentInfo = st.nextToken();
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMDrawTournamentInfo must true or false");
-				valid = false;
-			}
-		}
-		else if (type.equalsIgnoreCase("TMDrawUnitInfo"))
-		{
-			try
-			{
-				tmSettings.DrawUnitInfo = st.nextToken();
-			}
-			catch (Exception e)
-			{
-				System.err.println("ServerSettings: TMDrawUnitInfo must true or false");
-				valid = false;
-			}
-		}
-		else
-		{
-			System.err.println("Incorrect setting type in settings file:    " + type);
-			valid = false;
-		}
 		
 		return valid;
 	}

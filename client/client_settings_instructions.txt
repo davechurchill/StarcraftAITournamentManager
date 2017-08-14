@@ -1,0 +1,21 @@
+Edit client settings in client/client_settings.json. The file must parse as valid JSON.
+
+Name: ClientStarcraftDir
+Desc: Directory of Starcraft on Client machine
+Allowed values: string; no spaces; End in "\", backslashes must be escaped.
+
+Name: DefaultBWAPISettings
+Desc: File of default BWAPI settings, relative to client.jar
+Allowed values: string; no spaces; 
+
+Name: TournamentModule
+Desc: BWAPI Tournament Module Location, relative to Starcraft directory
+Allowed values: string; no spaces; forward slashes allowed
+
+Name: ServerAddress
+Desc: IP address and port of server
+Allowed values: string with format "[address]:[port]"
+
+Name: ClientProperties
+Desc: Features of this client that a bot can take advantage of if property matches to ClientRequirements in server settings
+Allowed values: array of json objects with required property: {"Property": string}

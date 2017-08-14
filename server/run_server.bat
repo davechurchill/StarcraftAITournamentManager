@@ -1,1 +1,1 @@
-java -jar server.jar server_settings.ini
+java -jar server.jar server_settings.json

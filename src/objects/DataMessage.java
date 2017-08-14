@@ -19,8 +19,8 @@ public class DataMessage implements Message
 	{
 		this.type = type;
 		
-		// Chaoslauncher and Required Files are in zip files already, so load from a zip
-		if (type == DataType.CHAOSLAUNCHER || type == DataType.REQUIRED_DIR)
+		// Required Files are in zip files already, so load from a zip
+		if (type == DataType.REQUIRED_DIR)
 		{
 			zipFileName = src;
 			readZipFile(src);

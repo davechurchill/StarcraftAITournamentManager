@@ -1,0 +1,155 @@
+/* FONTS*/
+
+body, table.tablesorter {
+	font-family: Verdana;
+	line-height: 1.5em;
+}
+
+p#footer, #detailedResultsTable {
+	font-size: 10px
+}
+
+#resultsMapTable th {
+	font-size: 11px;
+	font-weight: bold;
+}
+
+#resultsMapTable {
+	font-size: 12px;
+}
+
+#resultsTable, #resultsPairTable {
+	font-size: 14px;
+}
+
+p {
+	font-size: 16px;
+}
+
+#resultsTable tfoot {
+	font-weight: bold;
+}
+
+/* TABLE CELL WIDTHS AND TEXT ALIGNMENT */
+
+#detailedResultsTable th {
+	width: 100px;
+}
+
+#detailedResultsTable th:first-child {
+	width: 130px;
+}
+
+#resultsTable th {
+	width: 80px;
+}
+
+#resultsPairTable th {
+	width: 60px;
+	text-align: center;
+}
+
+#resultsPairTable th:first-child {
+	width: 100px;
+	text-align: center;
+}
+
+#resultsPairTable th:nth-child(2) {
+	width: 71px;
+	text-align: center;
+}
+
+#resultsMapTable th {
+	width: 80px;
+	text-align: center;
+}
+
+#resultsMapTable th:first-child {
+	text-align: center;
+	width: 100px;
+}
+
+/* OTHER LAYOUT */
+select.filter {
+	margin-right: 15px;
+}
+
+#gameCount {
+	display: inline-block;
+}
+
+/* TABLE BORDERS */
+
+table th, table td{
+	padding: 2px;
+}
+
+table {
+	border-collapse: collapse;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+td {
+	border: 1px solid grey;
+}
+
+/* REMOVE OUTSIDE BORDERS FROM TABLES */
+
+tr:first-child th, tr:first-child td, table.tablesorter tr:first-child th {
+	border-top: none;
+}
+
+tr:last-child td {
+	border-bottom: none;
+}
+
+tr td:first-child, tr th:first-child, table.tablesorter tr th:first-child {
+	border-left: none;
+}
+
+tr td:last-child, tr th:last-child, table.tablesorter tr th:last-child {
+	border-right: none;
+}
+
+/* TABLE ZEBRA COLORS */
+
+#resultsTable tbody tr:nth-child(odd), #detailedResultsTable tbody tr:nth-child(odd), #resultsPairTable tbody tr:nth-child(odd) td:nth-child(2) {
+	background-color: #e8e8e8;
+}
+
+#resultsTable tbody tr:nth-child(even), #detailedResultsTable tbody tr:nth-child(even), #resultsPairTable tbody tr:nth-child(even) td:nth-child(2) {
+	background-color: #ffffff;
+}
+
+/* DEFAULT TABLE HEADER AND FOOTER COLORS
+ * .header is added by tablesorter
+*/
+.header, tfoot td {
+	background-color: #cccccc;
+}
+
+/* STARCRAFT RACE COLORS */
+
+.race-protoss {
+	background-color: #f1c232;
+}
+
+.race-terran {
+	background-color: #6fa8dc;
+}
+
+.race-zerg {
+	background-color: #c27ba0;
+}
+
+.race-random {
+	background-color: #cccccc;
+}
+
+/* GRAPHS */
+
+#winPercentageGraph {
+	width: 95vw;
+	height: 95vh;
+}

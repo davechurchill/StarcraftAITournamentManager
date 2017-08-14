@@ -21,7 +21,7 @@ public class ClientGUI
 	
 	static JPanel		rightPanel;
 	
-	String [] columnNames = {"Client", "Status", "State", "StarCraft", "Function", "Data"};
+	String [] columnNames = {"Client", "Status", "State", "StarCraft", "Function", "Data", "Properties"};
 	
 	Object [][] data = 	{
 							
@@ -35,9 +35,11 @@ public class ClientGUI
 	
 	public void CreateGUI()
 	{
-		mainTable 	= new JTable(new DefaultTableModel(data, columnNames));
+		mainTable 	= new JTable(new MainTableModel(data, columnNames));
 		mainTable.setDefaultRenderer(Object.class, new MyRenderer());
+		mainTable.getTableHeader().setReorderingAllowed(false);
 		textArea	= new JTextArea();
+		textArea.setEditable(false);
 		mainFrame 	= new JFrame("StarCraft AI Tournament");
 		mainFrame.setLayout(new GridLayout(2,0));
 		
@@ -73,7 +75,7 @@ public class ClientGUI
 		client.shutDown();
 	}
 	
-	public void UpdateClient(String name, String status, String num, String host, String join, String data)
+	public void UpdateClient(String name, String status, String num, String host, String join, String data, String properties)
 	{
 		int row = GetClientRow(name);
 		
@@ -86,11 +88,12 @@ public class ClientGUI
 			GetModel().setValueAt(host, row, 3);
 			GetModel().setValueAt(join, row, 4);
 			GetModel().setValueAt(data, row, 5);
+			GetModel().setValueAt(properties, row, 6);
 		}
 		// otherwise add a new row
 		else
 		{
-			GetModel().addRow(new Object[]{name, status, num, host, join, "", data});
+			GetModel().addRow(new Object[]{name, status, num, host, join, data, properties});
 		}
 		
 		mainTable.scrollRectToVisible(mainTable.getCellRect(mainTable.getRowCount()-1, 0, true));
@@ -216,4 +219,18 @@ public class ClientGUI
 		}
 	}
 	
+	class MainTableModel extends DefaultTableModel
+	{
+		private static final long serialVersionUID = -442677410640547796L;
+
+		public MainTableModel(Object[][] data, String[] columnNames)
+		{
+			super(data, columnNames);
+		}
+
+		public boolean isCellEditable(int row, int column)
+		{
+			return false;
+		}
+	}
 }

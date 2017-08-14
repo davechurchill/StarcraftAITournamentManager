@@ -80,7 +80,7 @@ public class ZipTools
 							copy(fis, zout);
 							fis.close();
 							zout.closeEntry();
-							System.out.println("Zipped: " + name);
+							//System.out.println("Zipped: " + name);
 						}
 					}
 				}

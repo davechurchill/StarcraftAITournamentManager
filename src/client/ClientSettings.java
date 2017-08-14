@@ -1,18 +1,26 @@
 package client;
 
-import java.io.*;
-import java.util.StringTokenizer;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.Vector;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
 
 import objects.BWAPISettings;
 
 public class ClientSettings
 {	
 	public String			ClientStarcraftDir;
-	public String			ClientChaoslauncherDir;
+	
 	public String			TournamentModuleFilename;
 	
 	public String			ServerAddress;
 	public String 			DefaultBWAPISettingsFileName;
+	
+	Vector<String>			ClientProperties;
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
 
@@ -33,21 +41,27 @@ public class ClientSettings
 		try
 		{
 			BufferedReader br = new BufferedReader(new FileReader(filename));
-			String line;
-			
-			while ((line = br.readLine()) != null)
-			{
-				line = line.trim();
-				
-				if (line.startsWith("#") || line.length() == 0)
-				{
-					continue;
-				}
-				
-				parseLine(line);
-			}
-			
+			JsonObject jo = Json.parse(br).asObject();
 			br.close();
+			
+			ClientStarcraftDir = jo.get("ClientStarcraftDir").asString();
+			System.out.println("StarCraft Dir:   " + ClientStarcraftDir);
+			DefaultBWAPISettingsFileName = jo.get("DefaultBWAPISettings").asString();
+			TournamentModuleFilename = jo.get("TournamentModule").asString();
+			ServerAddress = jo.get("ServerAddress").asString();
+			
+			
+			ClientProperties = new Vector<String>();
+			JsonValue propertiesArray = jo.get("ClientProperties");
+			if (propertiesArray != null)
+			{
+				JsonArray properties = propertiesArray.asArray();
+				for (JsonValue propObject : properties)
+				{
+					JsonObject prop = propObject.asObject();
+					ClientProperties.add(prop.get("Property").asString());
+				}
+			}
 		}
 		catch (Exception e)
 		{
@@ -58,37 +72,4 @@ public class ClientSettings
 		
 		bwapi.loadFromFile(DefaultBWAPISettingsFileName);
 	}
-	
-	private void parseLine(String line) throws Exception
-	{
-		StringTokenizer st = new StringTokenizer(line, " +");	
-		String type = st.nextToken();
-		
-		if (type.equalsIgnoreCase("ClientChaoslauncherDir"))
-		{
-			ClientChaoslauncherDir = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("ClientStarcraftDir"))
-		{
-			ClientStarcraftDir = st.nextToken();
-			System.out.println("StarCraft Dir:   " + ClientStarcraftDir);
-		}
-		else if (type.equalsIgnoreCase("ServerAddress"))
-		{
-			ServerAddress = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("TournamentModule"))
-		{
-			TournamentModuleFilename = st.nextToken();
-		}
-		else if (type.equalsIgnoreCase("DefaultBWAPISettings"))
-		{
-			DefaultBWAPISettingsFileName = st.nextToken();
-		}
-		else
-		{
-			System.err.println("Ignoring incorrect setting type in settings file:    " + type);
-		}
-	}
-
 }

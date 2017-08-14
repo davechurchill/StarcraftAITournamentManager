@@ -8,6 +8,5 @@ public enum DataType implements Serializable
 	REPLAY,
 	BOT_DIR,
 	WRITE_DIR,
-	CHAOSLAUNCHER,
 	SCREENSHOT
 }

@@ -4,9 +4,7 @@ package server;
 import java.awt.*;
 
 import javax.swing.*;
-
-import java.awt.Color;
-
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.*;
 
 import objects.Bot;
@@ -15,30 +13,41 @@ import utility.GameListGenerator;
 import utility.ResultsParser;
 
 import java.awt.event.*;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerGUI 
 {
 	Server		server;
 	
-    private 	JFrame		mainFrame;
-    private 	JTable		mainTable;
-    private 	JTextArea	bottomText;	
-    private 	JPanel		bottomPanel;
-    private 	JMenuBar	menuBar;
-    private 	JMenu		fileMenu;
-    private 	JMenu		actionsMenu;
-    private		JMenuItem	exitMenuItem;
-    private 	JMenuItem	generateResultsMenuItem;
-    private 	JMenuItem	sendClientCommandMenuItem;
-    private		JMenuItem	viewClientScreenMenuItem;
+    private 	JFrame			mainFrame;
+    private 	JTable			mainTable;
+    private 	JTextArea		bottomText;
+    private 	JPanel			bottomPanel;
+    private		JPanel			statusPanel;
+    private		JProgressBar	progressBar;
+    private		JLabel			uptime;
+    private 	JMenuBar		menuBar;
+    private 	JMenu			fileMenu;
+    private 	JMenu			actionsMenu;
+    private		JMenuItem		exitMenuItem;
+    private 	JMenuItem		generateResultsMenuItem;
+    private 	JMenuItem		sendClientCommandMenuItem;
+    private		JMenuItem		viewClientScreenMenuItem;
+    private		JPopupMenu		popup;
     
-    private String [] 		columnNames = {"Client", "Status", "Game #", "Self", "Enemy", "Map", "Duration", "Win"};	
+    private String [] 		columnNames = {"Client", "Status", "Game / Round #", "Self", "Enemy", "Map", "Duration", "Win", "Properties"};
 	private Object [][] 	data = 	{ };
+	private Date startTime;
+	private String filter = "";
+	private	Vector<String> log;
+    private	JComboBox<String> filterSelect;
 
 	private boolean resumedTournament = false;
 	
@@ -50,18 +59,170 @@ public class ServerGUI
 	
 	public void CreateGUI()
 	{
-		mainTable = new JTable(new DefaultTableModel(data, columnNames));
+		mainTable = new JTable(new MainTableModel(data, columnNames));
 		mainTable.setDefaultRenderer(Object.class, new MyRenderer());
-		bottomText = new JTextArea();
+		mainTable.setFillsViewportHeight(true);
+		mainTable.getTableHeader().setReorderingAllowed(false);
+		
 		mainFrame = new JFrame("StarCraft AI Tournament Manager - Server");
-		mainFrame.setLayout(new GridLayout(2,0));
+		mainFrame.setLayout(new GridBagLayout());
+		
+		statusPanel = new JPanel();
+		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+		statusPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		statusPanel.add(new JLabel("Tournament progress: "));
+		progressBar = new JProgressBar(0, 100);
+		progressBar.setFont(new Font(progressBar.getFont().getFamily(), Font.PLAIN, progressBar.getFont().getSize()));
+		statusPanel.add(progressBar);
+		
+		statusPanel.add(new JLabel(" Server uptime: "));
+		uptime = new JLabel("");
+		uptime.setFont(new Font(uptime.getFont().getFamily(), Font.PLAIN, uptime.getFont().getSize()));
+		statusPanel.add(uptime);
+		
+		statusPanel.add(Box.createHorizontalGlue());
+		
+		statusPanel.add(new JLabel("Filter Log: "));
+		filterSelect = new JComboBox<String>();
+		filterSelect.setFont(new Font(filterSelect.getFont().getFamily(), Font.PLAIN, filterSelect.getFont().getSize()));
+		filterSelect.addItem("All");
+		filterSelect.addItem("Server");
+		statusPanel.add(filterSelect);
+		
+		bottomText = new JTextArea();
+		bottomText.setEditable(false);
+		log = new Vector<String>();
 		
 		bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1,0));
 		bottomPanel.add(new JScrollPane(bottomText));
 	
-        mainTable.setFillsViewportHeight(true);
+        popup = new JPopupMenu();
+        
+        JMenuItem popupScreenshotMenuItem = new JMenuItem("Take Client Screenshot");
+        popupScreenshotMenuItem.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e)
+			{
+				for (int r : mainTable.getSelectedRows())
+				{
+					server.sendScreenshotRequestToClient((String) mainTable.getValueAt(r, 0));
+				}
+			}
+        });
+        popup.add(popupScreenshotMenuItem);
+        
+        JMenuItem popupSendCommandMenuItem = new JMenuItem("Send Command");
+        popupSendCommandMenuItem.addActionListener(new ActionListener()
+        {
+			public void actionPerformed(ActionEvent e)
+			{
+				String command = (String)JOptionPane.showInputDialog(mainFrame, 
+        				"Enter Windows command to be executed on the selected Client machine(s).\n\n"
+        				+ "Will run as if typed into the client's Windows command line.\n\n"
+        				+ "Execution is asynchronous to client, no error on failure.\n\n"
+        				+ "Example:     notepad.exe\n"
+        				+ "Example:     taskkill /im notepad.exe\n\n", 
+        				"Send Command to Client(s)", JOptionPane.PLAIN_MESSAGE, null, null, "");
+        	
+	        	if (command != null && command.trim().length() > 0)
+	        	{
+	        		for (int r : mainTable.getSelectedRows())
+					{
+	        			server.sendCommandToClient((String) mainTable.getValueAt(r, 0), command);
+					}
+	        	}
+			}
+        });
+        popup.add(popupSendCommandMenuItem);
+        
+        JMenuItem popupKillClientMenuItem = new JMenuItem("Kill Client");
+        popupKillClientMenuItem.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+			{
+        		int confirmed = JOptionPane.showConfirmDialog(mainFrame, "Kill Selected Client(s): Are you sure?", "Kill Client(s) Confirmation", JOptionPane.YES_NO_OPTION);
+    			if (confirmed == JOptionPane.YES_OPTION)
+    			{
+    				//get IP addresses before deleting rows (clients) from table
+            		String[] addresses = new String[mainTable.getSelectedRowCount()];
+            		int i = 0;
+            		for (int r : mainTable.getSelectedRows())
+    				{
+            			addresses[i++] = (String) mainTable.getValueAt(r, 0);
+    				}
+            		
+            		for (String ip : addresses)
+            		{
+            			server.killClient(ip);
+            		}
+    			}
+			}
+        });
+        popup.add(popupKillClientMenuItem);
+        
+        JMenuItem popupFilterLog = new JMenuItem("Filter Log by Client");
+        popupFilterLog.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+			{
+        		filter = (String) mainTable.getValueAt(mainTable.getSelectedRow(), 0);
+        		for (int i = 0; i < filterSelect.getModel().getSize(); i++)
+        		{
+        			if (filterSelect.getItemAt(i).equalsIgnoreCase(filter))
+        			{
+        				filterSelect.setSelectedIndex(i);
+        			}
+        		}
+			}
+        });
+        popup.add(popupFilterLog);
+        
+        class PopupListener extends MouseAdapter {
+        	
+        	public void mousePressed(MouseEvent e)
+        	{
+        		super.mousePressed(e);
+        		if (mainTable.getRowCount() > 0)
+        		{
+        			int r = mainTable.rowAtPoint(e.getPoint());
+            		if (r == -1)
+            		{
+            			mainTable.removeRowSelectionInterval(0, mainTable.getRowCount() - 1);
+            		}
+            		else if (SwingUtilities.isRightMouseButton(e) && !mainTable.isRowSelected(r))
+            		{
+    					mainTable.removeRowSelectionInterval(0, mainTable.getRowCount() - 1);
+    					mainTable.setRowSelectionInterval(r, r);
+            		}
+        		}
+        	}
+        	
+        	public void mouseReleased(MouseEvent e)
+        	{
+        		super.mouseReleased(e);
+        		
+        		if (SwingUtilities.isRightMouseButton(e) && mainTable.rowAtPoint(e.getPoint()) != -1)
+        		{
+        			popup.show(e.getComponent(), e.getX(), e.getY());
+        		}
+        	}
+        }
+        
+        MouseListener popupListener = new PopupListener();
+        mainTable.addMouseListener(popupListener);
 	
+        filterSelect.addActionListener(new ActionListener()
+        		{
+					public void actionPerformed(ActionEvent arg0)
+					{
+						filter = (String) filterSelect.getSelectedItem();
+						filterLog();
+					}
+        		}
+        );
+        
         menuBar = new JMenuBar();
         fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
@@ -82,7 +243,7 @@ public class ServerGUI
     				{
     					ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
     					logText(getTimeStamp() + " Generating All Results File...\n");
-    					rp.writeDetailedResultsHTML("html/results.html");
+    					rp.writeDetailedResultsJSON();
     					logText(getTimeStamp() + " Generating All Results File Complete!\n");
     				}
     				catch (Exception ex)
@@ -149,16 +310,39 @@ public class ServerGUI
         });
         actionsMenu.add(viewClientScreenMenuItem);
         
-        
-		mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	    mainFrame.setSize(800,600);
+        mainFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	    mainFrame.setSize(900,600);
 	    mainFrame.setJMenuBar(menuBar);
-	    mainFrame.add(new JScrollPane(mainTable));
 	    
-		mainFrame.add(bottomPanel);
-	    mainFrame.setVisible(true);
+	    GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.weightx = 0.0;
+		c.weighty = 0.0;
+		mainFrame.add(statusPanel, c);
 	    
+	    c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 1;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		JScrollPane mainTableScrollPane = new JScrollPane(mainTable);
+		//ensures all space distributed evenly between this and bottom panel by GridBagLayout
+		mainTableScrollPane.setPreferredSize(new Dimension(0,0)); 
+	    mainFrame.add(mainTableScrollPane, c);
 	    
+	    c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 2;
+		c.fill = GridBagConstraints.BOTH;
+		c.weightx = 1.0;
+		c.weighty = 1.0;
+		bottomPanel.setPreferredSize(new Dimension(0,0));
+		mainFrame.add(bottomPanel, c);
+	    
+		mainFrame.setVisible(true);
 	    
 	    mainFrame.addWindowListener(new WindowAdapter() 
 	    {
@@ -173,29 +357,18 @@ public class ServerGUI
 	    });
 	}
 	
-	public void writeHTMLFile(String html, String filename) throws Exception
-	{
-		File file = new File(filename);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(html);
-		bw.close();
-		fw.close();
-	}
-	
 	public void handleFileDialogues()
 	{
 		// if we resumed a tournament, don't delete anything!
 		if (resumedTournament)
 		{
+			setupTimer();
 			return;
 		}
 		
 		handleTournamentData();
 		handleNoGamesFile();
+		setupTimer();
 	}
 	
 	public boolean handleTournamentResume()
@@ -289,49 +462,38 @@ public class ServerGUI
 		}
 	}
 	
+	private void setupTimer()
+	{
+		startTime = Calendar.getInstance().getTime();
+		Timer timer = new Timer(1000, new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				long diff = Calendar.getInstance().getTime().getTime() - startTime.getTime();
+				long days = TimeUnit.MILLISECONDS.toDays(diff);
+				long hours = TimeUnit.MILLISECONDS.toHours(diff) - TimeUnit.DAYS.toHours(days);
+				long minutes = TimeUnit.MILLISECONDS.toMinutes(diff) - TimeUnit.DAYS.toMinutes(days) - TimeUnit.HOURS.toMinutes(hours);
+				long seconds = TimeUnit.MILLISECONDS.toSeconds(diff) - TimeUnit.DAYS.toSeconds(days) - TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(minutes);
+				String time = days > 0 ? (days > 1 ? (days + " days, ") : (days + " day, ")) : "";
+				//time += hours > 0 || days > 0 ? (hours != 1 ? (hours + " hours, ") : (hours + " hour, ")) : "";
+				//time += minutes > 0 || hours > 0 || days > 0 ? (minutes != 1 ? (minutes + " minutes, ") : (" 1 minute, ")) : "";
+				//time += seconds > 1 ? (seconds + " seconds") : seconds + " second";
+				time += hours >= 10 ? hours + ":"  : "0" + hours + ":";
+				time += minutes >= 10 ? minutes + ":"  : "0" + minutes + ":";
+				time += seconds >= 10 ? seconds : "0" + seconds;
+				
+				uptime.setText(time);
+			}
+		});
+		timer.start();
+	}
+	
 	public static String getTimeStamp()
 	{
-		return new SimpleDateFormat("[HH:mm:ss]").format(Calendar.getInstance().getTime());
+		return new SimpleDateFormat("[MMM d, HH:mm:ss]").format(Calendar.getInstance().getTime());
 	}
 	
-	public synchronized String getHTML() throws Exception
-	{
-		String table = "<table cellpadding=2 rules=all style=\"font: 12px/1.5em Verdana\">\n";
-		table += "  <tr>\n";
-		table += "    <td colspan=11 bgcolor=#CCCCCC align=center style=\"font: 16px/1.5em Verdana\">Current Real-Time Client Scheduler / Status</td>\n";
-		table += "  </tr>\n";
-		table += "  <tr>\n";
-		for (int c=0; c<columnNames.length; ++c)
-		{
-			table += "    <td bgcolor=#cccccc width=67><center>";
-			table += columnNames[c];
-			table += "    </center></td>\n";
-		}
-		table += "  </tr>\n";
-		
-		for (int r=0; r<mainTable.getRowCount(); ++r)
-		{
-			String colour = "#FFFFFF";
-			if (mainTable.getValueAt(r,1).equals("RUNNING")) colour = "#00FF00";
-			if (mainTable.getValueAt(r,1).equals("STARTING")) colour = "#FFFF00";
-			if (mainTable.getValueAt(r,1).equals("SENDING")) colour = "#FFA500";
-			
-			table += "  <tr bgcolor=" + colour + ">\n";
-			for (int c=0; c<mainTable.getColumnCount(); ++c)
-			{
-				table += "    <td><center>";
-				String s = (String)mainTable.getValueAt(r,c);
-				table += s.substring(0, Math.min(8, s.length()));
-				table += "    </center></td>\n";
-			}
-			table += "  </tr>\n";
-		}
-		table += "</table><br>\n";
-		
-		return table;
-	}
-	
-	public synchronized void UpdateClient(String name, String status, String num, String host, String join)
+	public synchronized void UpdateClient(String name, String status, String num, String host, String join, String properties)
 	{
 		int row = GetClientRow(name);
 		if (row != -1)
@@ -339,6 +501,7 @@ public class ServerGUI
 			GetModel().setValueAt(status, row, 1);
 			GetModel().setValueAt(name, row, 0);
 			GetModel().setValueAt(num, row, 2);
+			GetModel().setValueAt(properties, row, 8);
 			
 			if (!status.equals("READY") && !status.equals("SENDING"))
 			{
@@ -358,7 +521,8 @@ public class ServerGUI
 		}
 		else
 		{
-			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", ""});
+			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", "", properties});
+			filterSelect.addItem(name);
 		}
 	}
 	
@@ -374,6 +538,13 @@ public class ServerGUI
 			GetModel().setValueAt(FrameCount, row, 6);
 			GetModel().setValueAt(win, row, 7);
 		}
+	}
+	
+	public synchronized void updateServerStatus(int games, int completed) {
+		progressBar.setMaximum(games);
+		progressBar.setValue(completed);
+		progressBar.setStringPainted(true);
+		progressBar.setString(completed + " / " + games);
 	}
 	
 	public synchronized int GetClientRow(String name)
@@ -398,16 +569,76 @@ public class ServerGUI
 		{
 			GetModel().removeRow(row);
 		}
-		else
+		for (int i = 0; i < filterSelect.getModel().getSize(); i++)
 		{
-			
+			if (filterSelect.getItemAt(i).equalsIgnoreCase(name))
+			{
+				filterSelect.removeItemAt(i);
+			}
 		}
 	}
 	
-	public void logText(String s)
+	public synchronized void logText(String s)
 	{
-		bottomText.append(s);
-		bottomText.setCaretPosition(bottomText.getDocument().getLength());
+		log.add(s);
+		if (filter.equalsIgnoreCase("all"))
+		{
+			bottomText.append(s);
+			bottomText.setCaretPosition(bottomText.getDocument().getLength());
+		}
+		else if (filter.equalsIgnoreCase("server"))
+		{
+			Pattern pattern = Pattern.compile(".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*");
+			Matcher matcher = pattern.matcher(s);
+			if (!matcher.find() || s.toLowerCase().contains("server"))
+			{
+				bottomText.append(s);
+				bottomText.setCaretPosition(bottomText.getDocument().getLength());
+			}
+		}
+		else if (s.contains(filter))
+		{
+			bottomText.append(s);
+			bottomText.setCaretPosition(bottomText.getDocument().getLength());
+		}
+	}
+	
+	public void filterLog()
+	{
+		StringBuilder filtered = new StringBuilder();
+		
+		if (filter.equalsIgnoreCase("all"))
+		{
+			for (int i = 0; i < log.size(); i++)
+			{
+				filtered.append(log.get(i));
+			}
+		}
+		else if (filter.equalsIgnoreCase("server"))
+		{
+			//excludes all lines that have an ip address
+			Pattern pattern = Pattern.compile(".*[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}.*");
+			for (int i = 0; i < log.size(); i++)
+			{
+				Matcher matcher = pattern.matcher(log.get(i));
+				if (!matcher.find() || log.get(i).toLowerCase().contains("server"))
+				{
+					filtered.append(log.get(i));
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < log.size(); i++)
+			{
+				if (log.get(i).contains(filter))
+				{
+					filtered.append(log.get(i));
+				}
+			}
+		}
+		
+		bottomText.setText(filtered.toString());
 	}
 	
 	public int NumRows()
@@ -432,7 +663,14 @@ public class ServerGUI
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 		{
 			Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-		
+			setBorder(noFocusBorder);
+			
+			//if row is selected, use default selection color
+			if (isSelected)
+			{
+				return cell;
+			}
+			
 			String status = (String)table.getValueAt(row, 1);
 			
 			if(status.equals("RUNNING"))
@@ -453,11 +691,26 @@ public class ServerGUI
 			}
 			else 
 			{
-				 //this shouldn't happen
+				//this shouldn't happen
 				cell.setBackground(Color.red);
 			}
 			
 			return cell;
+		}
+	}
+	
+	class MainTableModel extends DefaultTableModel
+	{
+		private static final long serialVersionUID = 8886359636823991784L;
+
+		public MainTableModel(Object[][] data, String[] columnNames)
+		{
+			super(data, columnNames);
+		}
+
+		public boolean isCellEditable(int row, int column)
+		{
+			return false;
 		}
 	}
 }

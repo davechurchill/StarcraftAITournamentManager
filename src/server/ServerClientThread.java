@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import objects.*;
@@ -22,6 +23,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 	private Socket 				con;
 	private ClientStatus 		status;
 	private Server 				server;
+	private Vector<String>		properties;
 	
 	private ObjectInputStream 	ois = null;
 	private ObjectOutputStream 	oos = null;
@@ -51,8 +53,12 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 			}
 			catch (Exception e) 
 			{
-				server.log("Excpetion in ManagerClientThread, removing client\n");
-				e.printStackTrace();
+				//don't print exception notice if stopThread() was called
+				if (run)
+				{
+					server.log("Exception in ManagerClientThread, removing client: " + getAddress().toString().replaceFirst("^.*/", "") + "\n");
+					e.printStackTrace();
+				}
 				server.removeClient(this);
 				run = false;
 			}
@@ -87,7 +93,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 				
 				if (dm.type == DataType.REPLAY)
 				{
-					server.log("Message from Client " + server.getClientIndex(this) + " : " + m.toString() + "\n");
+					server.log("Message from Client " + this.toString() + " : " + m.toString() + "\n");
 					dm.write(ServerSettings.Instance().ServerReplayDir);
 				}
 				else if (dm.type == DataType.WRITE_DIR)
@@ -110,7 +116,10 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 				
 				}
 			}
-			
+			else if (m instanceof ClientPropertyMessage)
+			{
+				this.properties = ((ClientPropertyMessage) m).properties;
+			}
 		}
 	}
 	
@@ -138,7 +147,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 
 	public synchronized void sendMessage(Message m) throws Exception
 	{
-		server.log("Sending Message to Client " + server.getClientIndex(this) + " : " + m.toString() + "\n");
+		server.log("Sending Message to Client " + getAddress().toString().replaceFirst("^.*/", "") + ": " + m.toString() + "\n");
 		
 		oos.writeObject(m);
 		oos.flush();
@@ -147,20 +156,6 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		if (m instanceof InstructionMessage)
 		{
 			lastInstructionSent = (InstructionMessage)m;
-		}
-	}
-	
-	public void sendChaoslauncherFiles()
-	{
-		try
-		{
-			Message m = new DataMessage(DataType.CHAOSLAUNCHER, ServerSettings.Instance().ServerRequiredDir + "Chaoslauncher.zip");
-			sendMessage(m);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(-1);
 		}
 	}
 	
@@ -219,6 +214,11 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 	{
 		return status;
 	}
+	
+	public synchronized Vector<String> getProperties()
+	{
+		return properties;
+	}
 
 	public void stopThread() 
 	{
@@ -234,6 +234,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		}
 		
 		run = false;
+		
 	}
 
 	public synchronized void setStatus(ClientStatus status) 

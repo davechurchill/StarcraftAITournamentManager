@@ -60,23 +60,6 @@ public class ClientCommands
 		WindowsCommandTools.RegEdit(sc64KeyName, "Program",     "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64KeyName, "GamePath",    "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64UserKeyName, "introX",      "REG_DWORD", "00000000");
-		
-		// Chaoslauncher Settings
-		String clKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\Launcher";
-		WindowsCommandTools.RegEdit(clKeyName,   "GameVersion",     "REG_SZ",    "Starcraft 1.16.1");
-		WindowsCommandTools.RegEdit(clKeyName,   "Width",           "REG_DWORD", "00000640");
-		WindowsCommandTools.RegEdit(clKeyName,   "Height",          "REG_DWORD", "00000480");
-		WindowsCommandTools.RegEdit(clKeyName,   "StartMinimized",  "REG_SZ",    "0");
-		WindowsCommandTools.RegEdit(clKeyName,   "MinimizeOnRun",   "REG_SZ",    "1");
-		WindowsCommandTools.RegEdit(clKeyName,   "RunScOnStartup",  "REG_SZ",    "1");
-		WindowsCommandTools.RegEdit(clKeyName,   "AutoUpdate",      "REG_SZ",    "0");
-		WindowsCommandTools.RegEdit(clKeyName,   "WarnNoAdmin",     "REG_SZ",    "0");
-		
-		// Chaoslauncher plugin settings
-		String clpKeyName = "HKEY_CURRENT_USER\\Software\\Chaoslauncher\\PluginsEnabled";
-		WindowsCommandTools.RegEdit(clpKeyName,  "BWAPI Injector (1.16.1) RELEASE", "REG_SZ", "1");
-		WindowsCommandTools.RegEdit(clpKeyName,  "W-MODE 1.02",                     "REG_SZ", "1");
-		WindowsCommandTools.RegEdit(clpKeyName,  "Chaosplugin for 1.16.1",          "REG_SZ", "0");
 	}	
 	
 	public static void Client_KillStarcraft()
@@ -88,20 +71,6 @@ public class ClientCommands
 			System.out.println("Killing Starcraft...  ");
 			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM StarCraft.exe", true, false);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
-		} 
-		
-		while (WindowsCommandTools.IsWindowsProcessRunning("Chaoslauncher.exe"))
-		{
-			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM Chaoslauncher.exe", true, false);
-			try { Thread.sleep(100); } catch (InterruptedException e) {}
-		}
-		
-		while (WindowsCommandTools.IsWindowsProcessRunning("\"Chaoslauncher - MultiInstance.exe\""))
-		{
-			System.out.println("Killing Chaoslauncher...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM \"Chaoslauncher - MultiInstance.exe\"", true, false);
-			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		}
 	}
 	
@@ -112,24 +81,6 @@ public class ClientCommands
 		// Kill any processes that weren't running before startcraft started
 		// This is helpful to kill any proxy bots or java threads that may still be going
 		WindowsCommandTools.KillExcessWindowsProccess(startingProc);
-	}
-	
-	public static void Client_DeleteChaoslauncherDirectory()
-	{
-		Client.log("      Client_DeleteChaoslauncherDirectory()\n");
-		
-		// Sleep for a second before deleting local directories
-		try 
-		{ 
-			Thread.sleep(2000); 
-		
-			// Delete local folders which now contain old data
-			FileUtils.DeleteDirectory(new File(ClientSettings.Instance().ClientChaoslauncherDir));
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	public static void Client_CleanStarcraftDirectory()
@@ -175,24 +126,8 @@ public class ClientCommands
 	{
 		Client.log("      Client_StartStarcraft()\n");
 		
-		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "DLLInjector.exe --lib \"bwapi-data/BWAPI.dll\" --launch \"Starcraft.exe\"", false, true);
-	}
-    
-    public static void Client_StartInsectLoader()
-	{
-		Client.log("      Client_StartInsectLoader()\n");
-		
-		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "InsectLoader.exe", false, true);
-	}
-    
-	public static void Client_StartChaoslauncher()
-	{
-		Client.log("      Client_StartChaoslauncher()\n");
-		
-		// Launch Chaoslauncher, do not wait for this to finish, exit if it fails (false, true)
-		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientChaoslauncherDir, "Chaoslauncher.exe", false, true);
+		// Launch Starcraft, do not wait for this to finish, exit if it fails (false, true)
+		WindowsCommandTools.RunWindowsExeLocal(ClientSettings.Instance().ClientStarcraftDir, "injectory.x86.exe --launch StarCraft.exe --inject bwapi-data\\BWAPI.dll --set-flags SEM_NOGPFAULTERRORBOX", false, true);
 	}
 
 	public static void Client_WriteTournamentModuleSettings(TournamentModuleSettingsMessage tmSettings)  
@@ -241,12 +176,21 @@ public class ClientCommands
 
 		BWINI += "; Used only for tournaments" + newLine;
 		BWINI += "; Tournaments can only be run in RELEASE mode" + newLine;
-		BWINI += "tournament =" + ClientSettings.Instance().TournamentModuleFilename + newLine + newLine;
+		BWINI += "tournament = " + ClientSettings.Instance().TournamentModuleFilename + newLine + newLine;
 
 		BWINI += "[auto_menu]" + newLine;
 		BWINI += "; auto_menu = OFF | SINGLE_PLAYER | LAN | BATTLE_NET" + newLine;
 		BWINI += "; for replays, just set the map to the path of the replay file" + newLine;
 		BWINI += "auto_menu = " + bwapi.auto_menu + newLine + newLine;
+		
+		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		{
+			BWINI += "; character_name = FIRST | WAIT | <other>" + newLine;
+			BWINI += "; if FIRST (default), use the first character in the list" + newLine;
+			BWINI += "; if WAIT, stop at this screen" + newLine;
+			BWINI += "; else the character with the given value is used/created" + newLine;
+			BWINI += "character_name = " + bwapi.character_name + newLine + newLine;
+		}
 
 		BWINI += "; pause_dbg = ON | OFF" + newLine;
 		BWINI += "; This specifies if auto_menu will pause until a debugger is attached to the process." + newLine;
@@ -274,7 +218,7 @@ public class ClientCommands
 		BWINI += ";	will join the game called \"BWAPI\"" + newLine;
 		BWINI += ";	If the game does not exist and the \"map\" entry is not blank, then the game will be created instead" + newLine;
 		BWINI += ";	If this entry is blank, then it will follow the rules of the \"map\" entry" + newLine;
-		BWINI += "game =" + id + newLine + newLine; 
+		BWINI += "game = " + instructions.hostBot.getName() + newLine + newLine; 
 
 		BWINI += "; mapiteration =  RANDOM | SEQUENCE" + newLine;
 		BWINI += "; type of iteration that will be done on a map name with a wildcard" + newLine;
@@ -304,6 +248,20 @@ public class ClientCommands
 		BWINI += ";game_type = TOP_VS_BOTTOM | MELEE | FREE_FOR_ALL | ONE_ON_ONE | USE_MAP_SETTINGS | CAPTURE_THE_FLAG" + newLine;
 		BWINI += ";           | GREED | SLAUGHTER | SUDDEN_DEATH | TEAM_MELEE | TEAM_FREE_FOR_ALL | TEAM_CAPTURE_THE_FLAG" + newLine;
 		BWINI += "game_type = " + bwapi.game_type + newLine + newLine;
+		
+		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		{
+			BWINI += "; game_type_extra = Text that appears in the drop-down list below the Game Type drop-down list." + newLine;
+			BWINI += "; If empty, the Starcraft default will be used." + newLine;
+			BWINI += "; The following are the game types that use this setting, and corresponding example values" + newLine;
+			BWINI += ";   TOP_VS_BOTTOM          3 vs 1 | 2 vs 2 | 1 vs 3 | # vs #" + newLine;
+			BWINI += ";   GREED                  2500 | 5000 | 7500 | 10000" + newLine;
+			BWINI += ";   SLAUGHTER              15 | 30 | 45 | 60" + newLine;
+			BWINI += ";   TEAM_MELEE             2 | 3 | 4 | 5 | 6 | 7 | 8" + newLine;
+			BWINI += ";   TEAM_FREE_FOR_ALL      2 | 3 | 4 | 5 | 6 | 7 | 8" + newLine;
+			BWINI += ";   TEAM_CAPTURE_THE_FLAG  2 | 3 | 4 | 5 | 6 | 7 | 8" + newLine;
+			BWINI += "game_type_extra = " + bwapi.game_type_extra + newLine + newLine;
+		}
 
 		BWINI += "; save_replay = path to save replay to" + newLine;
 		BWINI += "; Accepts all environment variables including custom variables. See wiki for more info." + newLine;
@@ -351,17 +309,18 @@ public class ClientCommands
 
 		BWINI += "; left, top" + newLine;
 		BWINI += "; Determines the position of the window" + newLine;
-		BWINI += "left = " + bwapi.left + newLine + newLine;
+		BWINI += "left = " + bwapi.left + newLine;
 		BWINI += "top  = " + bwapi.top + newLine + newLine;
 
 		BWINI += "; width, height" + newLine;
 		BWINI += "; Determines the width and height of the client area and not the window itself" + newLine;
-		BWINI += "width  = " + bwapi.width + newLine + newLine;
+		BWINI += "width  = " + bwapi.width + newLine;
 		BWINI += "height = " + bwapi.height + newLine + newLine;
 
 		BWINI += "[starcraft]" + newLine;
 		BWINI += "; Game sound engine = ON | OFF" + newLine;
-		BWINI += "sound = " + bwapi.sound + "" + newLine;
+		BWINI += "sound = " + bwapi.sound + "" + newLine + newLine;
+		
 		BWINI += "; Screenshot format = gif | pcx | tga | bmp" + newLine;
 		BWINI += "screenshots = " + bwapi.screenshots + newLine + newLine;
 

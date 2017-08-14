@@ -1,6 +1,4 @@
 *.class
-client/client.jar
-server/server.jar
 server/bots/Aiur
 server/bots/Bonjwa
 server/bots/BTHAI
@@ -8,9 +6,12 @@ server/bots/Cimex
 server/bots/CruzBot
 server/bots/Garmbot
 server/bots/HITA
+Server/bots/Iron
+Server/bots/JiaBot
 server/bots/IceBot
 server/bots/LetaBot
 server/bots/MaasCraft
+server/bots/MegaBot
 server/bots/MooseBot
 server/bots/Nova
 server/bots/NUSBot
@@ -18,8 +19,8 @@ server/bots/Oritaka
 server/bots/OpprimoBot
 server/bots/Overkill
 server/bots/Skynet
-server/bots/Stone
-server/bots/ZZZKBot
+Server/bots/SRbotOne
+Server/bots/Stone
 server/bots/SusanooTricks
 server/bots/TerranUAB
 server/bots/Tscmoo
@@ -28,9 +29,11 @@ server/bots/UAlbertaBot
 server/bots/Xelnaga
 server/bots/Ximp
 server/bots/Yarmouk
+server/bots/ZZZKBot
 *.REP
 server/winpercentage.txt
 server/results.txt
 server/games.txt
-server/html/*.html
 server/html/*.txt
+*.project
+.classpath

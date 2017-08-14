@@ -77,7 +77,7 @@ public class GameParser
 				line = line.trim();
 				String[] args = line.split("\\s+");
 				Game newGame = new Game(Integer.parseInt(args[0]), Integer.parseInt(args[1]), findBot(args[2]), findBot(args[3]), findMap(args[4])); 
-				games.addGame(newGame, newGame.getRound());
+				games.addGame(newGame);
 			}
 			line = br.readLine();
 		}

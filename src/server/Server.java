@@ -36,7 +36,12 @@ public class Server  extends Thread
 		if (resumed)
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			games.removePlayedGames(rp);
+			gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
+			games.removePlayedGames(rp.getGameIDs());
+		}
+		else
+		{
+			gui.updateServerStatus(games.getNumTotalGames(), 0);
 		}
 		
         clients 	= new Vector<ServerClientThread>();
@@ -62,61 +67,118 @@ public class Server  extends Thread
 		}
 		
 		int neededClients = 2;
-		
-		Game nextGame = games.getNextGame();
 		int iterations = 0;
+		
+		Game nextGame = null;
+		
+		//only one message of each kind is logged per instance
+		boolean notEnoughClients = false;
+		boolean requirementsNotMet = false;
 		
 		// keep trying to schedule games
 		while (true)
 		{
 			try
-			{
+			{		
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
-				writeHTMLFiles("index.html", iterations++);
+				updateResults(iterations++);
 				
 				if (!games.hasMoreGames())
 				{
-					log("No more games in games list, please shut down tournament!");
+					if (free.size() == clients.size())
+					{
+						log("No more games in games list, please shut down tournament!\n");
+						break;
+					}
+					else
+					{
+						log("No more games in games list, please wait for all games to finish.\n");
+						while (free.size() < clients.size())
+	                    {
+	                        Thread.sleep(gameRescheduleTimer);
+	                    }
+					}
+					continue;
 				}
 				
-				String gameString = "Game(" + nextGame.getGameID() + " / " + nextGame.getRound() + ")";
-			
 				// we can't start a game if we don't have enough clients
 				if (free.size() < neededClients) 
 				{
-					//log(gameString + " Can't start: Not Enough Clients\n");
-					continue;
-				}
-				// also don't start a game if a game is currently in the lobby
-				else if (isAnyGameStarting())
-				{
-					//log(gameString + " Can't start: Another Game Starting\n");
+					if (!notEnoughClients)
+					{
+						log("Not enough clients to start next game. Waiting for more free clients.\n");
+						notEnoughClients = true;
+					}
 					continue;
 				}
 				
-                if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
-                {
-                    // put some polling code here to wait until all games from this round are free
-                    while (free.size() < clients.size())
-                    {
-                        log(gameString + " Can't start: Waiting for Previous Round to Finish\n");
-                        Thread.sleep(gameRescheduleTimer);
-                    }
-                    
-                    log("Moving Write Directory to Read Directory");
-                    
-                    // move the write dir to the read dir
-                    ServerCommands.Server_MoveWriteToRead();
-                }
-						
-				log(gameString + " SUCCESS: Starting Game\n");
+				// check if previous games are still starting
+				Set<String> startingBots = getStartingHostBotNames();
+				
+				//get lists of client properties
+				Vector<Vector<String>> freeClientProperties = getFreeClientProperties();
+				
+				if (ServerSettings.Instance().StartGamesSimul.equalsIgnoreCase("yes"))
+				{
+					// we can start multiple games at same time
+					nextGame = games.getNextGame(startingBots, freeClientProperties);
+					if (nextGame == null)
+					{
+						//can't start a game because of bot requirements or round
+						if (!requirementsNotMet)
+						{
+							log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							requirementsNotMet = true;
+						}
+						continue;
+					}
+				}
+				else if (startingBots.isEmpty())
+				{
+					// can only start one game at a time, but none others are starting
+					nextGame = games.getNextGame(null, freeClientProperties);
+					if (nextGame == null)
+					{
+						//all games remaining in this round can not be started now (bot requirements)
+						if (!requirementsNotMet)
+						{
+							log ("Waiting for clients with needed properties.\n");
+							requirementsNotMet = true;
+						}
+						continue;
+					}
+				}
+				else
+				{
+					// need to wait for current starting game(s) to finish starting
+					continue;
+				}
+				
+				//only wait for round completion in AllvsAll tournament
+				if(ServerSettings.Instance().TournamentType.equalsIgnoreCase("AllVsAll")) {
+					
+					if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
+	                {
+						log("Next Game: (" + nextGame.getGameID() + " / " + nextGame.getRound() + ") Can't start: Waiting for Previous Round to Finish\n");
+	                    
+						// wait until all games from this round are free
+	                    while (free.size() < clients.size())
+	                    {
+	                        Thread.sleep(gameRescheduleTimer);
+	                    }
+	                    
+	                    log("Moving Write Directory to Read Directory\n");
+	                    
+	                    // move the write dir to the read dir
+	                    ServerCommands.Server_MoveWriteToRead();
+	                }
+				}
+				
+				notEnoughClients = false;
+				requirementsNotMet = false;
 				start1v1Game(nextGame);
-				
-				if (games.hasMoreGames())
-				{
-					nextGame = games.getNextGame();
-				}
+				previousScheduledGame = nextGame;
 			}
 			catch (Exception e)
 			{
@@ -127,51 +189,22 @@ public class Server  extends Thread
 		}
 	}
 	
-	public synchronized void writeHTMLFiles(String filename, int iter) throws Exception
-	{
-		try
-		{			
-			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			
-			String schedulerHTML = gui.getHTML();
-			String entrantsHTML = rp.getEntrantsHTML();
-			String headerHTML = rp.getHeaderHTML();
-			String footerHTML = rp.getFooterHTML();
-			String resultsHTML = rp.getResultsHTML();
-			
-			// if there are no clients, don't both writing the current scheduler info
-			if (clients.size() == 0)
-			{
-				schedulerHTML = "";
-			}
-			
-			// only write the all results file every 30 reschedules, saves time
-			if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
-			{
-				log("Generating All Results File...\n");
-				rp.writeDetailedResultsHTML("html/results.html");
-				log("Generating All Results File Complete!\n");
-			}
-			
-			writeHTMLFile(headerHTML + entrantsHTML + schedulerHTML + resultsHTML + footerHTML, "html/index.html");
-		}
-		catch (Exception e)
+	public synchronized void updateResults(int iter) throws Exception
+	{	
+		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
+		
+		gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
+				
+		// only write the all results file every 30 reschedules, saves time
+		if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
 		{
-			
+			log("Generating All Results File...\n");
+			rp.writeDetailedResultsJSON();
+			log("Generating All Results File Complete!\n");
 		}
-	}
-	
-	public void writeHTMLFile(String html, String filename) throws Exception
-	{
-		File file = new File(filename);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(html);
-		bw.close();
-		fw.close();
+		
+		rp.writeWinPercentageGraph();
+		FileUtils.writeToFile(rp.getResultsJSON(), "html/results/results_summary_json.js");
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost)
@@ -242,6 +275,28 @@ public class Server  extends Thread
     		log("There was an error sending the client command message");
     	}
 	}
+	
+	public synchronized void sendCommandToClient(String client, String command)
+	{
+		ClientCommandMessage message = new ClientCommandMessage(command);
+		
+		log("Sending command " + message.getCommand() + " to client: " + client + "\n");
+		
+		try
+    	{
+	        for (int i = 0; i < clients.size(); i++) 
+			{
+	        	if (clients.get(i).getAddress().toString().contains(client))
+	        	{
+	        		clients.get(i).sendMessage(message);
+	        	}    
+	        }
+    	}
+    	catch (Exception e)
+    	{
+    		log("There was an error sending the client command message");
+    	}
+	}
 		
 	public synchronized void updateStatusTable()
 	{
@@ -264,6 +319,19 @@ public class Server  extends Thread
 			String hostBotName = "";
 			String awayBotName = "";
 			
+			String properties = "";
+			if (c.getProperties() != null)
+			{
+				for (int i = 0; i < c.getProperties().size(); i++)
+				{
+					properties += c.getProperties().get(i);
+					if (i != c.getProperties().size() - 1)
+					{
+						properties += ", ";
+					}
+				}
+			}
+			
 			InstructionMessage ins = c.lastInstructionSent;
 			
 			if (ins != null)
@@ -280,18 +348,13 @@ public class Server  extends Thread
 				awayBotName = "";
 			}
 		
-			gui.UpdateClient(client, status, gameNumber, hostBotName, awayBotName);
+			gui.UpdateClient(client, status, gameNumber, hostBotName, awayBotName, properties);
 		}
-	}
-	
-	public static String getTimeStamp()
-	{
-		return new SimpleDateFormat("[HH:mm:ss]").format(Calendar.getInstance().getTime());
 	}
 	
 	public synchronized void log(String s)
 	{
-		gui.logText(getTimeStamp() + " " + s);
+		gui.logText(ServerGUI.getTimeStamp() + " " + s);
 	}
 	
 	private synchronized void removeNonFreeClientsFromFreeList() 
@@ -314,7 +377,6 @@ public class Server  extends Thread
 			{
                 clients.add(c);
                 log("New Client Added: " + c.toString() + "\n");
-                c.sendChaoslauncherFiles();
                 c.sendTournamentModuleSettings();
             }
             if (c.getStatus() == ClientStatus.READY && !free.contains(c)) 
@@ -337,25 +399,103 @@ public class Server  extends Thread
 		
         return true;
     }
-    
-    public synchronized int getNeededClients(Game game) 
-	{
-		return 2;
-	}
 	
-	private synchronized boolean isAnyGameStarting()
+	private synchronized Set<String> getStartingHostBotNames()
 	{
+		Set<String> hostNames = new HashSet<String>();
 		for (int i = 0; i < clients.size(); i++) 
 		{
 			ServerClientThread c = clients.get(i);
 			
 			if (c.getStatus() == ClientStatus.STARTING)
 			{
-				return true;
+				hostNames.add(c.lastInstructionSent.hostBot.getName());
 			}
 		}
 		
-		return false;
+		return hostNames;
+	}
+	
+	private Vector<Vector<String>> getFreeClientProperties()
+	{
+		Vector<Vector<String>> properties = new Vector<Vector<String>>(); 
+		
+		//properties are null if the client has none
+		for (ServerClientThread freeClient: free)
+		{
+			if (freeClient.getProperties() == null)
+			{
+				properties.add(new Vector<String>());
+			}
+			else
+			{
+				properties.add(freeClient.getProperties());
+			}
+		}
+		return properties;
+	}
+	
+	// this function assumes that there exist two suitable clients for the game
+	// that is tested in the GameStorage class
+	private int[] getClientsForGame(Game game)
+	{
+		//{home, away}
+		int[] clientsForGame = new int[2];
+		
+		// sort free clients according to number of properties so that
+		// clients with the least number of properties are used first 
+		free.sort(new Comparator<ServerClientThread>()
+		{
+			public int compare(ServerClientThread client1, ServerClientThread client2)
+			{
+				if (client1.getProperties().size() < client2.getProperties().size())
+				{
+					return -1;
+				}
+				else if (client1.getProperties().size() > client2.getProperties().size())
+				{
+					return 1;
+				}
+				return 0;
+			}
+		});
+		
+		clientsForGame[0] = findClientWithRequirements(free, game.getHomebot().getRequirements(), -1);
+		clientsForGame[1] = findClientWithRequirements(free, game.getAwaybot().getRequirements(), clientsForGame[0]);
+		
+		// in some cases where clients have multiple properties the home bot could have taken the only client
+		// acceptable for the away bot, so we have to let away bot pick first
+		if (clientsForGame[1] == -1)
+		{
+			clientsForGame[1] = findClientWithRequirements(free, game.getAwaybot().getRequirements(), -1);
+			clientsForGame[0] = findClientWithRequirements(free, game.getHomebot().getRequirements(), clientsForGame[1]);
+		}
+				
+		return clientsForGame;
+	}
+	
+	private int findClientWithRequirements(Vector<ServerClientThread> clients, Vector<String> requirements, int exclude)
+	{
+		for (int i = 0; i < clients.size(); i++)
+		{
+			if (exclude == -1 || i != exclude)
+			{
+				boolean hasAllProperties = true;
+				for (String requirement : requirements)
+				{
+					if (!clients.get(i).getProperties().contains(requirement))
+					{
+						hasAllProperties = false;
+						break;
+					}
+				}
+				if (hasAllProperties)
+				{
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 	
     /**
@@ -363,11 +503,10 @@ public class Server  extends Thread
      */
     private synchronized void start1v1Game(Game game) throws Exception
 	{	
-    	previousScheduledGame = game;
-    	
 		// get the clients and their instructions
-		ServerClientThread hostClient = free.get(0);
-		ServerClientThread awayClient = free.get(1);
+    	int[] gameClients = getClientsForGame(game);
+		ServerClientThread hostClient = free.get(gameClients[0]);
+		ServerClientThread awayClient = free.get(gameClients[1]);
 		InstructionMessage hostInstructions = new InstructionMessage(ServerSettings.Instance().bwapi, true, game);
 		InstructionMessage awayInstructions = new InstructionMessage(ServerSettings.Instance().bwapi, false, game);
 		
@@ -437,7 +576,7 @@ public class Server  extends Thread
 		{
 			log("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");				// EXCEPTION HERE
 			System.out.println("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");
-			Game g = games.lookupGame(game.getGameID(), game.getRound());
+			Game g = games.lookupGame(game.getGameID());
 			g.updateWithGame(game);
 			appendGameData(g);
 		}
@@ -492,23 +631,35 @@ public class Server  extends Thread
 		gui.RemoveClient(c.toString());
 		updateStatusTable();
     }
-
+    
     synchronized public void killClient(String ip) 
 	{
         System.out.println("Attempting to kill client: " + ip);
         for (int i = 0; i < clients.size(); i++) 
 		{
-            if (clients.get(i).getAddress().toString().contentEquals(ip)) 
+            if (clients.get(i).getAddress().toString().contains(ip)) 
 			{
-                System.out.println("Client Found and Stopped\n");
-                free.remove(clients.get(i));
-                clients.get(i).stopThread();
-                clients.remove(i);
+            	System.out.println("Client Found\n");
+                try
+				{
+					clients.get(i).sendMessage(new ClientShutdownMessage());
+					clients.get(i).stopThread();
+					free.remove(clients.get(i));
+	                	                clients.remove(i);
+					System.out.println("Client Found and Stopped\n");
+					gui.RemoveClient(ip);
+					log("Client removed: " + ip.replaceFirst("^.*/", "") + "\n");
+				}
+                catch (Exception e)
+				{
+					e.printStackTrace();
+				}
                 return;
             }
         }
     }
 }
+
 class FileCopyThread extends Thread
 {
 	String source;
@@ -565,20 +716,33 @@ class FileCopyThread extends Thread
 
 		FileChannel source = null;
 		FileChannel destination = null;
+		FileInputStream inputStream = null;
+		FileOutputStream outputStream = null;
 
 		try 
 		{
-			source = new FileInputStream(sourceFile).getChannel();
-			destination = new FileOutputStream(destFile).getChannel();
+			inputStream = new FileInputStream(sourceFile);
+			source = inputStream.getChannel();
+			outputStream = new FileOutputStream(destFile);
+			destination = outputStream.getChannel();
 			destination.transferFrom(source, 0, source.size());
+			
 		}
 		finally 
 		{
-			if(source != null) 
+			if (inputStream != null)
+			{
+				inputStream.close();
+			}
+			if (source != null) 
 			{
 				source.close();
 			}
-			if(destination != null) 
+			if (outputStream != null)
+			{
+				outputStream.close();
+			}
+			if (destination != null) 
 			{
 				destination.close();
 			}

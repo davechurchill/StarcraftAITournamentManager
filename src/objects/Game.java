@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Vector;
-import java.util.Date;
 
 public class Game implements Serializable
 {
@@ -14,8 +13,6 @@ public class Game implements Serializable
 	private Bot 			awaybot;
 	private String			homeAddress = "unknown";
 	private String			awayAddress = "unknown";
-	private Date			started;
-	private Date			finished;
 
 	private GameStatus 		status;
 	private Map 			map;

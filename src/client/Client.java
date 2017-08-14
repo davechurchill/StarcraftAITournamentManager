@@ -43,7 +43,6 @@ public class Client extends Thread
 	
 	private DataMessage	requiredFiles			= null;
 	private DataMessage	botFiles				= null;
-	private boolean 	haveChaoslauncher		= false;
 	
 	private TournamentModuleSettingsMessage	tmSettings = null;
 	
@@ -74,7 +73,18 @@ public class Client extends Thread
 	
 	private void updateGUI(String currentStatus, String haveState, String scRun, String func, String data)
 	{
-		gui.UpdateClient(listener.getAddress(), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data);		
+		String properties = "";
+		for (int i = 0; i < ClientSettings.Instance().ClientProperties.size(); i++)
+		{
+			properties += ClientSettings.Instance().ClientProperties.get(i);
+			if (i != ClientSettings.Instance().ClientProperties.size() - 1)
+			{
+				properties += ",";
+			}
+			properties += " ";
+		}
+		
+		gui.UpdateClient(listener.getAddress(), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data, properties);		
 	}
 	
 	public void setListener(ClientListenerThread l)
@@ -115,6 +125,11 @@ public class Client extends Thread
 	public synchronized void setStatus(ClientStatus s) 
 	{
 		setStatus(s, null);
+	}
+	
+	public synchronized void sendProperties(Vector<String> properties)
+	{
+		listener.sendMessageToServer(new ClientPropertyMessage(properties));
 	}
 	
 	public void run()
@@ -233,14 +248,6 @@ public class Client extends Thread
 				botFiles = dm;
 				log("Client: Bot files received\n");
 			}
-			else if (dm.type == DataType.CHAOSLAUNCHER)
-			{
-				log("Client: Chaoslauncher data received\n");
-				dm.write(ClientSettings.Instance().ClientChaoslauncherDir);
-				ClientCommands.Client_RegisterStarCraft();
-				haveChaoslauncher = true;
-				log("Client: Ready, waiting for Instructions from Server...\n");
-			}
 		}
 		else if (m instanceof StartGameMessage)
 		{
@@ -281,7 +288,7 @@ public class Client extends Thread
 			log("Server told us to execute command: " + ((ClientCommandMessage)m).getCommand() + "\n");
 			WindowsCommandTools.RunWindowsCommandAsync(((ClientCommandMessage)m).getCommand());
 		}
-		else if (m instanceof ServerShutdownMessage)
+		else if (m instanceof ServerShutdownMessage || m instanceof ClientShutdownMessage)
 		{
 			shutDown();
 		}
@@ -357,8 +364,8 @@ public class Client extends Thread
 				ClientCommands.Client_RunProxyScript();
 			}
 			
-			// Start loader and starcraft
-			ClientCommands.Client_StartChaoslauncher();
+			// Start starcraft
+			ClientCommands.Client_StartStarcraft();
 
 			// Record the time that we tried to start the game
 			startTime = System.currentTimeMillis();
@@ -422,6 +429,17 @@ public class Client extends Thread
 									null);
 		
 		retGame.setFinalFrame(gameState.frameCount);
+		
+		//some crashes leave the timeOuts in gameState empty (if game never started).
+		if (gameState.timeOutExceeded.size() == 0)
+		{
+			Vector<Integer> emptyTimers = new Vector<Integer>();
+			for (int i = 0; i < tmSettings.TimeoutLimits.size(); i++) {
+				emptyTimers.add(0);
+			}
+			gameState.timeOutExceeded = emptyTimers;
+		}
+		
 		if (previousInstructions.isHost) 
 		{
 			retGame.setHostcrash(true);

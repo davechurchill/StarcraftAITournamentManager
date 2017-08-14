@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Win Percentage Over Time</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/style.css">
+	<script src='javascript/jquery-1.10.2.min.js'></script>
+	<script src="javascript/highcharts.js"></script>
+	<script src="results/winpercentage.js"></script>
+	<script>
+		$(function() {
+			$('#winPercentageGraph').highcharts({
+				chart: {
+					zoomType: 'xy'
+				},
+				title: {
+					text: 'Starcraft AI Competition Win Percentage Over Time',
+					style: {
+						color: 'black',
+						fontSize:'24px'
+					},
+					x: -20 
+				},
+				xAxis: {
+					allowDecimals: false,
+					title : { 
+						text : 'Round Number',
+						style: {
+							color: 'black',
+							fontSize:'18px'
+						}
+					},
+					labels: {
+						style: {
+							color: 'black',
+							fontSize:'18px'
+						}
+					}
+				},
+				yAxis: {
+					title: {
+						text: 'Win Rate',
+						style: {
+							color: 'black',
+							fontSize:'18px'
+						}
+					},
+					labels: {
+						style: {
+							color: 'black',
+							fontSize:'18px'
+						}
+					},
+					plotLines: [{
+						value: 0,
+						width: 0,
+						color: '#ff0000'
+					}]
+				},
+				tooltip: {
+					crosshairs: true,
+					valuePrefix: '',
+					valueSuffix: ''
+				},
+				legend: {
+					layout: 'vertical',
+					align: 'right',
+					verticalAlign: 'middle',
+					borderWidth: 0
+				},
+				plotOptions: {
+					line: {
+						lineWidth: 2,
+						marker: {
+							enabled: true
+						}
+					}
+				},
+				series: winPercentage
+			});
+		});
+	</script>
+</head>
+<body>
+	<div id="winPercentageGraph"></div>
+</body>
+</html>
+
