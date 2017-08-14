@@ -223,8 +223,8 @@ public class ResultsParser
 			{
 				int ii = allPairs.get(i).botIndex;
 				
-				winPercentage.append("{ name: '" + botNames[ii] + "', data: [");
-				roundWins.append("{ name: '" + botNames[ii] + "', data: [");
+				winPercentage.append("{\"name\": \"" + botNames[ii] + "\", \"data\": [");
+				roundWins.append("{\"name\": \"" + botNames[ii] + "\", \"data\": [");
 				for (int j=0; j<gamesAfterRound.get(ii).size(); ++j)
 				{
 					double winRate = (double)winsAfterRound.get(ii).get(j) / (double)gamesAfterRound.get(ii).get(j);
@@ -261,8 +261,9 @@ public class ResultsParser
 		
 		winPercentage.append("];");
 		
-		FileUtils.writeToFile(winPercentage.toString(), "html/winpercentage.txt");
-		FileUtils.writeToFile(roundWins.toString(), "html/roundwins.txt");
+		FileUtils.CreateDirectory("html/results");
+		FileUtils.writeToFile(winPercentage.toString(), "html/results/winpercentage.js");
+		FileUtils.writeToFile(roundWins.toString(), "html/results/roundwins.js");
 	}
 	
 	public boolean hasGameResult(int gameID)
@@ -370,10 +371,11 @@ public class ResultsParser
 			outtxt.append(r.getResultString() + "\n");
 		}
 		
-		out.append("]");
+		out.append("];");
 		
-		FileUtils.writeToFile(out.toString(), "html/detailed_results_json.txt");
-		FileUtils.writeToFile(outtxt.toString(), "html/detailed_results.txt");
+		FileUtils.CreateDirectory("html/results");
+		FileUtils.writeToFile(out.toString(), "html/results/detailed_results_json.js");
+		FileUtils.writeToFile(outtxt.toString(), "html/results/detailed_results.txt");
 	}
 	
 	public String getResultsJSON()
@@ -400,8 +402,8 @@ public class ResultsParser
 		
 		StringBuilder json = new StringBuilder();
 		
-		File resultsTXT = new File("html/detailed_results.txt");
-		json.append("var resultsTXTSize = " + (resultsTXT.exists() ? resultsTXT.length() : 0) + ";\n");
+		File resultsTXT = new File("html/results/detailed_results.txt");
+		json.append("var resultsTXTSize = " + (resultsTXT.exists() ? resultsTXT.length()/1000 : 0) + ";\n");
 		json.append("var lastUpdateTime = '" + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "';\n");
 		json.append("var maps = [");
 		for (int i=0; i<numMaps; i++)

@@ -1,11 +1,17 @@
 $(function()
 {
 	//these arguments are declared in another file output by the Tournament Manager
+	displayDetailedResultsSize(resultsTXTSize)
 	fillResultsTable(resultsSummary);
 	fillPairsTable(resultsSummary);
 	fillMapsTable(resultsSummary, maps);
 	displayUpdateTime(lastUpdateTime);
 });
+
+function displayDetailedResultsSize(size)
+{
+	$("#plainTextSize").html("(" + size + " kB)");
+}
 
 function fillResultsTable(data)
 {

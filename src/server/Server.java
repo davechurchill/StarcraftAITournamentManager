@@ -204,7 +204,7 @@ public class Server  extends Thread
 		}
 		
 		rp.writeWinPercentageGraph();
-		FileUtils.writeToFile(rp.getResultsJSON(), "html/results_summary_json.txt");
+		FileUtils.writeToFile(rp.getResultsJSON(), "html/results/results_summary_json.js");
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost)
