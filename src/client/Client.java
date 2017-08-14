@@ -63,7 +63,7 @@ public class Client extends Thread
 	
 	public static String getTimeStamp()
 	{
-		return new SimpleDateFormat("[HH:mm:ss]").format(Calendar.getInstance().getTime());
+		return new SimpleDateFormat("[MMM d, HH:mm:ss]").format(Calendar.getInstance().getTime());
 	}
 	
 	public static synchronized void updateFunc(String func)
@@ -84,7 +84,7 @@ public class Client extends Thread
 			properties += " ";
 		}
 		
-		gui.UpdateClient(listener.getAddress(), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data, properties);		
+		gui.UpdateClient(listener.getAddress().replace("/", ""), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data, properties);		
 	}
 	
 	public void setListener(ClientListenerThread l)
