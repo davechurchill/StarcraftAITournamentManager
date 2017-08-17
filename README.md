@@ -9,21 +9,21 @@ Tournament Manager Software for StarCraft AI Competitions
 	* [Video](#video)
 	* [Server](#server)
 	* [Client](#client)
-	* [Results Parser](#resultsparser)
+	* [Results Parser](#results-parser)
 * [Instructions](#instructions)
 	* [Prerequisites](#prerequisites)
-	* [Download & Compile](#downloadcompile)
-	* [Initial Server Setup](#initialserversetup)
-	* [Running Server Software](#runningserversoftware)
-	* [Server GUI](#servergui)
-	* [Initial Client Setup](#initialclientsetup)
-	* [Running Client Software](#runningclientsoftware)
-	* [Results Output](#resultsoutput)
-	* [Helpful Windows Commands](#helpfulwindowscommands)
+	* [Download & Compile](#download--compile)
+	* [Initial Server Setup](#initial-server-setup)
+	* [Running Server Software](#running-server-software)
+	* [Server GUI](#server-gui)
+	* [Initial Client Setup](#initial-client-setup)
+	* [Running Client Software](#running-client-software)
+	* [Results Output](#results-output)
+	* [Helpful Windows Commands](#helpful-windows-commands)
 * [Settings](#settings)
-	* [Server Settings](#serversettings)
-	* [Client Settings](#clientsettings)
-* [Change Log](#changelog)
+	* [Server Settings](#server-settings)
+	* [Client Settings](#client-settings)
+* [Change Log](#change-log)
 
 ## Overview
 
@@ -47,7 +47,7 @@ Use this software at your own risk. That being said, it *should* work without ma
 
 ### Video
 
-The following video uses an older version of the tournament manager, but it still shows the main functionality of the software:
+The following video uses an older version of the tournament manager, but it still demonstrates the main functionality of the software:
 
 [![AIIDE Tournament Manager Software](http://img.youtube.com/vi/tl-nansNbsA/0.jpg)](http://www.youtube.com/watch?v=tl-nansNbsA)
 
