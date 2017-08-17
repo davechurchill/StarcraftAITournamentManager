@@ -416,10 +416,6 @@ public class ServerGUI
 					resultsFile.delete();
 				}
 				
-				//FileOutputStream fos = new FileOutputStream(ServerSettings.Instance().ResultsFile);
-				//fos.write((new String()).getBytes());
-				//fos.close();
-				
 				logText(getTimeStamp() + " Clearing Bot Read / Write Directories\n");
     			for (Bot b : ServerSettings.Instance().BotVector)
     			{

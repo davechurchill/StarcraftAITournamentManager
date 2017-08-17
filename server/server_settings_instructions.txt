@@ -12,7 +12,7 @@ If BotType is "proxy" then client will run the script server/bots/BotName/AI/run
 	
 	Example: {"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420", "ClientRequirements": [{"Property": "Extra RAM"}, {"Property": "GPU"}]}
 	
-***Client Requirements have to match a client in the tournament. (See Client Settings)
+***Bot Requirements have to match a client in the tournament. (See Client Settings)
 
 Name: maps
 Desc: array of json objects for each map in the tournament
@@ -41,10 +41,6 @@ Allowed values: number
 
 Name: clearResults
 Desc: Clear existing results on server start?
-Allowed values: "yes" | "no" | "ask"
-
-Name: resumeTournament
-Desc: Resume tournament if results exist?
 Allowed values: "yes" | "no" | "ask"
 
 Name: startGamesSimultaneously
