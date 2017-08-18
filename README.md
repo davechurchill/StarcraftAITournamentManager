@@ -129,23 +129,23 @@ You will find the following directory structure:
             run_client.bat                    Script to run client
         server/                           Server Directory
             bots/                             Contains all files for each bot
-                botname/                          Bot-specific directory
-                    AI/                               Where the .dll / proxy bot files go
-                    read/                             File I/O read directory
-                    write/                            File I/O write directory
+                botname/                      Bot-specific directory
+                    AI/                       Where the .dll / proxy bot files go
+                    read/                     File I/O read directory
+                    write/                    File I/O write directory
             html/                             HTML for viewing results
-               css/                              CSS files
-               javascript/                       Javascript files
-               results/                          Output folder for results data in JSON format
-               index.html                        Summary of tournament results 
-               results.html                      Detailed results from each game
-               win_percentage_graph.html         Win % over time for all bots
+               css/                           CSS files
+               javascript/                    Javascript files
+               results/                       Output folder for results data in JSON format
+               index.html                     Summary of tournament results 
+               results.html                   Detailed results from each game
+               win_percentage_graph.html      Win % over time for all bots
             replays/                          Replay storage directory * 
             required/                         Required file storage directory
-                Required_BWAPI_374.zip            BWAPI/Starcraft required files (BWAPI 374)
-                Required_BWAPI_401B.zip           BWAPI/Starcraft required files (BWAPI 401B)
-                Required_BWAPI_412.zip            BWAPI/Starcraft required files (BWAPI 412)
-                Required_BWAPI_420.zip            BWAPI/Starcraft required files (BWAPI 420)
+                Required_BWAPI_374.zip        BWAPI/Starcraft required files (BWAPI 374)
+                Required_BWAPI_401B.zip       BWAPI/Starcraft required files (BWAPI 401B)
+                Required_BWAPI_412.zip        BWAPI/Starcraft required files (BWAPI 412)
+                Required_BWAPI_420.zip        BWAPI/Starcraft required files (BWAPI 420)
             games.txt                         Default tournament games list filename *
             parse_results.bat                 Script to run results parser
             results.txt                       Default tournament results filename *
