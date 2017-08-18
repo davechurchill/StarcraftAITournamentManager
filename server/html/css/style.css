@@ -42,6 +42,7 @@ p {
 
 #resultsTable th {
 	width: 80px;
+	line-height: 1.5em;
 }
 
 #resultsPairTable th {
