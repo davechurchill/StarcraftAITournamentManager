@@ -118,8 +118,7 @@ Download a zip file containing all Visual Studio redists and easy install script
 
 ### Download & Compile
 
-Download or clone the repository to any directory on your server machine that does not contain spaces (I am a lazy programmer).
-You will find the following directory structure:
+Download or clone the repository to any directory on your server machine that does not contain spaces. You will find the following directory structure:
 
     TournamentManager/
         client/                           Client Directory
@@ -159,8 +158,7 @@ You will find the following directory structure:
             make.bat                          Script to compile / make jar files
 *doesn't exist by default, but server will create
 
-The tournament manager comes pre-compiled as 2 jar files (client/client.jar, server/server.jar), however if you want to compile the code you can use make.bat in the src/ folder, or any other build system you wish.
-The make.bat script will run clean.bat (delete .class files), compile the necessary Java files, create the required .jar files and put them into the correct sub-directories.
+The tournament manager comes pre-compiled as 2 jar files (client/client.jar, server/server.jar), however if you want to compile the code you can use make.bat in the src/ folder, or any other build system you wish. The make.bat script will run clean.bat (delete .class files), compile the necessary Java files, create the required .jar files and put them into the correct sub-directories.
 
 ### Initial Server Setup
 
@@ -194,13 +192,12 @@ Currently only round robin tournament games generation is supported, however you
 
 ### Server GUI
 
-The Server GUI displays information about the tournament in the top bar, followed by a list of connected clients and their current status, and a log at the bottom.
-Game duration is given in normal speed Starcraft time, though the game is likely playing much faster (depending on server settings and client hardware).
+The Server GUI displays information about the tournament in the top bar, followed by a list of connected clients and their current status, and a log at the bottom. Game duration is given in normal speed Starcraft time, though the game is likely playing much faster (depending on server settings and client hardware).
 
 The menu options under "Actions" allow you to:
-* generate detailed results (normally this is the only way to generate detailed results, unless automatic generation is turned on in the server settings),
-* send a command to all clients, or
-* request a screenshot of a client's screen.
+* Generate detailed results (normally this is the only way to generate detailed results, unless automatic generation is turned on in the server settings),
+* Send a command to all clients, or
+* Request a screenshot of a client's screen.
 
 The same client options, plus the options to kill clients or filter the log by client, can be found by selecting and right-clicking on one or more clients in the client list.
 
