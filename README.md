@@ -39,9 +39,7 @@ With these files you should be able to run a tournament as quickly as you can in
 
 ### Disclaimer
 
-Keep in mind that this is not retail software, and I am not responsible for any negative effects it has on your system.
-This software regularly creates, deletes, and sends files over sockets, and I am not a perfect programmer.
-Use this software at your own risk. That being said, it *should* work without many issues.
+This software regularly creates, deletes, and sends files over sockets, use it at your own risk. 
 
 ## Introduction
 
@@ -123,42 +121,42 @@ Download a zip file containing all Visual Studio redists and easy install script
 Download or clone the repository to any directory on your server machine that does not contain spaces (I am a lazy programmer).
 You will find the following directory structure:
 
-	TournamentManager/
-		client/                           Client Directory
-			BWAPI.ini                         Default BWAPI settings file
-			client.jar                        Client jar file
-			client_settings.json              Client settings file (modify this)
-			run_client.bat                    Script to run client
-		server/                           Server Directory
-			bots/                             Contains all files for each bot
-				botname/                          Bot-specific directory
-					AI/                               Where the .dll / proxy bot files go
-					read/                             File I/O read directory
-					write/                            File I/O write directory
-			html/                             HTML for viewing results
-            	css/                              CSS files
-                javascript/                       Javascript files
-                results/                          Output folder for results data in JSON format
-                index.html                        Summary of tournament results 
-                results.html                      Detailed results from each game
-                win_percentage_graph.html         Win % over time for all bots
-			replays/                          Replay storage directory * 
-			required/                         Required file storage directory
-				Required_BWAPI_374.zip            BWAPI/Starcraft required files (BWAPI 374)
-				Required_BWAPI_401B.zip           BWAPI/Starcraft required files (BWAPI 401B)
+    TournamentManager/
+        client/                           Client Directory
+            BWAPI.ini                         Default BWAPI settings file
+            client.jar                        Client jar file
+            client_settings.json              Client settings file (modify this)
+            run_client.bat                    Script to run client
+        server/                           Server Directory
+            bots/                             Contains all files for each bot
+                botname/                          Bot-specific directory
+                    AI/                               Where the .dll / proxy bot files go
+                    read/                             File I/O read directory
+                    write/                            File I/O write directory
+            html/                             HTML for viewing results
+               css/                              CSS files
+               javascript/                       Javascript files
+               results/                          Output folder for results data in JSON format
+               index.html                        Summary of tournament results 
+               results.html                      Detailed results from each game
+               win_percentage_graph.html         Win % over time for all bots
+            replays/                          Replay storage directory * 
+            required/                         Required file storage directory
+                Required_BWAPI_374.zip            BWAPI/Starcraft required files (BWAPI 374)
+                Required_BWAPI_401B.zip           BWAPI/Starcraft required files (BWAPI 401B)
                 Required_BWAPI_412.zip            BWAPI/Starcraft required files (BWAPI 412)
                 Required_BWAPI_420.zip            BWAPI/Starcraft required files (BWAPI 420)
-			games.txt                         Default tournament games list filename *
-			parse_results.bat                 Script to run results parser
+            games.txt                         Default tournament games list filename *
+            parse_results.bat                 Script to run results parser
             results.txt                       Default tournament results filename *
             results_parser.jar                Parses existing results like server without running server
-			run_server.bat                    Script to run server
-			server.jar                        Server .jar file
-			server_settings.json              Server settings file (modify this)
-		src/                              Source Code Folder
-			packagename/                      Source package directories
-			clean.bat                         Script to delete all .class files in subdirs
-			make.bat                          Script to compile / make jar files
+            run_server.bat                    Script to run server
+            server.jar                        Server .jar file
+            server_settings.json              Server settings file (modify this)
+        src/                              Source Code Folder
+            packagename/                      Source package directories
+            clean.bat                         Script to delete all .class files in subdirs
+            make.bat                          Script to compile / make jar files
 *doesn't exist by default, but server will create
 
 The tournament manager comes pre-compiled as 2 jar files (client/client.jar, server/server.jar), however if you want to compile the code you can use make.bat in the src/ folder, or any other build system you wish.
