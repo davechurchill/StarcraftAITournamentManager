@@ -527,7 +527,7 @@ Example server_settings.json:
     </td>
 </tr>
 <tr>
-	<td>ClientProperties</td>
+	<td>ClientProperties<br>(Optional)</td>
 	<td>
     	<b>Type:</b> Array of json objects<br><br>
     	Features of this client that a bot can take advantage of if matched to its <b>ClientRequirements</b> in server settings.
@@ -535,6 +535,7 @@ Example server_settings.json:
         <ul>
         <li><b>Property:</b> String</li>
         </ul>
+		This array can be empty if you are not using the properties feature.
     </td>
 </tr>
 </table>
