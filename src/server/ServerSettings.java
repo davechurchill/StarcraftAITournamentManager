@@ -25,12 +25,11 @@ public class ServerSettings
 	public String			ServerReplayDir		= "replays/";
 	public String			ServerRequiredDir	= "required/";
 	public String			ServerBotDir		= "bots/";
-	public int				ServerPort			= -1;
 	
+	public int				ServerPort			= -1;
 	public String			GamesListFile		= null;
 	public String			ResultsFile			= null;
 	public String 			ClearResults	 	= "ask";
-	public String 			ResumeTournament 	= "ask";
 	public String			DetailedResults		= "no";
 	public String			StartGamesSimul		= "no";
 	public String			TournamentType		= "AllVsAll";
@@ -107,7 +106,6 @@ public class ServerSettings
 			DetailedResults = jo.get("detailedResults").asBoolean() ? "yes" : "no"; 
 			ServerPort = jo.get("serverPort").asInt();
 			ClearResults = jo.get("clearResults").asString();
-			ResumeTournament = jo.get("resumeTournament").asString();
 			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean() ? "yes" : "no";
 			TournamentType = jo.get("tournamentType").asString();
 			
@@ -160,12 +158,6 @@ public class ServerSettings
 		if (GamesListFile == null)		{ System.err.println("ServerSettings: GamesListFile not specified in settings file"); valid = false; }
 		if (ResultsFile == null)		{ System.err.println("ServerSettings: ResultsFile must be specified in settings file"); valid = false; }
 		if (ServerPort == -1)			{ System.err.println("ServerSettings: ServerPort must be specified as an integer in settings file"); valid = false; }
-		
-		if (!ResumeTournament.equalsIgnoreCase("yes") && !ResumeTournament.equalsIgnoreCase("no") && !ResumeTournament.equalsIgnoreCase("ask"))
-		{
-			System.err.println("ServerSettings: ResumeTournament invalid option: " + ResumeTournament);
-			valid = false;
-		}
 		
 		if (!ClearResults.equalsIgnoreCase("yes") && !ClearResults.equalsIgnoreCase("no") && !ClearResults.equalsIgnoreCase("ask"))
 		{

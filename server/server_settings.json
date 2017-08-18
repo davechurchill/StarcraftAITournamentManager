@@ -42,7 +42,6 @@
 	"detailedResults"			: 	false,
 	"serverPort"				: 	1337,
 	"clearResults"				: 	"ask",
-	"resumeTournament"			: 	"ask",
 	"startGamesSimultaneously"	:	false,
 	"tournamentType"			:	"AllVsAll",
 	"excludeFromResults"		:	[{"BotName": "ExampleExcludedBot"}],

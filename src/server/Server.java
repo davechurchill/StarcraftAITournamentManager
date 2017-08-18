@@ -618,7 +618,6 @@ public class Server  extends Thread
     public void setupServer() 
 	{
 		log("Server: Created, Running Setup...\n");
-     	//runCommand("ServerSetup.bat");
 		ServerCommands.Server_InitialSetup();
 		log("Server: Setup Successful. Ready!\n");
     }
