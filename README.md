@@ -1,5 +1,5 @@
 # StarcraftAITournamentManager
-Tournament Manager Software for StarCraft AI Competitions
+Open Source Tournament Manager Software for StarCraft: Broodwar AI Competitions
 
 ## Table of Contents
 
@@ -45,7 +45,7 @@ This software regularly creates, deletes, and sends files over sockets, use it a
 
 ### Video
 
-The following video uses an older version of the tournament manager, but it still demonstrates the main functionality of the software:
+The following video uses an older version of the tournament manager, but the set up procedure is still quite similar, and it demonstrates the main functionality of the software. An updated video will be coming soon.
 
 [![AIIDE Tournament Manager Software](http://img.youtube.com/vi/tl-nansNbsA/0.jpg)](http://www.youtube.com/watch?v=tl-nansNbsA)
 
