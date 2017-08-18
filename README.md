@@ -45,11 +45,11 @@ This software regularly creates, deletes, and sends files over sockets, use it a
 
 ### Video
 
-The following video uses an older version of the tournament manager, but the set up procedure is still quite similar, and it demonstrates the main functionality of the software. An updated video will be coming soon.
+The following video uses an older version of the tournament manager, but the set up procedure is still quite similar, and it demonstrates the main functionality of the software. The main difference from what you see in the video and the new software are that the settings files are now in JSON format, and the GUIs look slightly different. An updated video will be coming soon.
 
 [![AIIDE Tournament Manager Software](http://img.youtube.com/vi/tl-nansNbsA/0.jpg)](http://www.youtube.com/watch?v=tl-nansNbsA)
 
-The main changes from what you see in the video are that the settings files are now in JSON format, and the GUIs look slightly different.
+
 
 ### Server
 
