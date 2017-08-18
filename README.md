@@ -1,7 +1,7 @@
 # StarcraftAITournamentManager
 Open Source Tournament Manager Software for StarCraft: Broodwar AI Competitions
 
-[(http://www.cs.mun.ca/~dchurchill/starcraftaicomp/tm_server_gui.png)]
+![TM Server GUI Screenshot](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/tm_server_gui.png)
 
 ## Table of Contents
 
