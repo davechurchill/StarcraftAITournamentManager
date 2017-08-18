@@ -110,8 +110,8 @@ Running a tournament using this software requires the following prerequisites:
 
 * Microsoft Windows XP (or higher) (Clients)
 * StarCraft: BroodWar (Clients only)
-* Microsoft C++ 2008 Redistributable (Clients only)
-* Any prerequisites for BWAPI versions and bots in the tournament, such as various C++ redistributables, BWTA/BWTA2 DLLs, specific JDK versions required by Java bots, etc. (Clients only)
+* Microsoft VC++ Redistributables (See Below, Clients only)
+* Any prerequisites for bots in the tournament, BWTA/BWTA2 DLLs, specific JDK versions required by Java bots, etc. (Clients only)
 * Java JDK 7 (Clients and Server)
 
 Download a zip file containing all Visual Studio redists and easy install script here: [all_vcredist_x86.zip](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/all_vcredist_x86.zip)
@@ -177,8 +177,7 @@ The tournament manager comes pre-compiled as 2 jar files (client/client.jar, ser
 **Note:** The tournament manager comes with the bots and maps which competed in the 2014-2016 AIIDE StarCraft AI Competitions.
 Make sure that each bot and map you change is listed correctly in server/server_settings.json 
 
-**Proxy Bots:** The file server/bots/BotName/AI/run_proxy.bat is a file which must exist if your bot is listed as 'proxy' in server_settings.json, it will be run on the client machine immediately BEFORE StarCraft is launched, and must contain all code necessary to launch your proxy bot.
-All proxy bot files must be stored in the server/bots/BotName/AI/ directory (subdirectories allowed), since this is the folder which is copied to the client machine before a game starts.
+**Proxy Bots:** The file server/bots/BotName/AI/run_proxy.bat is a file which must exist if your bot is listed as 'proxy' in server_settings.json, it will be run on the client machine immediately BEFORE StarCraft is launched, and must contain all code necessary to launch your proxy bot. All proxy bot files must be stored in the server/bots/BotName/AI/ directory (subdirectories allowed), since this is the folder which is copied to the client machine before a game starts.
 
 ### Running Server Software
 
