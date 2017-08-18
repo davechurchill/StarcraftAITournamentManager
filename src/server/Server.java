@@ -207,21 +207,22 @@ public class Server  extends Thread
 		FileUtils.writeToFile(rp.getResultsJSON(), "html/results/results_summary_json.js");
 	}
 	
-	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost)
+	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost, int gameID)
 	{
 		int fpm = 24 * 60;
 		int fps = 24;
 		int minutes = state.frameCount / fpm;
 		int seconds = (state.frameCount / fps) % 60;
+		String mapFile = games.lookupGame(gameID).getMap().getMapName();
 		gui.UpdateRunningStats(	client, 
 								state.selfName, 
 								state.enemyName, 
-								state.mapName, 
+								mapFile.substring(mapFile.indexOf(')') + 1, mapFile.indexOf('.')), 
 								"" + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds), 
 								state.selfWin == 1 ? "Victory" : "");
 	}
 	
-		public synchronized void updateStartingStats(String client, int startingTime)
+	public synchronized void updateStartingStats(String client, int startingTime)
 	{
 		gui.UpdateRunningStats(	client, 
 								"", 
