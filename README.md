@@ -243,7 +243,8 @@ This means it isn't possible to distinguish between a crash and a case of a bot 
 Crashes in which the game never starts (frame count for both bots is zero) are not counted in the results summary in **html/index.html**.
 In Detailed results these games are listed with an arbitrary winner and loser, but the crashing bot is listed as "unknown".
 
-Games that last more frames than `gameFrameLimit` in server_settings.json (default setting is equal to one hour at normal speed) are terminated, and the winner is the bot with the higher score. These losses are reported as "Hour" in the results summary and "Timeout" in the detailed results page.
+Games that last more frames than `gameFrameLimit` in server_settings.json (default setting is equal to one hour at normal speed) are terminated, and the winner is the bot with the higher score.
+These losses are reported as "Game Timeout" in the results summary and "Timeout" in the detailed results page.
 
 ### Helpful Windows commands
 

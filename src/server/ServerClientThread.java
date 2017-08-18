@@ -136,7 +136,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		
 		if (m.status == ClientStatus.RUNNING && m.gameState != null)
 		{
-			server.updateRunningStats(this.toString(), m.gameState, m.isHost);
+			server.updateRunningStats(this.toString(), m.gameState, m.isHost, lastInstructionSent.game_id);
 		}
 		
 		if (m.status == ClientStatus.STARTING && m.startingTime > 0)
