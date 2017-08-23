@@ -354,7 +354,8 @@ This file must parse as valid JSON or the server will not start.
 	<td>startGamesSimultaneously</td>
 	<td>
     	<b>Type:</b> Boolean<br><br>
-    	If set to true new games will be started while other games are still in the starting process (i.e. other Starcraft instances are in the lobby).<br><br>
+    	If set to <b>true</b> new games will be started while other games are still in the starting process (i.e. other Starcraft instances are in the lobby).
+		If set to <b>false</b> only one game can be <b>STARTING</b> at a time.<br><br>
         <b>WARNING:</b> This is only useable if all bots are using BWAPI version 4.2.0 or later.
         If using older versions of BWAPI, bots will join any game in the lobby, leading to games with more than 2 players, and generally games that do not match.
     </td>
@@ -366,9 +367,19 @@ This file must parse as valid JSON or the server will not start.
     	Allowed values: "AllVsAll" | "1VsAll"<br>
         <ul>
         	<li>AllVsAll - Standard round robin tournament</li>
-            <li>1VsAll - First bot in <b>bots</b> list will play all the others, without waiting for rounds to end or copying write/read folders.
+            <li>1VsAll - First bot in <b>bots</b> list will play all the others.
          	Usefull for testing changes to your bot.</li>
         </ul>
+    </td>
+</tr>
+<tr>
+	<td>enableBotFileIO</td>
+	<td>
+    	<b>Type:</b> Boolean<br><br>
+    	If set to <b>true</b> the server will wait for each round to complete before sarting the next round.
+		Every time a round finishes the contents of 'BotName/write' will be copied to 'BotName/read'.
+		Bots that implement learning from previous rounds will have access to the contents of the read directory in 'bwapi-data/read' on the client machine.
+		If set to <b>false</b> the server will ignore round numbers when scheduling games, and never copy from 'write' to 'read'.
     </td>
 </tr>
 <tr>

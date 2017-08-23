@@ -97,6 +97,7 @@ public class Server  extends Thread
 						while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
+	                        updateResults(iterations++);
 	                    }
 					}
 					continue;
@@ -119,16 +120,24 @@ public class Server  extends Thread
 				//get lists of client properties
 				Vector<Vector<String>> freeClientProperties = getFreeClientProperties();
 				
-				if (ServerSettings.Instance().StartGamesSimul.equalsIgnoreCase("yes"))
+				if (ServerSettings.Instance().StartGamesSimul)
 				{
 					// we can start multiple games at same time
-					nextGame = games.getNextGame(startingBots, freeClientProperties);
+					nextGame = games.getNextGame(startingBots, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
 						if (!requirementsNotMet)
 						{
-							log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							if (ServerSettings.Instance().EnableBotFileIO)
+							{
+								log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							}
+							else
+							{
+								log ("Waiting for clients with needed properties.\n");
+							}
+							
 							requirementsNotMet = true;
 						}
 						continue;
@@ -137,13 +146,21 @@ public class Server  extends Thread
 				else if (startingBots.isEmpty())
 				{
 					// can only start one game at a time, but none others are starting
-					nextGame = games.getNextGame(null, freeClientProperties);
+					nextGame = games.getNextGame(null, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
 					if (nextGame == null)
 					{
-						//all games remaining in this round can not be started now (bot requirements)
+						//can't start a game because of bot requirements or round
 						if (!requirementsNotMet)
 						{
-							log ("Waiting for clients with needed properties.\n");
+							if (ServerSettings.Instance().EnableBotFileIO)
+							{
+								log ("Waiting for other games from this round to finish or for clients with needed properties.\n");
+							}
+							else
+							{
+								log ("Waiting for clients with needed properties.\n");
+							}
+							
 							requirementsNotMet = true;
 						}
 						continue;
@@ -151,21 +168,27 @@ public class Server  extends Thread
 				}
 				else
 				{
-					// need to wait for current starting game(s) to finish starting
+					// need to wait for current starting game to finish starting
 					continue;
 				}
 				
-				//only wait for round completion in AllvsAll tournament
-				if(ServerSettings.Instance().TournamentType.equalsIgnoreCase("AllVsAll")) {
+				//only wait for round completion and transfer write dir to read dir if Bot File I/O is turned on
+				if(ServerSettings.Instance().EnableBotFileIO) {
 					
+					//check if starting a new round
 					if (previousScheduledGame != null && (nextGame.getRound() > previousScheduledGame.getRound()))
 	                {
-						log("Next Game: (" + nextGame.getGameID() + " / " + nextGame.getRound() + ") Can't start: Waiting for Previous Round to Finish\n");
-	                    
-						// wait until all games from this round are free
+						//check if all games from previous round are finished
+						if (free.size() < clients.size())
+						{
+							log("Next Game: (" + nextGame.getGameID() + " / " + nextGame.getRound() + ") Can't start: Waiting for Previous Round to Finish\n");
+						}
+						
+						// wait until all clients are free
 	                    while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
+	                        updateResults(iterations++);
 	                    }
 	                    
 	                    log("Moving Write Directory to Read Directory\n");
@@ -196,7 +219,7 @@ public class Server  extends Thread
 		gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
 				
 		// only write the all results file every 30 reschedules, saves time
-		if (ServerSettings.Instance().DetailedResults.equalsIgnoreCase("yes") && iter % 30 == 0)
+		if (ServerSettings.Instance().DetailedResults && iter % 30 == 0)
 		{
 			log("Generating All Results File...\n");
 			rp.writeDetailedResultsJSON();
