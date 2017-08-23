@@ -30,9 +30,10 @@ public class ServerSettings
 	public String			GamesListFile		= null;
 	public String			ResultsFile			= null;
 	public String 			ClearResults	 	= "ask";
-	public String			DetailedResults		= "no";
-	public String			StartGamesSimul		= "no";
+	public boolean			DetailedResults		= false;
+	public boolean			StartGamesSimul		= false;
 	public String			TournamentType		= "AllVsAll";
+	public boolean			EnableBotFileIO		= true;
 	public Vector<String>	ExcludeFromResults	= new Vector<String>();
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
@@ -103,11 +104,12 @@ public class ServerSettings
 			
 			GamesListFile = jo.get("gamesListFile").asString();
 			ResultsFile = jo.get("resultsFile").asString();
-			DetailedResults = jo.get("detailedResults").asBoolean() ? "yes" : "no"; 
+			DetailedResults = jo.get("detailedResults").asBoolean(); 
 			ServerPort = jo.get("serverPort").asInt();
 			ClearResults = jo.get("clearResults").asString();
-			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean() ? "yes" : "no";
+			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean();
 			TournamentType = jo.get("tournamentType").asString();
+			EnableBotFileIO = jo.get("enableBotFileIO").asBoolean();
 			
 			JsonArray excludedBots = jo.get("excludeFromResults").asArray();
 			for (JsonValue excludedBot : excludedBots)

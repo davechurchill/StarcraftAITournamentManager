@@ -37,11 +37,11 @@ public class GameStorage
 		return !gamesToPlay.isEmpty();
 	}
 	
-	public Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties)
+	public Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties, boolean waitForPreviousRound)
 	{
-		//don't return a game if all games from previous rounds have not already been removed
+		//if bot File IO is turned on, don't return a game if all games from previous rounds have not already been removed
 		int currentRound = gamesToPlay.get(gamesToPlay.firstKey()).getRound();
-		for (int i = gamesToPlay.firstKey(); allGames.get(i).getRound() == currentRound; i++)
+		for (int i = gamesToPlay.firstKey(); !waitForPreviousRound || allGames.get(i).getRound() == currentRound; i++)
 		{
 			if (gamesToPlay.get(i) == null)
 			{
@@ -97,33 +97,6 @@ public class GameStorage
 		return null;
 	}
 	
-	// Get the next game that isn't being hosted by a client in currentHosts
-	public Game getNextGame(Collection<String> currentHosts)
-	{
-		//don't return a game if all games from previous rounds have not already been removed
-		int currentRound = gamesToPlay.get(gamesToPlay.firstKey()).getRound();
-		for (int i = gamesToPlay.firstKey(); allGames.get(i).getRound() == currentRound; i++)
-		{
-			if (gamesToPlay.get(i) == null)
-			{
-				continue;
-			}
-			if (currentHosts.contains(gamesToPlay.get(i).getHomebot().getName()))
-			{
-				continue;
-			}
-			return gamesToPlay.remove(i);
-		}
-		//returns null if no game can be started right now
-		return null;
-	}
-	
-	// get the unplayed game with smallest gameID
-	public Game getNextGame()
-	{
-		return gamesToPlay.remove(gamesToPlay.firstKey());
-	} 
-
 	public Game lookupGame(int gameID) 
 	{
 		return allGames.get(gameID);
