@@ -115,7 +115,7 @@ Running a tournament using this software requires the following prerequisites:
 * StarCraft: BroodWar (Clients only)
 * Microsoft VC++ Redistributables (See Below, Clients only)
 * Any prerequisites for bots in the tournament, BWTA/BWTA2 DLLs, specific JDK versions required by Java bots, etc. (Clients only)
-* Java JDK 7 (Clients and Server)
+* Java JDK 8 (Clients and Server)
 
 Download a zip file containing all Visual Studio redists and easy install script here: [all_vcredist_x86.zip](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/all_vcredist_x86.zip)
 
@@ -208,7 +208,7 @@ The same client options, plus the options to kill clients or filter the log by c
 1. Install StarCraft: BroodWar to a directory containing no spaces
 1. Upgrade StarCraft to version 1.16.1
 1. Install Microsoft Visual C++ Redists [(zip file containing all Visual Studio redists and easy install script)](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/all_vcredist_x86.zip)
-1. Install Java JDK 7 or higher
+1. Install Java JDK 8 or higher
 1. Edit system PATH to include jdk/bin directory for javac and java
 1. 32bit Windows: Edit registry so that HKLM\SOFTWARE has "Full Control" for current user
 1. 64bit Windows: Edit registry so that HKLM\SOFTWARE\Wow6432Node has "Full Control" for current user
