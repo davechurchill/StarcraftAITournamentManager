@@ -60,7 +60,12 @@ public class Bot implements Serializable
 	{
 		return type.equalsIgnoreCase("proxy");
 	}
-	
+
+  public boolean isMixedBot()
+  {
+    return type.equalsIgnoreCase("mixed");
+  }
+
 	public boolean hasRequirements()
 	{
 		if (requirements == null)

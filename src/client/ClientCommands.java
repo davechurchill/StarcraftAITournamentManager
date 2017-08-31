@@ -26,9 +26,9 @@ public class ClientCommands
 		Client_CleanStarcraftDirectory();
 	}
 		
-	public static void Client_RunProxyScript()
+	public static void Client_RunBotScript()
 	{
-        Client.log("      Client_RunProxyScript()\n");
+    Client.log("      Client_RunBotScript()\n");
         
 		WindowsCommandTools.RunWindowsCommand(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI\\run_proxy.bat", false, false);
 	}

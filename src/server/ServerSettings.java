@@ -199,8 +199,8 @@ public class ServerSettings
 			if (!new File(botReadDir).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot read directory " + botReadDir + " does not exist."); valid = false; }
 			if (!new File(botBWAPIReq).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot required BWAPI files " + botBWAPIReq + " does not exist."); valid = false; }
 			
-			// Check if the bot is proxy and the proxy bot exists
-			if (b.isProxyBot() && !new File(proxyScript).exists()) 
+      // Check that the proxy script exists if the type of bot requires it
+			if ((b.isProxyBot() || b.isMixedBot()) && !new File(proxyScript).exists())
 			{ 
 				System.err.println("Bot Error: " + b.getName() + " listed as proxy but " + proxyScript + " does not exist."); 
 				valid = false; 

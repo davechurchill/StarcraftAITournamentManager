@@ -324,7 +324,24 @@ public class Client extends Thread
 			return instructions.awayBot.isProxyBot();
 		}
 	}
-	
+
+  private boolean isMixedBot(InstructionMessage instructions)
+  {
+    if (instructions == null)
+    {
+       return false;
+    }
+
+    if (instructions.isHost)
+    {
+       return instructions.hostBot.isMixedBot();
+    }
+    else
+    {
+       return instructions.awayBot.isMixedBot();
+    }
+  }
+
 	private void startStarCraft(InstructionMessage instructions)
 	{
 		if (status == ClientStatus.READY)
@@ -358,10 +375,11 @@ public class Client extends Thread
 			// Clear out the write directory, since all of it was copied over from server
 			ClientCommands.Client_ClearWriteDirectory();
 						
-			// If this is a proxy bot, start the proxy bot script before StarCraft starts
-			if (isProxyBot(previousInstructions))
+			// If the bot requires an executable, start the bot script before
+			// StarCraft starts
+			if (isProxyBot(previousInstructions) || isMixedBot(previousInstructions))
 			{
-				ClientCommands.Client_RunProxyScript();
+				ClientCommands.Client_RunBotScript();
 			}
 			
 			// Start starcraft

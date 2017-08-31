@@ -182,6 +182,8 @@ Make sure that each bot and map you change is listed correctly in server/server_
 
 **Proxy Bots:** The file server/bots/BotName/AI/run_proxy.bat is a file which must exist if your bot is listed as 'proxy' in server_settings.json, it will be run on the client machine immediately BEFORE StarCraft is launched, and must contain all code necessary to launch your proxy bot. All proxy bot files must be stored in the server/bots/BotName/AI/ directory (subdirectories allowed), since this is the folder which is copied to the client machine before a game starts.
 
+**Mixed Bots:** Bots that require both a DLL and a script (such as bots based on [TorchCraft](https://github.com/TorchCraft/TorchCraft)) can declare this type. The server will add the `BotName.dll` to the clients' bwapi.ini, and will also execute `run_proxy.bat` before starting a match.
+
 ### Running Server Software
 
 1. Edit server/server_settings.json to suit your tournament needs
@@ -289,7 +291,7 @@ This file must parse as valid JSON or the server will not start.
         <ul>
         <li><b>BotName:</b> String - the name of the bot, matching the bot folder name</li>
         <li><b>Race:</b> "Random" | "Terran" | "Zerg" | "Protoss"</li>
-        <li><b>BotType:</b> "dll" | "proxy"</li>
+        <li><b>BotType:</b> "dll" | "proxy" | "mixed"</li>
         <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"</li>
         <li><b>ClientRequirements</b> (OPTIONAL): array of json objects with required properties</li>
         	<ul>
