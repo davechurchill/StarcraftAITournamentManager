@@ -112,6 +112,7 @@ The results parser is useful if you want to view HTML results for different tour
 Running a tournament using this software requires the following prerequisites:
 
 * Microsoft Windows 7 (or higher) (Clients)
+* Physical or Virtual Machines with minimum 2 CPU cores (Clients)
 * StarCraft: BroodWar (Clients only)
 * Microsoft VC++ Redistributables (See Below, Clients only)
 * Any prerequisites for bots in the tournament, BWTA/BWTA2 DLLs, specific JDK versions required by Java bots, etc. (Clients only)
@@ -220,7 +221,7 @@ The same client options, plus the options to kill clients or filter the log by c
 1. Run client/run_client.bat
 
 Note: Exactly one client instance can be run per machine.
-Clients can be run on a physical or a virtual machine, as long as your LAN settings can handle StarCraft's UDP communication.
+Clients can be run on a physical or a virtual machine (minimum 2 CPU cores), as long as your LAN settings can handle StarCraft's UDP communication.
 One client can be run on the same machine as the server.
 I regularly run sample tournaments with the server and one client running on a physical machine, with a 2nd client running in a VM.
 
