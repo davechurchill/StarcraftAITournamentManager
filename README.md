@@ -3,8 +3,7 @@ Open Source Tournament Manager Software for StarCraft: Broodwar AI Competitions
 
 Created and maintained by [David Churchill](http://www.cs.mun.ca/~dchurchill/) and Rick Kelly, organizers of the [AIIDE Starcraft AI Competition](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/)
 
-![CommandCenter Playing SC2](https://i.imgur.com/KM24iYa.jpg)
-![CommandCenter Playing BW](https://i.imgur.com/QyQxv7Y.png)
+![TM Server GUI Screenshot](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/tm_server_gui.png)
 
 ## Table of Contents
 
