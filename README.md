@@ -166,7 +166,7 @@ The tournament manager comes pre-compiled as 2 jar files (client/client.jar, ser
 
 ### Initial Server Setup
 
-1. Install Java JDK 7 or higher
+1. Install Java JDK 8 or higher (64-bit for memory requirements of large tournaments)
 1. (Windows) Edit system PATH to include jdk/bin directory for javac and java
 1. Turn off firewall
 1. The following directory structure must exist for each bot in the tournament:
