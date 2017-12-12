@@ -496,7 +496,7 @@ public class ServerGUI
 	
 	public static String getTimeStamp()
 	{
-		return new SimpleDateFormat("[MMM d, HH:mm:ss]").format(Calendar.getInstance().getTime());
+		return new SimpleDateFormat("[YYYY-MM-dd HH:mm:ss]").format(Calendar.getInstance().getTime());
 	}
 	
 	public synchronized void UpdateClient(String name, String status, String num, String host, String join, String properties)
