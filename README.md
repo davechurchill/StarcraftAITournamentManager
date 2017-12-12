@@ -166,7 +166,7 @@ The tournament manager comes pre-compiled as 2 jar files (client/client.jar, ser
 
 ### Initial Server Setup
 
-1. Install Java JDK 8 or higher (64-bit for memory requirements of large tournaments)
+1. Install Java JDK 8 or higher
 1. (Windows) Edit system PATH to include jdk/bin directory for javac and java
 1. Turn off firewall
 1. The following directory structure must exist for each bot in the tournament:
@@ -186,7 +186,7 @@ Make sure that each bot and map you change is listed correctly in server/server_
 ### Running Server Software
 
 1. Edit server/server_settings.json to suit your tournament needs
-1. Run server/run_server.bat
+1. Run server/run_server.bat (Use 64-bit Java and -Xmx option in run-server.bat to set high memory limit for large tournaments (10,000+ games))
 1. If previous results exist, server will ask to resume tournament or delete previous results (under default configuration)
 1. If a games list file does not exist, server will prompt to generate one. It can generate a round robin tournament or a 1 vs all tournament based on the bots and maps in server_settings.json.
 Currently only round robin tournament games generation is supported, however you can edit the games list manually as long as you follow the existing syntax.
