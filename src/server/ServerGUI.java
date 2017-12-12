@@ -31,6 +31,7 @@ public class ServerGUI
     private 	JTextArea		bottomText;
     private 	JPanel			bottomPanel;
     private		JPanel			statusPanel;
+    private		JLabel			numClients;
     private		JProgressBar	progressBar;
     private		JLabel			uptime;
     private 	JMenuBar		menuBar;
@@ -71,10 +72,19 @@ public class ServerGUI
 		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
 		statusPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
+		statusPanel.add(new JLabel("Clients: "));
+		numClients = new JLabel("");
+		numClients.setFont(new Font(numClients.getFont().getFamily(), Font.PLAIN, numClients.getFont().getSize()));
+		statusPanel.add(numClients);
+		
+		statusPanel.add(Box.createHorizontalGlue());
+		
 		statusPanel.add(new JLabel("Tournament progress: "));
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setFont(new Font(progressBar.getFont().getFamily(), Font.PLAIN, progressBar.getFont().getSize()));
 		statusPanel.add(progressBar);
+		
+		statusPanel.add(Box.createHorizontalGlue());
 		
 		statusPanel.add(new JLabel(" Server uptime: "));
 		uptime = new JLabel("");
@@ -520,6 +530,7 @@ public class ServerGUI
 			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", "", properties});
 			filterSelect.addItem(name);
 		}
+		numClients.setText(Integer.toString(GetModel().getRowCount()));
 	}
 	
 	public synchronized void UpdateRunningStats(String client, String self, String enemy, String map, String FrameCount, String win)
@@ -572,6 +583,7 @@ public class ServerGUI
 				filterSelect.removeItemAt(i);
 			}
 		}
+		numClients.setText(Integer.toString(GetModel().getRowCount()));
 	}
 	
 	public synchronized void logText(String s)
