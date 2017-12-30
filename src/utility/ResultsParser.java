@@ -215,6 +215,7 @@ public class ResultsParser
 		StringBuilder roundWins = new StringBuilder();
 		
 		winPercentage.append("var winPercentage = [\n");
+		roundWins.append("var roundWins = [\n");
 		
 		for (int i=0; i<numBots; ++i)
 		{
@@ -237,7 +238,15 @@ public class ResultsParser
 						wins -= winsAfterRound.get(ii).get(j-1);
 					}
 					
-					roundWins.append(" " + wins);
+					int games = gamesAfterRound.get(ii).get(j);
+					if (j > 0)
+					{
+						games -= gamesAfterRound.get(ii).get(j-1);
+					}
+					
+					double roundWinRate = (double)wins / (double)games;
+					
+					roundWins.append(" " + roundWinRate);
 					
 					if (j < gamesAfterRound.get(ii).size() - 1)
 					{
@@ -260,6 +269,7 @@ public class ResultsParser
 		}
 		
 		winPercentage.append("];");
+		roundWins.append("];");
 		
 		FileUtils.CreateDirectory("html/results");
 		FileUtils.writeToFile(winPercentage.toString(), "html/results/winpercentage.js");
