@@ -14,6 +14,7 @@ import utility.ResultsParser;
 
 import java.awt.event.*;
 import java.io.File;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -39,6 +40,7 @@ public class ServerGUI
     private 	JMenu			actionsMenu;
     private		JMenuItem		exitMenuItem;
     private 	JMenuItem		generateResultsMenuItem;
+    private		JMenuItem		viewResultsMenuItem;
     private 	JMenuItem		sendClientCommandMenuItem;
     private		JMenuItem		viewClientScreenMenuItem;
     private		JPopupMenu		popup;
@@ -264,6 +266,26 @@ public class ServerGUI
             }
         });
         actionsMenu.add(generateResultsMenuItem);
+        
+        viewResultsMenuItem = new JMenuItem("View Results in Web Browser");
+        viewResultsMenuItem.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent a)
+        	{
+        		if (Desktop.isDesktopSupported())
+        		{
+					try
+					{
+						Desktop.getDesktop().browse(new File("html/index.html").toURI());
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+        	}
+        });
+        actionsMenu.add(viewResultsMenuItem);
 
         exitMenuItem = new JMenuItem("Quit Server", KeyEvent.VK_Q);
         exitMenuItem.addActionListener(new ActionListener() 
