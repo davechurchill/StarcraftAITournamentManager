@@ -20,12 +20,13 @@ public class ServerSettings
 	public Vector<Bot> 		BotVector 			= new Vector<Bot>();
 	public Vector<Map> 		MapVector 			= new Vector<Map>();
 	
-	//The following 4 paths are hard coded here and not options in the settings file
+	//The following 4 paths are hard coded here and are not options in the settings file
 	public String			ServerDir			= "./";
 	public String			ServerReplayDir		= "replays/";
 	public String			ServerRequiredDir	= "required/";
 	public String			ServerBotDir		= "bots/";
 	
+	//These are set in server_settings.json
 	public int				ServerPort			= -1;
 	public String			GamesListFile		= null;
 	public String			ResultsFile			= null;
@@ -156,7 +157,6 @@ public class ServerSettings
 		// check if all setting variables are valid
 		if (BotVector.size() <= 1) 		{ System.err.println("ServerSettings: Must have at least 2 bots in settings file"); valid = false; }
 		if (MapVector.size() <= 0)		{ System.err.println("ServerSettings: Must have at least 1 map in settings file"); valid = false; }
-		if (ServerDir == null)			{ System.err.println("ServerSettings: ServerDir not specified in settings file"); valid = false; }
 		if (GamesListFile == null)		{ System.err.println("ServerSettings: GamesListFile not specified in settings file"); valid = false; }
 		if (ResultsFile == null)		{ System.err.println("ServerSettings: ResultsFile must be specified in settings file"); valid = false; }
 		if (ServerPort == -1)			{ System.err.println("ServerSettings: ServerPort must be specified as an integer in settings file"); valid = false; }

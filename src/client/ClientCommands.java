@@ -24,6 +24,8 @@ public class ClientCommands
 				
 		// Clean the Starcraft directory of old files and folders
 		Client_CleanStarcraftDirectory();
+		
+		Client_RegisterStarCraft();
 	}
 		
 	public static void Client_RunProxyScript()

@@ -8,8 +8,6 @@ import java.text.*;
 import utility.*;
 import objects.*;
 
-import java.nio.channels.FileChannel;
-
 public class Server  extends Thread 
 {
     private Vector<ServerClientThread> 		clients;							
@@ -681,94 +679,4 @@ public class Server  extends Thread
             }
         }
     }
-}
-
-class FileCopyThread extends Thread
-{
-	String source;
-	String dest;
-	Server server;
-
-	public FileCopyThread(Server m, String source, String dest)
-	{
-		this.source = source;
-		this.dest = dest;
-		server = m;
-		
-		server.log("File Copy Thread Initialized\n");
-	}
-
-	public void run()
-	{
-		server.log("File Copy Thread Started()\n");
-	
-		while(true)
-		{
-			try
-			{
-				Thread.sleep(5000);
-				server.log("Trying to copy file to web_docs\n");
-				copyFileWindows(source, dest);
-				server.log("SUCCESS   : " + source + " copied to " + dest + "\n");
-				copyFileWindows(dest, "y:\\web_docs\\index.html");
-				server.log("SUCCESS   : Final Copy\n");
-			}
-			catch (Exception e)
-			{
-				server.log("FAIL   : " + source + " not copied to " + dest + "\n");
-			}
-		}
-	}
-
-	public void copyFileWindows(String s, String d) throws Exception
-	{
-		String[] args = { "CMD", "/C", "COPY", "/Y", s, d };
-		Process p = Runtime.getRuntime().exec(args);
-		p.waitFor();
-	}
-	
-	public void copyFile() throws IOException 
-	{
-		File sourceFile = new File(source);
-		File destFile = new File(dest);
-	
-		if(!destFile.exists()) 
-		{
-			destFile.createNewFile();
-		}
-
-		FileChannel source = null;
-		FileChannel destination = null;
-		FileInputStream inputStream = null;
-		FileOutputStream outputStream = null;
-
-		try 
-		{
-			inputStream = new FileInputStream(sourceFile);
-			source = inputStream.getChannel();
-			outputStream = new FileOutputStream(destFile);
-			destination = outputStream.getChannel();
-			destination.transferFrom(source, 0, source.size());
-			
-		}
-		finally 
-		{
-			if (inputStream != null)
-			{
-				inputStream.close();
-			}
-			if (source != null) 
-			{
-				source.close();
-			}
-			if (outputStream != null)
-			{
-				outputStream.close();
-			}
-			if (destination != null) 
-			{
-				destination.close();
-			}
-		}
-	}
 }

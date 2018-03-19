@@ -14,6 +14,7 @@ import utility.ResultsParser;
 
 import java.awt.event.*;
 import java.io.File;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +32,7 @@ public class ServerGUI
     private 	JTextArea		bottomText;
     private 	JPanel			bottomPanel;
     private		JPanel			statusPanel;
+    private		JLabel			numClients;
     private		JProgressBar	progressBar;
     private		JLabel			uptime;
     private 	JMenuBar		menuBar;
@@ -38,6 +40,7 @@ public class ServerGUI
     private 	JMenu			actionsMenu;
     private		JMenuItem		exitMenuItem;
     private 	JMenuItem		generateResultsMenuItem;
+    private		JMenuItem		viewResultsMenuItem;
     private 	JMenuItem		sendClientCommandMenuItem;
     private		JMenuItem		viewClientScreenMenuItem;
     private		JPopupMenu		popup;
@@ -71,10 +74,19 @@ public class ServerGUI
 		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
 		statusPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
+		statusPanel.add(new JLabel("Clients: "));
+		numClients = new JLabel("");
+		numClients.setFont(new Font(numClients.getFont().getFamily(), Font.PLAIN, numClients.getFont().getSize()));
+		statusPanel.add(numClients);
+		
+		statusPanel.add(Box.createHorizontalGlue());
+		
 		statusPanel.add(new JLabel("Tournament progress: "));
 		progressBar = new JProgressBar(0, 100);
 		progressBar.setFont(new Font(progressBar.getFont().getFamily(), Font.PLAIN, progressBar.getFont().getSize()));
 		statusPanel.add(progressBar);
+		
+		statusPanel.add(Box.createHorizontalGlue());
 		
 		statusPanel.add(new JLabel(" Server uptime: "));
 		uptime = new JLabel("");
@@ -254,6 +266,26 @@ public class ServerGUI
             }
         });
         actionsMenu.add(generateResultsMenuItem);
+        
+        viewResultsMenuItem = new JMenuItem("View Results in Web Browser");
+        viewResultsMenuItem.addActionListener(new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent a)
+        	{
+        		if (Desktop.isDesktopSupported())
+        		{
+					try
+					{
+						Desktop.getDesktop().browse(new File("html/index.html").toURI());
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+        	}
+        });
+        actionsMenu.add(viewResultsMenuItem);
 
         exitMenuItem = new JMenuItem("Quit Server", KeyEvent.VK_Q);
         exitMenuItem.addActionListener(new ActionListener() 
@@ -486,7 +518,7 @@ public class ServerGUI
 	
 	public static String getTimeStamp()
 	{
-		return new SimpleDateFormat("[MMM d, HH:mm:ss]").format(Calendar.getInstance().getTime());
+		return new SimpleDateFormat("[YYYY-MM-dd HH:mm:ss]").format(Calendar.getInstance().getTime());
 	}
 	
 	public synchronized void UpdateClient(String name, String status, String num, String host, String join, String properties)
@@ -520,6 +552,7 @@ public class ServerGUI
 			GetModel().addRow(new Object[]{name, status, num, host, join, "", "", "", properties});
 			filterSelect.addItem(name);
 		}
+		numClients.setText(Integer.toString(GetModel().getRowCount()));
 	}
 	
 	public synchronized void UpdateRunningStats(String client, String self, String enemy, String map, String FrameCount, String win)
@@ -572,6 +605,7 @@ public class ServerGUI
 				filterSelect.removeItemAt(i);
 			}
 		}
+		numClients.setText(Integer.toString(GetModel().getRowCount()));
 	}
 	
 	public synchronized void logText(String s)
