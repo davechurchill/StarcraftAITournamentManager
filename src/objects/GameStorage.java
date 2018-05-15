@@ -8,13 +8,15 @@ import java.util.Vector;
 
 public class GameStorage 
 {
-	private TreeMap<Integer, Game> gamesToPlay;
-	private HashMap<Integer, Game> allGames;
+	private TreeMap<Integer, Game> gamesToPlay; //once a game from here is scheduled it is removed
+	private HashMap<Integer, Game> allGames; //"all" here means unplayed games and currently scheduled/in-progress games
+	private HashMap<Integer, Game> receivedOneResult; //games that one client has reported on
 	
 	public GameStorage()
 	{
 		gamesToPlay = new TreeMap<Integer, Game>();
 		allGames = new HashMap<Integer, Game>();
+		receivedOneResult = new HashMap<Integer, Game>();
 	}
 	
 	public void addGame(Game game)
@@ -28,7 +30,9 @@ public class GameStorage
 		Iterator<Integer> it = gameIDs.iterator();
 		while (it.hasNext()) 
 		{
-		    gamesToPlay.remove(it.next());
+			int current = it.next();
+		    gamesToPlay.remove(current);
+		    allGames.remove(current);
 		}
 	}
 	
@@ -110,5 +114,18 @@ public class GameStorage
 	public int getNumTotalGames()
 	{
 		return allGames.size();
+	}
+	
+	public void receivedResult(int gameID)
+	{
+		if (receivedOneResult.containsKey(gameID))
+		{
+			receivedOneResult.remove(gameID);
+			allGames.remove(gameID);
+		}
+		else
+		{
+			receivedOneResult.put(gameID, allGames.get(gameID));
+		}
 	}
 }

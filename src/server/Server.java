@@ -17,6 +17,7 @@ public class Server  extends Thread
 	private GameStorage						games;
 	
 	private int								gameRescheduleTimer = 2000;
+	private int								totalGames;
 	
 	public ServerGUI 						gui;
 	
@@ -31,15 +32,16 @@ public class Server  extends Thread
 		gui.handleFileDialogues();
     	
 		games = GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
+		totalGames = games.getNumTotalGames();
 		if (resumed)
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
+			gui.updateServerStatus(totalGames, rp.getGameIDs().size());
 			games.removePlayedGames(rp.getGameIDs());
 		}
 		else
 		{
-			gui.updateServerStatus(games.getNumTotalGames(), 0);
+			gui.updateServerStatus(totalGames, 0);
 		}
 		
         clients 	= new Vector<ServerClientThread>();
@@ -65,7 +67,6 @@ public class Server  extends Thread
 		}
 		
 		int neededClients = 2;
-		int iterations = 0;
 		
 		Game nextGame = null;
 		
@@ -80,7 +81,6 @@ public class Server  extends Thread
 			{		
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
-				updateResults(iterations++);
 				
 				if (!games.hasMoreGames())
 				{
@@ -95,7 +95,6 @@ public class Server  extends Thread
 						while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
-	                        updateResults(iterations++);
 	                    }
 					}
 					continue;
@@ -186,7 +185,6 @@ public class Server  extends Thread
 	                    while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
-	                        updateResults(iterations++);
 	                    }
 	                    
 	                    log("Moving Write Directory to Read Directory\n");
@@ -210,14 +208,14 @@ public class Server  extends Thread
 		}
 	}
 	
-	public synchronized void updateResults(int iter) throws Exception
+	public synchronized void updateResults() throws Exception
 	{	
 		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 		
-		gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
+		gui.updateServerStatus(totalGames, rp.getGameIDs().size());
 				
 		// only write the all results file every 30 reschedules, saves time
-		if (ServerSettings.Instance().DetailedResults && iter % 30 == 0)
+		if (ServerSettings.Instance().DetailedResults)
 		{
 			log("Generating All Results File...\n");
 			rp.writeDetailedResultsJSON();
@@ -601,6 +599,8 @@ public class Server  extends Thread
 			Game g = games.lookupGame(game.getGameID());
 			g.updateWithGame(game);
 			appendGameData(g);
+			games.receivedResult(game.getGameID());
+			updateResults();
 		}
 		catch (Exception e)
 		{
