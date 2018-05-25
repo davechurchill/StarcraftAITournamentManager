@@ -35,6 +35,7 @@ public class ServerSettings
 	public boolean			StartGamesSimul		= false;
 	public String			TournamentType		= "AllVsAll";
 	public boolean			EnableBotFileIO		= true;
+	public boolean			LadderMode			= false;
 	public Vector<String>	ExcludeFromResults	= new Vector<String>();
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
@@ -111,6 +112,7 @@ public class ServerSettings
 			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean();
 			TournamentType = jo.get("tournamentType").asString();
 			EnableBotFileIO = jo.get("enableBotFileIO").asBoolean();
+			LadderMode = jo.get("ladderMode").asBoolean();
 			
 			JsonArray excludedBots = jo.get("excludeFromResults").asArray();
 			for (JsonValue excludedBot : excludedBots)

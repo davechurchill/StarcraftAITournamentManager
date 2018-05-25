@@ -45,6 +45,7 @@
 	"startGamesSimultaneously"	:	false,
 	"tournamentType"			:	"AllVsAll",
 	"enableBotFileIO"           :   true,
+	"ladderMode"				:	true,
 	"excludeFromResults"		:	[{"BotName": "ExampleExcludedBot"}],
 	
 	"tournamentModuleSettings":

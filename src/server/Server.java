@@ -1,4 +1,3 @@
-
 package server;
 
 import java.io.*;
@@ -7,6 +6,11 @@ import java.text.*;
 
 import utility.*;
 import objects.*;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.WriterConfig;
 
 public class Server  extends Thread 
 {
@@ -78,9 +82,13 @@ public class Server  extends Thread
 		while (true)
 		{
 			try
-			{		
+			{
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
+				if (ServerSettings.Instance().LadderMode)
+				{
+					writeServerStatus();
+				}
 				
 				if (!games.hasMoreGames())
 				{
@@ -95,6 +103,10 @@ public class Server  extends Thread
 						while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
+	                        if (ServerSettings.Instance().LadderMode)
+	        				{
+	        					writeServerStatus();
+	        				}
 	                    }
 					}
 					continue;
@@ -185,6 +197,10 @@ public class Server  extends Thread
 	                    while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
+	                        if (ServerSettings.Instance().LadderMode)
+	        				{
+	        					writeServerStatus();
+	        				}
 	                    }
 	                    
 	                    log("Moving Write Directory to Read Directory\n");
@@ -679,4 +695,27 @@ public class Server  extends Thread
             }
         }
     }
+	
+	private void writeServerStatus() {
+		Vector<Vector<String>> tableData = gui.getTableData();
+		JsonObject status = Json.object();
+		//JsonObject clients = Json.object();
+		JsonArray clients = (JsonArray) Json.array();
+		for (Vector<String> vec : tableData) {
+			JsonObject client = Json.object();
+			client.add("Client", vec.get(0));
+			client.add("Status", vec.get(1));
+			client.add("Game", vec.get(2));
+			client.add("Self", vec.get(3));
+			client.add("Enemy", vec.get(4));
+			client.add("Map", vec.get(5));
+			client.add("Duration", vec.get(6));
+			client.add("Win", vec.get(7));
+			client.add("Properties", vec.get(8));
+			clients.add(client);
+		}
+		status.add("clients", clients);
+		status.add("updateTime", ServerGUI.getTimeStamp());
+		FileUtils.writeToFile(status.toString(WriterConfig.PRETTY_PRINT), "server_status.json");
+	}
 }

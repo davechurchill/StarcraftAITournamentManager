@@ -681,6 +681,12 @@ public class ServerGUI
 		return GetModel().getColumnCount();
 	}
 	
+	@SuppressWarnings("unchecked")
+	public Vector<Vector<String>> getTableData()
+	{
+		return GetModel().getDataVector();
+	}
+	
 	private DefaultTableModel GetModel()
 	{
 		return (DefaultTableModel)(mainTable.getModel());
