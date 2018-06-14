@@ -2,6 +2,12 @@ package objects;
 
 import java.util.Vector;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.WriterConfig;
+
 import server.ServerSettings;
 
 public class GameResult implements Comparable<Object>
@@ -13,11 +19,13 @@ public class GameResult implements Comparable<Object>
 	public String awayName			= "Error";
 	public String mapName			= "Error";
 	
-	public String firstReport		= "Error";
+	public boolean firstReport      = false;
+	public boolean complete         = false;
 	
 	public String winName			= "Error";
 	public String crashName			= "";
 	public String timeOutName		= "";
+	public GameEndType gameEndType  = GameEndType.NORMAL;
 	
 	public boolean hostWon			= false;
 	public boolean hostCrash		= false;
@@ -41,9 +49,9 @@ public class GameResult implements Comparable<Object>
 
 	public GameResult() {}
 
-	public GameResult (String data) 
+	public GameResult (JsonObject result) 
 	{
-		setResult(data);
+		setResult(result);
 
 		/*int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
 	
@@ -54,223 +62,132 @@ public class GameResult implements Comparable<Object>
 		}*/
 	}
 	
-	public void setResult (String dataLine)
+	public void setResult (JsonObject result)
 	{
-		String[] data = dataLine.trim().split(" +");
+		gameID = result.get("gameID").asInt();
+		roundID = result.get("round").asInt();
+		mapName = result.get("map").asString();
+		Vector<Integer> timerVec;
 		
-		gameID 				= Integer.parseInt(data[0]);
-		roundID 			= Integer.parseInt(data[1]);
-		
-		hostName			= data[2];
-		awayName			= data[3];
-		mapName				= data[4];
-		
-		if (data[5].equals("true"))
+		if (result.get("wasHost").asBoolean())
 		{
-			hostWon = true;
-		}
-		
-		if (data[6].equals("true"))
-		{
-			hostCrash = true;
-		}
-		
-		if (data[7].equals("true"))
-		{
-			awayCrash = true;
-		}
-		
-		hourTimeout			= Boolean.getBoolean(data[8]);
-		
-		hostScore			= Integer.parseInt(data[9]) != 0 ? Integer.parseInt(data[9]) : hostScore;
-		awayScore			= Integer.parseInt(data[10]) != 0 ? Integer.parseInt(data[10]) : awayScore;
-		
-		finalFrame			= Integer.parseInt(data[11]) > finalFrame ? Integer.parseInt(data[11]) : finalFrame;
-		
-		hostTime			= Integer.parseInt(data[12]) != 0 ? Integer.parseInt(data[12]) : hostTime;
-		awayTime			= Integer.parseInt(data[13]) != 0 ? Integer.parseInt(data[13]) : awayTime;
-		
-		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
-		for (int i=0; i<numTimers; ++i)
-		{
-			if(hostTimers.size()==numTimers)//this is the second time here
-			{
-				if(hostTimers.get(i)==0)
-				{
-					try
-					{
-						hostTimers.set(i, Integer.parseInt(data[14 + i]));
-					}
-					catch(java.lang.ArrayIndexOutOfBoundsException ex)
-					{
-						hostTimers.set(i, -1);
-					}
-				}
-				if(awayTimers.get(i)==0)
-				{
-					try
-					{
-						awayTimers.set(i, Integer.parseInt(data[14 + numTimers + i]));
-					}
-					catch(java.lang.ArrayIndexOutOfBoundsException ex)
-					{
-						awayTimers.set(i, -1);
-					}
-				}
-			}
-			else
-			{
-				try
-				{
-					hostTimers.add(Integer.parseInt(data[14 + i]));
-				}
-				catch(java.lang.ArrayIndexOutOfBoundsException ex)
-				{
-					hostTimers.add(-1);
-				}
-				try
-				{
-					awayTimers.add(Integer.parseInt(data[14 + numTimers + i]));
-				}
-				catch(java.lang.ArrayIndexOutOfBoundsException ex)
-				{
-					awayTimers.add(-1);
-				}
-			}
-		}
-		
-		// if there's an address field
-		if (data.length > 14 + numTimers*2)
-		{
-			hostAddress = data[14 + numTimers*2];
-			awayAddress = data[14 + numTimers*2 + 1];
+			hostName = result.get("reportingBot").asString();
+			hostWon = result.get("won").asBoolean();
+			hostScore = result.get("score").asInt();
+			hostTime = result.get("gameDuration").asInt();
+			hostAddress = result.get("address").asString();
+			timerVec = hostTimers;
 			
-			// if there's a date field
-			if (data.length > 14 + numTimers*2 + 2)
-			{			
-				startDate = data[14 + numTimers*2 + 2];
-				
-				// record the finish date only from the second person to report
-				if (!firstReport.equalsIgnoreCase("Error"))
-				{
-					finishDate = data[14 + numTimers*2 + 3];
-				}
-			}
-		}
-		
-		if (finalFrame > 0 && hostCrash && !awayCrash)
-		{
-			crashName = hostName;
-			hostWon = false;
-		}
-		else if (finalFrame > 0 && awayCrash && !hostCrash)
-		{
-			crashName = awayName;
-			hostWon = true;
-		}
-			
-		int tempFinalFrame 	= Integer.parseInt(data[11]);
-		
-		// if this is the first bot to report
-		if (firstReport.equals("Error"))
-		{
-			// if host time is zero then this is the away bot reporting
-			if (hostTime == 0)
+			//if both bots have reported and crashed, believe the first to report
+			hostCrash = result.get("crash").asBoolean();
+			if (hostCrash && awayCrash)
 			{
-				firstReport = awayName;
-				// if we have no final frame then the bot must have crashed
-				if (tempFinalFrame == -1)
-				{
-					awayCrash = true;
-					hostCrash = false;
-					crashName = awayName;
-					hostWon = true;
-				}
-			}
-			// this is the host bot reporting
-			else
-			{
-				firstReport = hostName;
-				// if we have no final frame then the bot must have crashed
-				if (tempFinalFrame == -1)
-				{
-					hostCrash = true;
-					awayCrash = false;
-					crashName = hostName;
-					hostWon = false;
-				}
-			}
-		}
-		// otherwise this is the 2nd report
-		// this checks to see if the 2nd report bot crashed
-		else if (tempFinalFrame == -1)
-		{
-			// if the first bot to report was host
-			if (firstReport.equals(hostName))
-			{
-				hostCrash = false;
-				awayCrash = true;
-				crashName = awayName;
 				hostWon = true;
+				hostCrash = false;
 			}
-			// otherwise the first bot to report was the away bot
-			else
+		}
+		else
+		{
+			awayName = result.get("reportingBot").asString();
+			hostWon = !result.get("won").asBoolean();
+			awayScore = result.get("score").asInt();
+			awayTime = result.get("gameDuration").asInt();
+			awayAddress = result.get("address").asString();
+			timerVec = awayTimers;
+			
+			//if both bots have reported and crashed, believe the first to report
+			awayCrash = result.get("crash").asBoolean();
+			if (hostCrash && awayCrash)
 			{
+				hostWon = false;
 				awayCrash = false;
-				hostCrash = true;
+			}
+		}
+		
+		//see GameEndType for precedence order of game end types
+		GameEndType thisGameEnd = GameEndType.valueOf(result.get("gameEndType").asString());
+		gameEndType = thisGameEnd.ordinal() < gameEndType.ordinal() ? thisGameEnd : gameEndType;
+		
+		hourTimeout = result.get("timeout").asBoolean();
+		finalFrame = result.get("finalFrame").asInt() > finalFrame ? result.get("finalFrame").asInt() : finalFrame;
+		
+		JsonArray timers = result.get("timers").asArray();
+		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
+		for (int i = 0; i < timers.size(); i++)
+		{
+			timerVec.add(timers.get(i).asObject().get("frameCount").asInt());
+		}
+		while (timerVec.size() < numTimers)
+		{
+			// if the results didn't contain enough timers, add -1s. Probably a crash.
+			timerVec.add(-1);
+		}
+		
+		// TODO: decide which bot's dates to use?
+		startDate = result.get("startDate").asString();
+		finishDate = result.get("finishDate").asString();
+		
+		// Only process final results if both bots have reported
+		if (!firstReport)
+		{
+			firstReport = true;
+		}
+		else
+		{
+			// set name of crashing bot
+			// at this point only one bot can be set to have crashed because of above logic
+			if (hostCrash)
+			{
 				crashName = hostName;
 				hostWon = false;
 			}
-		}
-		
-		// check bot time-outs
-		for (int i=0; i<numTimers; ++i)
-		{
-			// check if the host timed out
-			if (hostTimers.get(i) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(i))
+			else if (awayCrash)
 			{
-				timeOutName = hostName;
-				hostWon = false;
-				break;
-			}
-			
-			// check if the away bot timed out
-			if (awayTimers.get(i) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(i))
-			{
-				timeOutName = awayName;
-				hostWon = true;
-				break;
-			}
-		}
-		
-		// if the bots reached the hour time limit
-		if (finalFrame >= ServerSettings.Instance().tmSettings.GameFrameLimit)
-		{
-			hourTimeout = true;
-			
-			// the winner is the bot with the highest score
-			if (hostScore >= awayScore)
-			{
+				crashName = awayName;
 				hostWon = true;
 			}
-			else
+			
+			// check bot time-outs
+			for (int i = 0; i < numTimers; ++i)
 			{
-				hostWon = false;
+				// check if the host timed out
+				if (hostTimers.get(i) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(i))
+				{
+					timeOutName = hostName;
+					hostWon = false;
+					break;
+				}
+				
+				// check if the away bot timed out
+				if (awayTimers.get(i) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(i))
+				{
+					timeOutName = awayName;
+					hostWon = true;
+					break;
+				}
 			}
+			
+			// check if the bots reached the hour time limit
+			// don't use the timeout boolean from the client report because it might be wrong (TournamentModule bug)
+			if (finalFrame >= ServerSettings.Instance().tmSettings.GameFrameLimit)
+			{
+				hourTimeout = true;
+				
+				// the winner is the bot with the highest score
+				if (hostScore >= awayScore)
+				{
+					hostWon = true;
+				}
+				else
+				{
+					hostWon = false;
+				}
+			}
+			
+			//set winner
+			winName = hostWon ? hostName : awayName;
+			complete = true;
 		}
-		
-		//if no one timed out or crashed, we have someone kicked out
-	/*	if(finalFrame > 0 && !hostCrash && !awayCrash && prevHostWon!=hostWon)
-		{
-			//let's pronounce as winner the one who played the shortest game (and kicked the other out)
-			if(prevFinalFrame > finalFrame)
-			{
-			}
-			else
-			{
-			}
-		}*/
-		winName = hostWon ? hostName : awayName;
 	}
 	
 	public String toString()
@@ -297,7 +214,7 @@ public class GameResult implements Comparable<Object>
 		return s;
 	}
 	
-	public String getResultString() 
+	public String getResultString()
 	{
 		String winnerName = hostWon ? hostName : awayName;
 		String loserName = hostWon ? awayName : hostName;

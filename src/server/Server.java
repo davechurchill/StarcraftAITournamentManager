@@ -568,11 +568,11 @@ public class Server  extends Thread
 		awayClient.sendMessage(new StartGameMessage());
 		
 		// set the game to running
-		game.setHomeAddress(hostClient.address.toString());
-		game.setAwayAddress(awayClient.address.toString());
-		game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
+		//game.setHomeAddress(hostClient.address.toString());
+		//game.setAwayAddress(awayClient.address.toString());
+		//game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
         game.setStatus(GameStatus.RUNNING);
-        game.startTime();
+       //game.startTime();
 		
 		// remove the clients from the free list
         free.remove(hostClient);
@@ -606,16 +606,16 @@ public class Server  extends Thread
         listener = l;
     }
 
-    public synchronized void receiveGameResults(String address, Game game) 
+    public synchronized void receiveGameResults(String address, GameReport report) 
 	{
 		try 
 		{
-			log("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");				// EXCEPTION HERE
-			System.out.println("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");
-			Game g = games.lookupGame(game.getGameID());
-			g.updateWithGame(game);
-			appendGameData(g);
-			games.receivedResult(game.getGameID());
+			log("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");				// EXCEPTION HERE
+			System.out.println("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");
+			Game g = games.lookupGame(report.getGameID());
+			g.addReport(report);
+			appendGameData(report);
+			games.receivedResult(report.getGameID());
 			updateResults();
 		}
 		catch (Exception e)
@@ -630,14 +630,14 @@ public class Server  extends Thread
     	return clients.indexOf(c);
     }
     
-    private synchronized void appendGameData(Game game) 
+    private synchronized void appendGameData(GameReport report) 
 	{
-    	System.out.println("Writing out replay data for gameID " + game.getGameID());
+    	System.out.println("Writing out replay data for gameID " + report.getGameID());
         try 
 		{
             FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
             BufferedWriter out = new BufferedWriter(fstream);
-            out.write(game.getResultString());
+            out.write(report.getResultJSON(ServerSettings.Instance().tmSettings.TimeoutLimits) + "\n");
             out.close();
         } 
 		catch (Exception e) 

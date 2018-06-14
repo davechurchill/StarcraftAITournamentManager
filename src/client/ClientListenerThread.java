@@ -67,7 +67,7 @@ public class ClientListenerThread extends Thread
 	
 	public String getAddress()
 	{
-		return "" + socket.getInetAddress();
+		return socket.getInetAddress().toString().replace("/", "");
 	}
 	
 	public void run()

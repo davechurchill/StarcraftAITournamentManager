@@ -1,6 +1,13 @@
 package utility;
 
 import java.util.*;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.JsonValue;
+import com.eclipsesource.json.WriterConfig;
+
 import java.io.*;
 import java.text.*;
 
@@ -100,7 +107,8 @@ public class ResultsParser
 			GameResult result = results.get(i);
 			
 			// if the game didn't start for either bot, don't parse this result
-			if (result.finalFrame <= 0)
+			// if all bots have not reported, don't parse this result
+			if (result.finalFrame <= 0 || !result.complete)
 			{
 				continue;
 			}
@@ -516,7 +524,6 @@ public class ResultsParser
 				return i;
 			}
 		}
-		
 		return -1;
 	}
 	
@@ -529,7 +536,6 @@ public class ResultsParser
 				return i;
 			}
 		}
-		
 		return -1;
 	}
 	
@@ -541,15 +547,15 @@ public class ResultsParser
 	{
 		if (line.trim().length() > 0)
 		{
-			String[] data = line.trim().split(" +");
+			JsonObject result = Json.parse(line).asObject();
 			
-			int gameID = Integer.parseInt(data[0]);
+			int gameID = result.get("gameID").asInt();
 			gameIDs.add(gameID);
 			
 			//filter for excluded bots
 			for (String excludedBot : ServerSettings.Instance().ExcludeFromResults)
 			{
-				if (excludedBot.equals(data[2]) || excludedBot.equals(data[3]))
+				if (excludedBot.equals(result.get("reportingBot").asString()))
 				{
 					return;
 				}
@@ -557,11 +563,11 @@ public class ResultsParser
 			
 			if (gameResults.containsKey(gameID))
 			{
-				gameResults.get(gameID).setResult(line);
+				gameResults.get(gameID).setResult(result);
 			}
 			else
 			{
-				gameResults.put(gameID, new GameResult(line));
+				gameResults.put(gameID, new GameResult(result));
 			}
 		}
 	}

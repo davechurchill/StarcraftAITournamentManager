@@ -6,6 +6,7 @@ public class InstructionMessage implements Message
 	
 	public Bot 					hostBot;
 	public Bot 					awayBot;
+	public Map                  map;
 	
 	public boolean 				isHost;
 	
@@ -32,6 +33,7 @@ public class InstructionMessage implements Message
         round_id = game.getRound();
         isHost = host;
         bwapi = defaultBWAPI.clone();
+        map = game.getMap();
 		
 		bwapi.enemy_count = "1";
         bwapi.wait_for_max_players = 2;

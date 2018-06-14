@@ -131,7 +131,7 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		// if the status is sending, grab the replay
 		if (status == ClientStatus.SENDING)
 		{
-			server.receiveGameResults(address.toString(), m.game); 
+			server.receiveGameResults(address.toString(), m.report); 
 		}
 		
 		if (m.status == ClientStatus.RUNNING && m.gameState != null)
