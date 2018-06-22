@@ -402,7 +402,7 @@ public class Client extends Thread
 		report.setFinishDate();
 		report.setFinalFrame(gameState.frameCount);
 		report.setTimers(gameState.timeOutExceeded);
-		report.setTimeout(gameState.gameHourUp == 1);
+		report.setGameTimeout(gameState.gameHourUp == 1);
 		report.setWon(gameState.selfWin == 1);
 		report.setScore(gameState.selfScore);
 		report.setTime(getElapsedTime());
@@ -429,7 +429,7 @@ public class Client extends Thread
 		report.setFinishDate();
 		report.setFinalFrame(gameState.frameCount);
 		report.setTimers(gameState.timeOutExceeded);
-		report.setTimeout(gameState.gameHourUp == 1);
+		report.setGameTimeout(gameState.gameHourUp == 1);
 		report.setWon(gameState.selfWin == 1);
 		report.setScore(gameState.selfScore);
 		report.setTime(getElapsedTime());

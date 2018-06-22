@@ -23,11 +23,11 @@ public class GameReport implements Serializable
 	
 	private GameEndType     gameEndType;
 	private boolean         won;
-	private long            time;
+	private long            time; //time in ms measured by TM client
 	private int             score;
 	private boolean         crash;
 	private Vector<Integer> timers;
-	private boolean         timeout;
+	private boolean         gameTimeout;
 	private int             finalFrame;
 	
 	private String          startDate;
@@ -47,7 +47,7 @@ public class GameReport implements Serializable
 		score = 0;
 		crash = false;
 		timers = new Vector<Integer>();
-		timeout = false;
+		gameTimeout = false;
 		finalFrame = 0;
 		
 		startDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
@@ -71,7 +71,7 @@ public class GameReport implements Serializable
 		resultObject.add("gameDuration", time);
 		resultObject.add("score", score);
 		resultObject.add("crash", crash);
-		resultObject.add("timeout", timeout);
+		resultObject.add("gameTimeout", gameTimeout);
 		resultObject.add("finalFrame", finalFrame);
 		
 		//timerLimits are in the same order as the frame counts output by the TournamentModule
@@ -140,12 +140,12 @@ public class GameReport implements Serializable
 		this.timers = timers;
 	}
 
-	public boolean isTimeout() {
-		return timeout;
+	public boolean isGameTimeout() {
+		return gameTimeout;
 	}
 
-	public void setTimeout(boolean timeout) {
-		this.timeout = timeout;
+	public void setGameTimeout(boolean gameTimeout) {
+		this.gameTimeout = gameTimeout;
 	}
 
 	public int getFinalFrame() {

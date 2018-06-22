@@ -2,7 +2,6 @@ package server;
 
 import java.io.*;
 import java.util.*;
-import java.text.*;
 
 import utility.*;
 import objects.*;
@@ -234,7 +233,7 @@ public class Server  extends Thread
 		if (ServerSettings.Instance().DetailedResults)
 		{
 			log("Generating All Results File...\n");
-			rp.writeDetailedResultsJSON();
+			rp.writeDetailedResults();
 			log("Generating All Results File Complete!\n");
 		}
 		

@@ -3,10 +3,7 @@ package utility;
 import java.util.*;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.WriterConfig;
 
 import java.io.*;
 import java.text.*;
@@ -40,6 +37,7 @@ public class ResultsParser
 	private int[] mapUsage 			= new int[numMaps];
 	private int[] hour 		        = new int[numBots];
 	
+	//first index is bot index, second index is round number
 	private Vector<Vector<Integer>> winsAfterRound = new Vector<Vector<Integer>>();
 	private Vector<Vector<Integer>> gamesAfterRound = new Vector<Vector<Integer>>();
 	
@@ -113,74 +111,56 @@ public class ResultsParser
 				continue;
 			}
 			
-			int b1 = getIndex(result.hostName);
-			int b2 = getIndex(result.awayName);
-			
-			if (getIndex(result.timeOutName) != -1)
+			if (result.timeout != -1)
 			{
-				timeout[getIndex(result.timeOutName)]++;
+				timeout[getIndex(result.getTimeoutName())]++;
 			}
 			
-			if (getIndex(result.crashName) != -1)
+			if (result.crash != -1)
 			{
-				crash[getIndex(result.crashName)]++;
+				crash[getIndex(result.getCrashName())]++;
 			}
 			
-			hour[b1] += (result.hourTimeout) ? 1 : 0;
-			hour[b2] += (result.hourTimeout) ? 1 : 0;
-			
-			games[b1]++;
-			games[b2]++;
-			
-			frames[b1] += result.finalFrame;
-			frames[b2] += result.finalFrame;
-			
-			int winner = getIndex(result.winName);
-			int map = getMapIndex(result.mapName);
-			
-			wins[b1][b2] += (winner == b1) ? 1 : 0;
-			wins[b2][b1] += (winner == b2) ? 1 : 0;
-			
+			int winner = getIndex(result.getWinnerName());
+			int map = getMapIndex(result.map);
 			mapUsage[map]++;
 			mapWins[winner][map]++;
-			mapGames[b1][map]++;
-			mapGames[b2][map]++;
 			
-			// update elo
-			updateElo(b1, b2, winner == b1);
-						
-			// update win percentage arrays
-			if (result.roundID >= gamesAfterRound.get(b1).size())
+			for (int j = 0; j < result.bots.size(); j++)
 			{
-				gamesAfterRound.get(b1).add(gamesAfterRound.get(b1).lastElement() + 1);
+				int b1 = getIndex(result.bots.get(j));
+				hour[b1] += (result.gameTimeout) ? 1 : 0;
+				games[b1]++;
+				frames[b1] += result.finalFrame;
+				mapGames[b1][map]++;
+				
+				//record all results for combinations of bots in the game
+				for (int k = j + 1; k < result.bots.size(); k++)
+				{
+					int b2 = getIndex(result.bots.get(k));
+					wins[b1][b2] += (result.winner == i) ? 1 : 0;
+					wins[b2][b1] += (result.winner == k) ? 1 : 0;
+					updateElo(b1, b2, winner == b1);
+				}
+				
+				// update win percentage arrays
+				// if it's a new round, add it to the end of the vector
+				if (result.roundID >= gamesAfterRound.get(b1).size())
+				{
+					gamesAfterRound.get(b1).add(gamesAfterRound.get(b1).lastElement() + 1);
+				}
+				// otherwise just add 1 to the back
+				else
+				{
+					gamesAfterRound.get(b1).set(result.roundID, gamesAfterRound.get(b1).get(result.roundID) + 1);
+				}
+				
+				while (result.roundID >= winsAfterRound.get(b1).size())
+				{
+					winsAfterRound.get(b1).add(winsAfterRound.get(b1).lastElement());		
+				}	
 			}
-			else
-			{
-				gamesAfterRound.get(b1).set(result.roundID, gamesAfterRound.get(b1).get(result.roundID) + 1);
-			}
-			
-			// if it's a new round, add it to the end of the vector
-			if (result.roundID >= gamesAfterRound.get(b2).size())
-			{
-				gamesAfterRound.get(b2).add(gamesAfterRound.get(b2).lastElement() + 1);
-			}
-			// otherwise just add 1 to the back
-			else
-			{
-				gamesAfterRound.get(b2).set(result.roundID, gamesAfterRound.get(b2).get(result.roundID) + 1);
-			}
-			
-			while (result.roundID >= winsAfterRound.get(b1).size())
-			{
-				winsAfterRound.get(b1).add(winsAfterRound.get(b1).lastElement());		
-			}
-			
-			while (result.roundID >= winsAfterRound.get(b2).size())
-			{
-				winsAfterRound.get(b2).add(winsAfterRound.get(b2).lastElement());		
-			}
-			
-			winsAfterRound.get(winner).set(result.roundID, winsAfterRound.get(winner).get(result.roundID) + 1);	
+			winsAfterRound.get(winner).set(result.roundID, winsAfterRound.get(winner).get(result.roundID) + 1);
 		}
 	}
 	
@@ -289,10 +269,13 @@ public class ResultsParser
 		return gameIDs.contains(gameID);
 	}
 	
-	public void writeDetailedResultsJSON()
+	public void writeDetailedResults()
 	{
 		StringBuilder out = new StringBuilder();
 		StringBuilder outtxt = new StringBuilder();
+		
+		//text file header line
+		outtxt.append(GameResult.getResultStringHeader() + "\n");
 		
 		//replay dir on local machine, easy to change by editing the output file
 		out.append("var replayPath = '../replays/';\n");
@@ -303,83 +286,7 @@ public class ResultsParser
 		{				
 			GameResult r = results.get(i);
 			
-			out.append("{");
-			
-			String idString = "" + r.gameID;
-			while (idString.length() < 5) { idString = "0" + idString; }
-			out.append("\"Round/Game\": \"" + r.roundID + " / " + idString + "\", ");
-			
-			String winnerReplayName = r.hostWon ? r.getHostReplayName() : r.getAwayReplayName();
-			String loserReplayName = r.hostWon ? r.getAwayReplayName() : r.getHostReplayName();
-			String winnerName = r.hostWon ? r.hostName : r.awayName;
-			String loserName = r.hostWon ? r.awayName : r.hostName;
-			
-			out.append("\"WinnerName\": \"" + winnerName + "\", ");
-			out.append("\"LoserName\": \"" + loserName + "\", ");
-			
-			if (new File("replays\\" + winnerReplayName).exists())
-			{
-				out.append("\"WinnerReplay\": \"" + winnerReplayName.replace("\\", "/") + "\", ");
-			}
-			else
-			{
-				out.append("\"WinnerReplay\": \"\", ");
-			}
-			
-			if (new File("replays\\" + loserReplayName).exists())
-			{
-				out.append("\"LoserReplay\": \"" + loserReplayName.replace("\\", "/") + "\", ");
-			}
-			else
-			{
-				out.append("\"LoserReplay\": \"\", ");
-			}
-			
-			out.append("\"Crash\": \"" + (r.finalFrame == -1 ? "unknown" : r.crashName) + "\", ");
-			out.append("\"Timeout\": \"" + r.timeOutName + "\", ");
-			out.append("\"Map\": \"" + r.mapName.substring(r.mapName.indexOf(')') + 1, r.mapName.indexOf('.')) + "\", ");
-			
-			String hours   = "" + r.finalFrame/(24*60*60); while (hours.length() < 2) { hours = "0" + hours; }
-			String minutes = "" + (r.finalFrame % (24*60*60))/(24*60); while (minutes.length() < 2) { minutes = "0" + minutes; }
-			String seconds = "" + (r.finalFrame % (24*60))/(24); while (seconds.length() < 2) { seconds = "0" + seconds; }
-			
-			out.append("\"Duration\": \"" + hours + ":" + minutes + ":" + seconds + "\", ");
-			out.append("\"W Score\": " + (r.hostWon ? r.hostScore : r.awayScore) + ", ");
-			out.append("\"L Score\": " + (r.hostWon ? r.awayScore : r.hostScore) + ", ");
-			
-			double maxScore = Math.max(r.hostScore, r.awayScore) + 1;
-			double closeNess = (r.hostWon ?  (r.hostScore - r.awayScore)/(maxScore) : (r.awayScore - r.hostScore)/(maxScore));
-			closeNess = (double)Math.round(closeNess * 100000) / 100000;
-			out.append("\"(W-L)/Max\": " + closeNess + ", ");
-			
-			int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
-			out.append("\"WinnerTimers\": [");
-			for (int t=0; t<numTimers; ++t)
-			{
-				out.append("{\"Limit\": " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + ", \"Count\": " + (r.hostWon ? r.hostTimers.get(t) : r.awayTimers.get(t)) + "}");
-				if (t != numTimers - 1)
-				{
-					out.append(", ");
-				}
-			}
-			out.append("], ");
-			
-			out.append("\"LoserTimers\": [");
-			for (int t=0; t<numTimers; ++t)
-			{
-				out.append("{\"Limit\": " + ServerSettings.Instance().tmSettings.TimeoutLimits.get(t) + ", \"Count\": " + (r.hostWon ? r.awayTimers.get(t) : r.hostTimers.get(t)) + "}");
-				if (t != numTimers - 1)
-				{
-					out.append(", ");
-				}
-			}
-			out.append("], ");
-			
-			out.append("\"Win Addr\": \"" + (r.hostWon ? r.hostAddress : r.awayAddress) + "\", ");
-			out.append("\"Lose Addr\": \"" + (r.hostWon ? r.awayAddress : r.hostAddress) + "\", ");
-			out.append("\"Start\": \"" + (r.startDate) + "\", ");
-			out.append("\"Finish\": \"" + (r.finishDate) + "\"}");
-			
+			out.append(r.getResultJSON());
 			if (i != results.size() - 1)
 			{
 				out.append(",");
@@ -610,7 +517,7 @@ class GameResultCrashComparator implements Comparator<GameResult>
 {
     public int compare(GameResult o1, GameResult o2)
     {
-		return o1.crashName.compareTo(o2.crashName);
+		return o1.getCrashName().compareTo(o2.getCrashName());
 	}
 }
 
@@ -618,7 +525,7 @@ class GameResultTimeOutComparator implements Comparator<GameResult>
 {
     public int compare(GameResult o1, GameResult o2)
     {
-		return o1.timeOutName.compareTo(o2.timeOutName);
+		return o1.getTimeoutName().compareTo(o2.getTimeoutName());
 	}
 }
 
@@ -626,6 +533,6 @@ class GameWinnerNameComparator implements Comparator<GameResult>
 {
     public int compare(GameResult o1, GameResult o2)
     {
-		return o1.winName.compareTo(o2.winName);
+		return o1.getWinnerName().compareTo(o2.getWinnerName());
 	}
 }

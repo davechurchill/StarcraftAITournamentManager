@@ -5,8 +5,6 @@ import java.util.Vector;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
-import com.eclipsesource.json.WriterConfig;
 
 import server.ServerSettings;
 
@@ -15,35 +13,31 @@ public class GameResult implements Comparable<Object>
 	public int gameID				= -1;
 	public int roundID				= -1;
 	
-	public String hostName			= "Error";
-	public String awayName			= "Error";
-	public String mapName			= "Error";
+	public Vector<String> bots            = new Vector<String>();
+	public Vector<String> replays         = new Vector<String>();
+	public Vector<Integer> scores         = new Vector<Integer>();
+	public Vector<String> addresses       = new Vector<String>();
+	public Vector<Vector<Integer>> timers = new Vector<Vector<Integer>>();
+	public Vector<Integer> times          = new Vector<Integer>(); //time in ms measured by TM client - not used currently
+	
+	public int host = -1;
+	public int winner = -1;
+	public int crash = -1;
+	public int timeout = -1;
+	public String map = "";
+	public int finalFrame = -1;
+	public String start = "";
+	public String finish = "";
+	public GameEndType gameEndType  = GameEndType.NORMAL;
+	public boolean gameTimeout		= false;
+	
+	/***************************************************/
+	
+	
 	
 	public boolean firstReport      = false;
 	public boolean complete         = false;
 	
-	public String winName			= "Error";
-	public String crashName			= "";
-	public String timeOutName		= "";
-	public GameEndType gameEndType  = GameEndType.NORMAL;
-	
-	public boolean hostWon			= false;
-	public boolean hostCrash		= false;
-	public boolean awayCrash		= false;
-	
-	public Vector<Integer> hostTimers   = new Vector<Integer>();
-	public Vector<Integer> awayTimers   = new Vector<Integer>();
-
-	public boolean hourTimeout		= false;
-	
-	public int hostScore			= 0;
-	public int awayScore			= 0;
-	public int finalFrame			= -2;
-	public int hostTime				= 0;
-	public int awayTime				= 0;
-	
-	public String hostAddress		= "unknown";
-	public String awayAddress		= "unknown";
 	public String startDate			= "unknown";
 	public String finishDate		= "unknown"; 
 
@@ -52,241 +46,327 @@ public class GameResult implements Comparable<Object>
 	public GameResult (JsonObject result) 
 	{
 		setResult(result);
-
-		/*int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
-	
-		for (int i=0; i<numTimers; ++i)
-		{
-			hostTimers.add(0);
-			awayTimers.add(0);
-		}*/
 	}
 	
 	public void setResult (JsonObject result)
 	{
 		gameID = result.get("gameID").asInt();
 		roundID = result.get("round").asInt();
-		mapName = result.get("map").asString();
-		Vector<Integer> timerVec;
+		map = result.get("map").asString();
+		
+		int botIndex = bots.size();
+		bots.add(result.get("reportingBot").asString());
+		scores.add(result.get("score").asInt());
+		times.add(result.get("gameDuration").asInt()); //unused
+		addresses.add(result.get("address").asString());
+		replays.add(getReplayName(result.get("reportingBot").asString()));
 		
 		if (result.get("wasHost").asBoolean())
 		{
-			hostName = result.get("reportingBot").asString();
-			hostWon = result.get("won").asBoolean();
-			hostScore = result.get("score").asInt();
-			hostTime = result.get("gameDuration").asInt();
-			hostAddress = result.get("address").asString();
-			timerVec = hostTimers;
-			
-			//if both bots have reported and crashed, believe the first to report
-			hostCrash = result.get("crash").asBoolean();
-			if (hostCrash && awayCrash)
-			{
-				hostWon = true;
-				hostCrash = false;
-			}
+			host = botIndex;
 		}
-		else
+		
+		if (result.get("won").asBoolean())
 		{
-			awayName = result.get("reportingBot").asString();
-			hostWon = !result.get("won").asBoolean();
-			awayScore = result.get("score").asInt();
-			awayTime = result.get("gameDuration").asInt();
-			awayAddress = result.get("address").asString();
-			timerVec = awayTimers;
-			
-			//if both bots have reported and crashed, believe the first to report
-			awayCrash = result.get("crash").asBoolean();
-			if (hostCrash && awayCrash)
-			{
-				hostWon = false;
-				awayCrash = false;
-			}
+			winner = botIndex;
+		}
+		
+		//if this is first bot to report crash, assign crash
+		if (result.get("crash").asBoolean() && crash == -1)
+		{
+			crash = botIndex;
 		}
 		
 		//see GameEndType for precedence order of game end types
 		GameEndType thisGameEnd = GameEndType.valueOf(result.get("gameEndType").asString());
 		gameEndType = thisGameEnd.ordinal() < gameEndType.ordinal() ? thisGameEnd : gameEndType;
 		
-		hourTimeout = result.get("timeout").asBoolean();
+		gameTimeout = result.get("gameTimeout").asBoolean();
 		finalFrame = result.get("finalFrame").asInt() > finalFrame ? result.get("finalFrame").asInt() : finalFrame;
 		
-		JsonArray timers = result.get("timers").asArray();
+		Vector<Integer> timerVec = new Vector<Integer>();
+		JsonArray botTimers = result.get("timers").asArray();
 		int numTimers = ServerSettings.Instance().tmSettings.TimeoutLimits.size();
-		for (int i = 0; i < timers.size(); i++)
+		for (int i = 0; i < botTimers.size(); i++)
 		{
-			timerVec.add(timers.get(i).asObject().get("frameCount").asInt());
+			timerVec.add(botTimers.get(i).asObject().get("frameCount").asInt());
 		}
 		while (timerVec.size() < numTimers)
 		{
 			// if the results didn't contain enough timers, add -1s. Probably a crash.
 			timerVec.add(-1);
 		}
+		timers.add(timerVec);
 		
 		// TODO: decide which bot's dates to use?
 		startDate = result.get("startDate").asString();
 		finishDate = result.get("finishDate").asString();
 		
-		// Only process final results if both bots have reported
+		// Only process final results if all bots have reported
 		if (!firstReport)
 		{
 			firstReport = true;
 		}
 		else
 		{
-			// set name of crashing bot
-			// at this point only one bot can be set to have crashed because of above logic
-			if (hostCrash)
+			// set index of crashing bot
+			if (crash != -1)
 			{
-				crashName = hostName;
-				hostWon = false;
-			}
-			else if (awayCrash)
-			{
-				crashName = awayName;
-				hostWon = true;
+				winner = (crash + 1) % 2;
 			}
 			
-			// check bot time-outs
-			for (int i = 0; i < numTimers; ++i)
+			// check bot time-outs			
+			for (int i = 0; i < bots.size(); i++)
 			{
-				// check if the host timed out
-				if (hostTimers.get(i) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(i))
+				for (int j = 0; j < timers.get(i).size(); ++j)
 				{
-					timeOutName = hostName;
-					hostWon = false;
-					break;
-				}
-				
-				// check if the away bot timed out
-				if (awayTimers.get(i) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(i))
-				{
-					timeOutName = awayName;
-					hostWon = true;
-					break;
+					//check to see if any bot timed out
+					
+					// check if the host timed out
+					if (timers.get(i).get(j) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(j))
+					{
+						timeout = i;
+						winner = (timeout + 1) % 2;
+						break;
+					}
 				}
 			}
 			
-			// check if the bots reached the hour time limit
+			// check if the bots reached the game time limit
 			// don't use the timeout boolean from the client report because it might be wrong (TournamentModule bug)
 			if (finalFrame >= ServerSettings.Instance().tmSettings.GameFrameLimit)
 			{
-				hourTimeout = true;
+				gameTimeout = true;
 				
 				// the winner is the bot with the highest score
-				if (hostScore >= awayScore)
+				int maxScore = -1;
+				int maxScoreIndex = -1;
+				for (int i = 0; i < bots.size(); i++)
 				{
-					hostWon = true;
+					if (scores.get(i) > maxScore)
+					{
+						maxScore = scores.get(i);
+						maxScoreIndex = i;
+					}
 				}
-				else
-				{
-					hostWon = false;
-				}
+				winner = maxScoreIndex;
 			}
-			
-			//set winner
-			winName = hostWon ? hostName : awayName;
 			complete = true;
 		}
 	}
 	
-	public String toString()
-	{
-		String s = String.format("%7d %5d %15s %15s %15s %8d %15s %15s %25s %6b %6b%6b %8d %8d %10d %10d \n",
-				this.gameID, this.roundID, this.hostName, 
-				this.awayName, this.winName, this.finalFrame, this.crashName, this.timeOutName, this.mapName, 
-				this.hostCrash, this.awayCrash, 
-				this.hourTimeout, this.hostScore, this.awayScore, 
-				this.hostTime, this.awayTime);
-				
-		for (int i=0; i<hostTimers.size(); ++i)
+	public String getResultJSON() {
+		JsonObject resultObject = Json.object();
+		
+		resultObject.add("gameID", gameID);
+		resultObject.add("round",  roundID);
+		
+		JsonArray botsArray = (JsonArray) Json.array();
+		for (String botName : bots)
 		{
-			String t = String.format(" %5d", hostTimers.get(i));
+			botsArray.add(botName);
+		}
+		resultObject.add("bots", botsArray);
+		
+		JsonArray replaysArray = (JsonArray) Json.array();
+		for (String replay : replays)
+		{
+			replaysArray.add(replay);
+		}
+		resultObject.add("replays", replaysArray);
+		
+		JsonArray scoresArray = (JsonArray) Json.array();
+		for (int score : scores)
+		{
+			scoresArray.add(score);
+		}
+		resultObject.add("scores", scoresArray);
+		
+		JsonArray addressesArray = (JsonArray) Json.array();
+		for (String address : addresses)
+		{
+			addressesArray.add(address);
+		}
+		resultObject.add("addresses", addressesArray);
+		
+		
+		resultObject.add("host", host);
+		resultObject.add("winner", winner);
+		resultObject.add("crash", crash);
+		resultObject.add("timeout", timeout);
+		
+		resultObject.add("map", map);
+		resultObject.add("gameEndType", gameEndType.toString());
+		
+		String hours   = "" + finalFrame/(24*60*60); while (hours.length() < 2) { hours = "0" + hours; }
+		String minutes = "" + (finalFrame % (24*60*60))/(24*60); while (minutes.length() < 2) { minutes = "0" + minutes; }
+		String seconds = "" + (finalFrame % (24*60))/(24); while (seconds.length() < 2) { seconds = "0" + seconds; }
+		resultObject.add("duration", hours + ":" + minutes + ":" + seconds);
+		
+		Vector<Integer> timerLimits = ServerSettings.Instance().tmSettings.TimeoutLimits;
+		JsonArray timersArrayArray = (JsonArray) Json.array();
+		for (int i = 0; i < bots.size(); i++)
+		{
+			//timerLimits are in the same order as the frame counts output by the TournamentModule
+			JsonArray timersArray = (JsonArray) Json.array();
+			for (int j = 0; j < timerLimits.size(); j++)
+			{
+				JsonObject timerObject = Json.object();
+				timersArray.add(timerObject.add("timeInMS", timerLimits.get(j)).add("frameCount", timers.get(i).get(j)));
+			}
+			timersArrayArray.add(timersArray);
+		}
+		resultObject.add("timers", timersArrayArray);
+		
+		double maxScore = Math.max(scores.get(0), scores.get(1)) + 1;
+		double closeness = (scores.get(winner) - scores.get((winner + 1) % 2)) / maxScore; 
+		closeness = (double)Math.round(closeness * 100000) / 100000;
+		resultObject.add("(W-L)/Max", closeness);
+		
+		resultObject.add("start", startDate);
+		resultObject.add("finish", finishDate);
+		
+		return resultObject.toString();
+	}
+	
+	public static String getResultStringHeader()
+	{
+		String s = String
+				.format("%7s %6s %15s %15s %15s %15s %25s %11s %15s %8s %8s",
+					"Game ID",
+					"Round",
+					"Winner",
+					"Loser",
+					"Crash",
+					"Timeout",
+					"Map",
+					"Final Frame",
+					"Game End Type",
+					"W Score",
+					"L Score"
+			);
+		
+		Vector<Integer> timerLimits = ServerSettings.Instance().tmSettings.TimeoutLimits;
+		for (int i = 0; i < timerLimits.size(); ++i)
+		{
+			String t = String.format(" %7s", "W " + timerLimits.get(i));
+			s += t;
+		}
+		for (int i = 0; i < timerLimits.size(); ++i)
+		{
+			String t = String.format(" %7s", "L " + timerLimits.get(i));
 			s += t;
 		}
 		
-		for (int i=0; i<awayTimers.size(); ++i)
-		{
-			String t = String.format(" %5d", awayTimers.get(i));
-			s += t;
-		}
+		s += String.format(" %15s", "W Address");
+		s += String.format(" %15s", "L Address");
+		
+		s += String.format(" %15s", "Start");
+		s += String.format(" %15s", "Finish");
 		
 		return s;
 	}
 	
 	public String getResultString()
 	{
-		String winnerName = hostWon ? hostName : awayName;
-		String loserName = hostWon ? awayName : hostName;
+		String winnerName = getWinnerName();
+		String loserName = bots.get((winner + 1) % 2);
 		
 		String s = String
-				.format("%7d %5d %15s %15s %15s %15s %25s %8d %8d %8d",
-						gameID, 
-						roundID,
-						winnerName,
-						loserName,
-						crashName.length() == 0 ? "-" : crashName,
-						timeOutName.length() == 0 ? "-" : timeOutName,
-						mapName,
-						finalFrame, 
-						hostWon ? hostScore : awayScore, 
-						hostWon ? awayScore : hostScore);
+			.format("%7d %6d %15s %15s %15s %15s %25s %11d %15s %8d %8d",
+				gameID, 
+				roundID,
+				winnerName,
+				loserName,
+				crash == -1 ? "-" : getCrashName(),
+				timeout == -1 ? "-" : getTimeoutName(),
+				map,
+				finalFrame,
+				gameEndType.toString(),
+				scores.get(winner), 
+				scores.get((winner + 1) % 2)
+		);
 
-		for (int i=0; i<hostTimers.size(); ++i)
+		for (int i = 0; i < timers.get(host).size(); ++i)
 		{
-			String t = String.format(" %7d", hostTimers.get(i));
+			String t = String.format(" %7d", timers.get(host).get(i));
 			s += t;
 		}
 		
-		for (int i=0; i<awayTimers.size(); ++i)
+		for (int i = 0; i < timers.get((host + 1) % 2).size(); ++i)
 		{
-			String t = String.format(" %7d", awayTimers.get(i));
+			String t = String.format(" %7d", timers.get((host + 1) % 2).get(i));
 			s += t;
 		}
 		
-		s += "  " + (hostWon ? hostAddress : awayAddress) + "  " + (hostWon ? awayAddress : hostAddress);
-		s += "  " + startDate + "  " + finishDate;
+		s += String.format(" %15s", addresses.get(winner));
+		s += String.format(" %15s", addresses.get((winner + 1) % 2));
+		
+		s += String.format(" %15s", startDate);
+		s += String.format(" %15s", finishDate);
 		
 		return s;
 	}
+	
+	public String getHostName()
+	{
+		if (host != -1)
+		{
+			return bots.get(host);
+		}
+		return "";
+	}
+	
+	public String getWinnerName()
+	{
+		if (winner != -1)
+		{
+			return bots.get(winner);
+		}
+		return "";
+	}
+	
+	public String getCrashName()
+	{
+		if (crash != -1)
+		{
+			return bots.get(crash);
+		}
+		return "";
+	}
+	
+	public String getTimeoutName()
+	{
+		if (timeout != -1)
+		{
+			return bots.get(timeout);
+		}
+		return "";
+	}
+	
+	
 	
 	public int compareTo(Object other)
 	{
 		return this.gameID - ((GameResult)other).gameID;
 	}
 
-	public String getHostReplayName()
+	private String getReplayName(String botName)
 	{
 		String replayName = "";
 		
-		replayName += hostName.toUpperCase() + "\\";
+		replayName += botName.toUpperCase() + "\\";
 		
 		String idString = "" + gameID;
 		while(idString.length() < 5) { idString = "0" + idString; }
 		
 		replayName += idString + "-";
-		replayName += hostName.substring(0, Math.min(hostName.length(), 4)).toUpperCase();
+		replayName += botName.substring(0, Math.min(botName.length(), 4)).toUpperCase();
 		replayName += "_";
-		replayName += awayName.substring(0, Math.min(awayName.length(), 4)).toUpperCase();
+		replayName += botName.substring(0, Math.min(botName.length(), 4)).toUpperCase();
 		replayName += ".REP";
 		
 		return replayName;
 	}
 	
-	public String getAwayReplayName()
-	{
-		String replayName = "";
-		
-		replayName += awayName.toUpperCase() + "\\";
-		String idString = "" + gameID;
-		while(idString.length() < 5) { idString = "0" + idString; }
-		
-		replayName += idString + "-";
-		replayName += awayName.substring(0, Math.min(awayName.length(), 4)).toUpperCase();
-		replayName += "_";
-		replayName += hostName.substring(0, Math.min(hostName.length(), 4)).toUpperCase();
-		replayName += ".REP";
-		
-		return replayName;
-	}
 }

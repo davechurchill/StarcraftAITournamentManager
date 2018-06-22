@@ -30,7 +30,7 @@ public class ResultsParserMain
 			
 			FileUtils.writeToFile(rp.getResultsJSON(), "html/results/results_summary_json.js");
 			rp.writeWinPercentageGraph();
-			rp.writeDetailedResultsJSON();
+			rp.writeDetailedResults();
 			
 		}
 		catch (Exception e)

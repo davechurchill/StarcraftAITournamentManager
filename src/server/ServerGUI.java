@@ -14,7 +14,6 @@ import utility.ResultsParser;
 
 import java.awt.event.*;
 import java.io.File;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -255,12 +254,13 @@ public class ServerGUI
     				{
     					ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
     					logText(getTimeStamp() + " Generating All Results File...\n");
-    					rp.writeDetailedResultsJSON();
+    					rp.writeDetailedResults();
     					logText(getTimeStamp() + " Generating All Results File Complete!\n");
     				}
     				catch (Exception ex)
     				{
     					logText(getTimeStamp() + " Generating results failed :(\n");
+    					System.out.println(ex.getStackTrace());
     				}
     			}   
             }

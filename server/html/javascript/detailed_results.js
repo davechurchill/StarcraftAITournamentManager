@@ -30,27 +30,27 @@ function fillFilters(resultsSummary, maps)
 
 function filterResult(result, crashFilter, botFilter, winnerFilter, loserFilter, mapFilter)
 {
-	if (crashFilter == "only-crashes" && result.Crash == "")
+	if (crashFilter == "only-crashes" && result.crash == -1)
 	{
 		return false;
 	}
-	if (crashFilter == "no-crashes" && result.Crash != "")
+	if (crashFilter == "no-crashes" && result.crash != -1)
 	{
 		return false;
 	}
-	if (botFilter != "all" && botFilter != result.WinnerName && botFilter != result.LoserName)
+	if (botFilter != "all" && result.bots.indexOf(botFilter) == -1)
 	{
 		return false;
 	}
-	if (winnerFilter != "all" && winnerFilter != result.WinnerName)
+	if (winnerFilter != "all" && winnerFilter != result.bots[result.winner])
 	{
 		return false;
 	}
-	if (loserFilter != "all" && loserFilter != result.LoserName)
+	if (loserFilter != "all" && loserFilter != result.bots[(result.winner + 1) % 2])
 	{
 		return false;
 	}
-	if (mapFilter != "all" && mapFilter != result.Map)
+	if (mapFilter != "all" && mapFilter != result.map)
 	{
 		return false;
 	}
@@ -74,16 +74,16 @@ function fillDetailedResultsTable(data, replayDir)
 	var numResults = data.length;
 	if (numResults > 0)
 	{
-		var numTimers = data[0].WinnerTimers.length;
+		var numTimers = data[0].timers[0].length;
 		for (var i = 0; i < numTimers; i++)
 		{
-			winnerTimerHeaders += "<th> W " + data[0].WinnerTimers[i].Limit + "</th>";
-			loserTimerHeaders += "<th> L " + data[0].LoserTimers[i].Limit + "</th>";
+			winnerTimerHeaders += "<th> W " + data[0].timers[0][i].timeInMS + "</th>";
+			loserTimerHeaders += "<th> L " + data[0].timers[0][i].timeInMS + "</th>";
 		}
 	}
 	
 	//headers
-	var headerHtml = "<tr><th>Round/Game</th><th>Winner</th><th>Loser</th><th>Crash</th><th>Timeout</th><th>Map</th><th>Duration</th><th>W Score</th><th>L Score</th><th>(W-L)/Max</th>";
+	var headerHtml = "<tr><th>Game ID</th><th>Round</th><th>Winner</th><th>Loser</th><th>Crash</th><th>Timeout</th><th>Map</th><th>Duration</th><th>End Type</th><th>W Score</th><th>L Score</th><th>(W-L)/Max</th>";
 	headerHtml += winnerTimerHeaders + loserTimerHeaders;
 	headerHtml += "<th>Win Addr</th><th>Lose Addr</th><th>Start</th><th>Finish</th></tr>";
 	
@@ -99,47 +99,52 @@ function fillDetailedResultsTable(data, replayDir)
 		unfilteredGames += 1;
 		
 		html += "<tr>";
-		html += "<td>"+ data[i]['Round/Game'] + "</td>"; 
+		html += "<td>"+ data[i].gameID + "</td>"; 
+		html += "<td>"+ data[i].round + "</td>";
 		
-		if (data[i].WinnerReplay != "")
+		var winner = data[i].winner;
+		var loser = (data[i].winner + 1) % 2;
+		
+		if (data[i].replays[winner] != "")
 		{
-			html += "<td><a href='" + replayDir + data[i].WinnerReplay + "'>" + data[i].WinnerName + "</a></td>";
+			html += "<td><a href='" + replayDir + data[i].replays[winner] + "'>" + data[i].bots[winner] + "</a></td>";
 		}
 		else
 		{
-			html += "<td>" + data[i].WinnerName + "</td>";
+			html += "<td>" + data[i].bots[winner] + "</td>";
 		}
 		
-		if (data[i].LoserReplay != "")
+		if (data[i].replays[loser] != "")
 		{
-			html += "<td><a href='" + replayDir + data[i].LoserReplay + "'>" + data[i].LoserName + "</a></td>";
+			html += "<td><a href='" + replayDir + data[i].replays[loser] + "'>" + data[i].bots[loser] + "</a></td>";
 		}
 		else
 		{
-			html += "<td>" + data[i].LoserName + "</td>";
+			html += "<td>" + data[i].bots[loser] + "</td>";
 		}
 		
-		html += "<td>" + data[i].Crash + "</td>";
-		html += "<td>" + data[i].Timeout + "</td>";
-		html += "<td>" + data[i].Map + "</td>";
-		html += "<td>" + data[i].Duration + "</td>";
-		html += "<td>" + data[i]['W Score'] + "</td>";
-		html += "<td>" + data[i]['L Score'] + "</td>";
-		html += "<td>" + data[i]['(W-L)/Max'] + "</td>";
+		html += "<td>" + (data[i].crash == -1 ? "" : data[i].bots[data[i].crash]) + "</td>";
+		html += "<td>" + (data[i].timeout == -1 ? "" : data[i].bots[data[i].timeout]) + "</td>";
+		html += "<td>" + data[i].map + "</td>";
+		html += "<td>" + data[i].duration + "</td>";
+		html += "<td>" + data[i].gameEndType + "</td>";
+		html += "<td>" + data[i].scores[winner] + "</td>";
+		html += "<td>" + data[i].scores[loser] + "</td>";
+		html += "<td>" + data[i]["(W-L)/Max"] + "</td>";
 		
 		for (var j = 0; j < numTimers; j++)
 		{
-			html += "<td>" + data[i].WinnerTimers[j].Count + "</td>";
+			html += "<td>" + data[i].timers[winner][j].frameCount + "</td>";
 		}
 		for (var j = 0; j < numTimers; j++)
 		{
-			html += "<td>" + data[i].LoserTimers[j].Count + "</td>";
+			html += "<td>" + data[i].timers[loser][j].frameCount + "</td>";
 		}
 		
-		html += "<td>" + data[i]['Win Addr'] + "</td>";
-		html += "<td>" + data[i]['Lose Addr'] + "</td>";
-		html += "<td>" + data[i].Start + "</td>";
-		html += "<td>" + data[i].Finish + "</td>";
+		html += "<td>" + data[i].addresses[winner] + "</td>";
+		html += "<td>" + data[i].addresses[loser] + "</td>";
+		html += "<td>" + data[i].start + "</td>";
+		html += "<td>" + data[i].finish + "</td>";
 		
 		html += "</tr>";
 	}
