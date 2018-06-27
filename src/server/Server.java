@@ -238,7 +238,7 @@ public class Server  extends Thread
 		}
 		
 		rp.writeWinPercentageGraph();
-		FileUtils.writeToFile(rp.getResultsJSON(), "html/results/results_summary_json.js");
+		FileUtils.writeToFile(rp.getResultsSummary(), "html/results/results_summary_json.js");
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost, int gameID)
@@ -567,8 +567,8 @@ public class Server  extends Thread
 		awayClient.sendMessage(new StartGameMessage());
 		
 		// set the game to running
-		//game.setHomeAddress(hostClient.address.toString());
-		//game.setAwayAddress(awayClient.address.toString());
+		game.setHomeAddress(hostClient.toString());
+		game.setAwayAddress(awayClient.toString());
 		//game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
         game.setStatus(GameStatus.RUNNING);
        //game.startTime();
@@ -611,10 +611,15 @@ public class Server  extends Thread
 		{
 			log("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");				// EXCEPTION HERE
 			System.out.println("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");
+			
 			Game g = games.lookupGame(report.getGameID());
-			g.addReport(report);
-			appendGameData(report);
+			g.setStatus(GameStatus.DONE);
 			games.receivedResult(report.getGameID());
+			
+			report.setAddress((report.isHost() ? g.getHomeAddress() : g.getAwayAddress()));
+			report.setOpponentAddress((report.isHost() ? g.getAwayAddress() : g.getHomeAddress()));
+			appendGameData(report);
+			
 			updateResults();
 		}
 		catch (Exception e)

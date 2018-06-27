@@ -30,18 +30,11 @@ public class GameResult implements Comparable<Object>
 	public String finish = "";
 	public GameEndType gameEndType  = GameEndType.NORMAL;
 	public boolean gameTimeout		= false;
-	
-	/***************************************************/
-	
-	
-	
-	public boolean firstReport      = false;
-	public boolean complete         = false;
-	
 	public String startDate			= "unknown";
-	public String finishDate		= "unknown"; 
-
-	public GameResult() {}
+	public String finishDate		= "unknown";
+	
+	public int reportsReceived      = 0;
+	public boolean complete         = false;
 
 	public GameResult (JsonObject result) 
 	{
@@ -54,12 +47,25 @@ public class GameResult implements Comparable<Object>
 		roundID = result.get("round").asInt();
 		map = result.get("map").asString();
 		
-		int botIndex = bots.size();
-		bots.add(result.get("reportingBot").asString());
-		scores.add(result.get("score").asInt());
-		times.add(result.get("gameDuration").asInt()); //unused
-		addresses.add(result.get("address").asString());
-		replays.add(getReplayName(result.get("reportingBot").asString()));
+		int botIndex = getIndex(result.get("reportingBot").asString());
+		if (botIndex == -1)
+		{
+			initBot(result.get("reportingBot").asString());
+			botIndex = getIndex(result.get("reportingBot").asString());
+		}
+		
+		int oppIndex = getIndex(result.get("opponentBot").asString());
+		if (oppIndex == -1)
+		{
+			initBot(result.get("opponentBot").asString());
+			oppIndex = getIndex(result.get("opponentBot").asString());
+		}
+		
+		scores.set(botIndex, result.get("score").asInt());
+		times.set(botIndex, result.get("gameDuration").asInt()); //unused
+		addresses.set(botIndex, result.get("address").asString());
+		addresses.set((botIndex + 1) % 2, result.get("opponentAddress").asString());
+		replays.set(botIndex, getReplayName(botIndex));
 		
 		if (result.get("wasHost").asBoolean())
 		{
@@ -77,9 +83,15 @@ public class GameResult implements Comparable<Object>
 			crash = botIndex;
 		}
 		
-		//see GameEndType for precedence order of game end types
+		//see GameEndType source for precedence order of game end types
 		GameEndType thisGameEnd = GameEndType.valueOf(result.get("gameEndType").asString());
 		gameEndType = thisGameEnd.ordinal() < gameEndType.ordinal() ? thisGameEnd : gameEndType;
+		
+		//if this bot reports that StarCraft didn't start or crashed before the game, assign it as crashing bot
+		if (thisGameEnd == GameEndType.NO_STARCRAFT)
+		{
+			crash = botIndex;
+		}
 		
 		gameTimeout = result.get("gameTimeout").asBoolean();
 		finalFrame = result.get("finalFrame").asInt() > finalFrame ? result.get("finalFrame").asInt() : finalFrame;
@@ -96,16 +108,16 @@ public class GameResult implements Comparable<Object>
 			// if the results didn't contain enough timers, add -1s. Probably a crash.
 			timerVec.add(-1);
 		}
-		timers.add(timerVec);
+		timers.set(botIndex, timerVec);
 		
 		// TODO: decide which bot's dates to use?
 		startDate = result.get("startDate").asString();
 		finishDate = result.get("finishDate").asString();
 		
 		// Only process final results if all bots have reported
-		if (!firstReport)
+		if (reportsReceived == 0)
 		{
-			firstReport = true;
+			reportsReceived++;
 		}
 		else
 		{
@@ -120,9 +132,6 @@ public class GameResult implements Comparable<Object>
 			{
 				for (int j = 0; j < timers.get(i).size(); ++j)
 				{
-					//check to see if any bot timed out
-					
-					// check if the host timed out
 					if (timers.get(i).get(j) >= ServerSettings.Instance().tmSettings.TimeoutBounds.get(j))
 					{
 						timeout = i;
@@ -194,9 +203,10 @@ public class GameResult implements Comparable<Object>
 		resultObject.add("winner", winner);
 		resultObject.add("crash", crash);
 		resultObject.add("timeout", timeout);
-		
 		resultObject.add("map", map);
-		resultObject.add("gameEndType", gameEndType.toString());
+		
+		// if only one client sent back a report, change gameEndType to show that.
+		resultObject.add("gameEndType", (complete ? gameEndType.toString() : GameEndType.NO_REPORT.toString()));
 		
 		String hours   = "" + finalFrame/(24*60*60); while (hours.length() < 2) { hours = "0" + hours; }
 		String minutes = "" + (finalFrame % (24*60*60))/(24*60); while (minutes.length() < 2) { minutes = "0" + minutes; }
@@ -344,26 +354,52 @@ public class GameResult implements Comparable<Object>
 		return "";
 	}
 	
-	
-	
 	public int compareTo(Object other)
 	{
 		return this.gameID - ((GameResult)other).gameID;
 	}
+	
+	private void initBot(String botName)
+	{
+		bots.add(botName);
+		scores.add(-1);
+		times.add(-1); //unused
+		addresses.add("");
+		replays.add("");
+		Vector<Integer> timerVec = new Vector<Integer>();
+		while (timerVec.size() < ServerSettings.Instance().tmSettings.TimeoutLimits.size())
+		{
+			timerVec.add(-1);
+		}
+		timers.add(timerVec);
+	}
+	
+	private int getIndex(String botName)
+	{
+		for (int i = 0; i < bots.size(); i++)
+		{
+			if (bots.get(i).equals(botName))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
 
-	private String getReplayName(String botName)
+	private String getReplayName(int botIndex)
 	{
 		String replayName = "";
 		
-		replayName += botName.toUpperCase() + "\\";
+		
+		replayName += bots.get(botIndex).toUpperCase() + "\\";
 		
 		String idString = "" + gameID;
 		while(idString.length() < 5) { idString = "0" + idString; }
 		
 		replayName += idString + "-";
-		replayName += botName.substring(0, Math.min(botName.length(), 4)).toUpperCase();
+		replayName += bots.get(botIndex).substring(0, Math.min(bots.get(botIndex).length(), 4)).toUpperCase();
 		replayName += "_";
-		replayName += botName.substring(0, Math.min(botName.length(), 4)).toUpperCase();
+		replayName += bots.get((botIndex + 1) % 2).substring(0, Math.min(bots.get((botIndex + 1) % 2).length(), 4)).toUpperCase();
 		replayName += ".REP";
 		
 		return replayName;

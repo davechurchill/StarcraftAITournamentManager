@@ -3,7 +3,9 @@ package utility;
 import java.util.*;
 
 import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.WriterConfig;
 
 import java.io.*;
 import java.text.*;
@@ -32,6 +34,7 @@ public class ResultsParser
 	private double[] elo			= new double[numBots];
 	private int[] timeout 			= new int[numBots];
 	private int[] games 			= new int[numBots];
+	private int[] allWins 			= new int[numBots];
 	private int[] crash 			= new int[numBots];
 	private int[] frames 			= new int[numBots];
 	private int[] mapUsage 			= new int[numMaps];
@@ -138,7 +141,7 @@ public class ResultsParser
 				for (int k = j + 1; k < result.bots.size(); k++)
 				{
 					int b2 = getIndex(result.bots.get(k));
-					wins[b1][b2] += (result.winner == i) ? 1 : 0;
+					wins[b1][b2] += (result.winner == j) ? 1 : 0;
 					wins[b2][b1] += (result.winner == k) ? 1 : 0;
 					updateElo(b1, b2, winner == b1);
 				}
@@ -162,6 +165,14 @@ public class ResultsParser
 			}
 			winsAfterRound.get(winner).set(result.roundID, winsAfterRound.get(winner).get(result.roundID) + 1);
 		}
+		
+		for (int i=0; i<numBots; i++)
+		{
+			for (int j=0; j<numBots; j++)
+			{
+				allWins[i] += wins[i][j];
+			}
+		}
 	}
 	
 	private void updateElo(int b1, int b2, boolean win)
@@ -180,20 +191,10 @@ public class ResultsParser
 	
 	public void writeWinPercentageGraph()
 	{
-		int[] allwins = new int[botNames.length];
-		
-		for (int i=0; i<numBots; i++)
-		{
-			for (int j=0; j<numBots; j++)
-			{
-				allwins[i] += wins[i][j];
-			}
-		}
-		
 		Vector<ResultPair> allPairs = new Vector<ResultPair>();
 		for (int i=0; i<numBots; i++)
 		{
-			double winPercentage = (games[i] > 0 ? ((double)allwins[i]/games[i]) : 0);
+			double winPercentage = (games[i] > 0 ? ((double)allWins[i]/games[i]) : 0);
 			allPairs.add(new ResultPair(botNames[i], i, winPercentage));
 		}
 		
@@ -303,53 +304,39 @@ public class ResultsParser
 		FileUtils.writeToFile(outtxt.toString(), "html/results/detailed_results.txt");
 	}
 	
-	public String getResultsJSON()
+	public String getResultsSummary()
 	{	
-		int[] allgames = new int[botNames.length];
-		int[] allwins = new int[botNames.length];
-		
-		for (int i=0; i<numBots; i++)
-		{
-			for (int j=0; j<numBots; j++)
-			{
-				allwins[i] += wins[i][j];
-				allgames[i] += wins[i][j] + wins[j][i];
-			}
-		}
-		
 		Vector<ResultPair> allPairs = new Vector<ResultPair>();
 		for (int i=0; i<numBots; i++)
 		{
-			double winPercentage = (allgames[i] > 0 ? ((double)allwins[i]/allgames[i]) : 0);
+			double winPercentage = (games[i] > 0 ? ((double)allWins[i]/games[i]) : 0);
 			allPairs.add(new ResultPair(botNames[i], i, winPercentage));
 		}
 		Collections.sort(allPairs, new ResultPairComparator());
 		
-		StringBuilder json = new StringBuilder();
+		StringBuilder out = new StringBuilder();
 		
 		File resultsTXT = new File("html/results/detailed_results.txt");
-		json.append("var resultsTXTSize = " + (resultsTXT.exists() ? resultsTXT.length()/1000 : 0) + ";\n");
-		json.append("var lastUpdateTime = '" + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "';\n");
-		json.append("var maps = [");
-		for (int i=0; i<numMaps; i++)
-		{
-			json.append("'" + mapNames[i].substring(mapNames[i].indexOf(')') + 1, mapNames[i].indexOf('.')) + "'");
-			if (i != numMaps - 1)
-			{
-				json.append(",");
-			}
-		}
-		json.append("]\n");
+		out.append("var resultsTXTSize = " + (resultsTXT.exists() ? resultsTXT.length()/1000 : 0) + ";\n");
+		out.append("var lastUpdateTime = '" + new SimpleDateFormat("yyyy-MM-dd [HH:mm:ss]").format(Calendar.getInstance().getTime()) + "';\n");
 		
-		json.append("var resultsSummary = [\n");
+		JsonArray maps = (JsonArray) Json.array();
+		for (String mapName : mapNames)
+		{
+			maps.add(mapName.substring(mapName.indexOf(')') + 1, mapName.indexOf('.')));
+		}
+		out.append("var maps = " + maps.toString() + ";\n");
+		
+		JsonArray resultsSummary = (JsonArray) Json.array();
 		
 		for (int i=0; i<numBots; ++i)
 		{
+			JsonObject botSummary = Json.object();
 			int ii = allPairs.get(i).botIndex;
 			
-			json.append("\t{\"BotName\": \"" + botNames[ii] + "\", ");
-			json.append("\"Rank\": " + i + ", ");
-			json.append("\"Race\": \"" + ServerSettings.Instance().BotVector.get(ii).getRace() + "\", ");
+			botSummary.add("BotName", botNames[ii]);
+			botSummary.add("Rank", i);
+			botSummary.add("Race", ServerSettings.Instance().BotVector.get(ii).getRace());
 			
 			//parse BWAPI version to go from "BWAPI_412" -> "4.1.2"
 			String version = ServerSettings.Instance().BotVector.get(ii).getBWAPIVersion();
@@ -363,63 +350,47 @@ public class ResultsParser
 					versionNum += ".";
 				}
 			}
-			json.append("\"BWAPIVersion\": \"" + versionNum + "\", ");
+			botSummary.add("BWAPIVersion", versionNum);
 			
-			json.append("\"BotType\": \"" + ServerSettings.Instance().BotVector.get(ii).getType() + "\", ");
-			json.append("\"Games\": " + allgames[ii] + ", ");
-			json.append("\"Wins\": " + allwins[ii] + ", ");
-			json.append("\"Losses\": " + (allgames[ii] - allwins[ii]) + ", ");
-			json.append("\"Score\": " + new DecimalFormat("##.##").format(allPairs.get(i).win*100) + ", ");
-			json.append("\"ELO\": " + (int)elo[ii] + ", "); 
-			json.append("\"AvgTime\": " + (allgames[ii] > 0 ? frames[ii]/games[ii] : "0") + ", ");
-			json.append("\"Hour\": " + hour[ii] + ", ");
-			json.append("\"Crash\": " + crash[ii] + ", ");
-			json.append("\"Timeout\": " + timeout[ii] + ", ");
+			botSummary.add("Games", games[ii]);
+			botSummary.add("Wins", allWins[ii]);
+			botSummary.add("Losses", games[ii] - allWins[ii]);
+			botSummary.add("Score", new DecimalFormat("##.##").format(allPairs.get(i).win*100));
+			botSummary.add("ELO", (int)elo[ii]);
+			botSummary.add("AvgTime", games[ii] > 0 ? frames[ii]/games[ii] : 0);
+			botSummary.add("Hour", hour[ii]);
+			botSummary.add("Crash", crash[ii]);
+			botSummary.add("Timeout", timeout[ii]);
 			
-			json.append("\"resultPairs\": [");
-			
+			JsonArray resultPairs = (JsonArray) Json.array();
 			for (int j=0; j<numBots; j++)
 			{
+				JsonObject pair = Json.object();
 				int jj = allPairs.get(j).botIndex;
 				
-				json.append("{\"Opponent\": \"" + botNames[jj] + "\", ");
-				json.append("\"Wins\": " + wins[ii][jj] + ", ");
-				json.append("\"Games\": " + (wins[ii][jj] + wins[jj][ii]) + "}");
-				
-				if (j != numBots - 1)
-				{
-					json.append(", ");
-				}
+				pair.add("Opponent", botNames[jj]);
+				pair.add("Wins", wins[ii][jj]);
+				pair.add("Games", wins[ii][jj] + wins[jj][ii]);
+				resultPairs.add(pair);
 			}
-			json.append("], ");
+			botSummary.add("resultPairs", resultPairs);
 			
-			json.append("\"mapResults\": [");
-			
+			JsonArray mapResults = (JsonArray) Json.array();
 			for (int j=0; j<numMaps; j++)
 			{
-				json.append("{\"Map\": \"" + mapNames[j].substring(mapNames[j].indexOf(')') + 1, mapNames[j].indexOf('.')) + "\", ");
-				json.append("\"Wins\": " + mapWins[ii][j] + ", ");
-				json.append("\"Games\": " + mapGames[ii][j] + "}");
-				
-				if (j != numMaps - 1)
-				{
-					json.append(", ");
-				}
+				JsonObject mapResult = Json.object();
+				mapResult.add("Map", mapNames[j].substring(mapNames[j].indexOf(')') + 1, mapNames[j].indexOf('.')));
+				mapResult.add("Wins", mapWins[ii][j]);
+				mapResult.add("Games", mapGames[ii][j]);
+				mapResults.add(mapResult);
 			}
+			botSummary.add("mapResults", mapResults);
 			
-			json.append("]}");
-			
-			if (i != numBots - 1)
-			{
-				json.append(", ");
-			}
-			
-			json.append("\n");
+			resultsSummary.add(botSummary);
 		}
+		out.append("var resultsSummary = " + resultsSummary.toString(WriterConfig.PRETTY_PRINT) + ";\n");
 		
-		json.append("];");
-		
-		return json.toString();
+		return out.toString();
 	}
 		
 	public int getIndex(String botName)

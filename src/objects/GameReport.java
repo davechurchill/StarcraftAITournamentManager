@@ -18,8 +18,10 @@ public class GameReport implements Serializable
 	private int             round;
 	private Map             map;
 	private Bot             reportingBot;
+	private Bot             opponentBot;
 	private boolean         isHost;
 	private String          address;
+	private String          opponentAddress;
 	
 	private GameEndType     gameEndType;
 	private boolean         won;
@@ -33,14 +35,14 @@ public class GameReport implements Serializable
 	private String          startDate;
 	private String          finishDate;
 	
-	public GameReport(int gameID, int round, Map map, Bot bot, boolean isHost, String address) 
+	public GameReport(int gameID, int round, Map map, Bot reportingBot, Bot opponentBot, boolean isHost) 
 	{
 		this.gameID = gameID;
 		this.round = round;
 		this.map = map;
-		reportingBot = bot;
+		this.reportingBot = reportingBot;
+		this.opponentBot = opponentBot;
 		this.isHost = isHost;
-		this.address = address;
 		
 		won = false;
 		time = 0;
@@ -63,8 +65,10 @@ public class GameReport implements Serializable
 		resultObject.add("round",  round);
 		resultObject.add("map", map.getMapName());
 		resultObject.add("reportingBot", reportingBot.getName());
+		resultObject.add("opponentBot", opponentBot.getName());
 		resultObject.add("wasHost", isHost);
 		resultObject.add("address", address);
+		resultObject.add("opponentAddress", opponentAddress);
 		
 		resultObject.add("gameEndType", gameEndType.toString());
 		resultObject.add("won", won);
@@ -89,44 +93,68 @@ public class GameReport implements Serializable
 		return resultObject.toString();
 	}
 	
+	public void setAddress(String address)
+	{
+		this.address = address;
+	}
+	
+	public void setOpponentAddress(String address)
+	{
+		this.opponentAddress = address;
+	}
+	
 	public String getaddress()
 	{
 		return address;		
 	}
 
-	public Bot getBot() {
+	public Bot getReportingBot()
+	{
 		return reportingBot;
 	}
+	
+	public Bot getOpponentBot()
+	{
+		return opponentBot;
+	}
 
-	public Map getMap() {
+	public Map getMap()
+	{
 		return map;
 	}
 
-	public boolean isWon() {
+	public boolean isWon()
+	{
 		return won;
 	}
 
-	public void setWon(boolean won) {
+	public void setWon(boolean won)
+	{
 		this.won = won;
 	}
 
-	public int getGameID() {
+	public int getGameID()
+	{
 		return gameID;
 	}
 
-	public int getScore() {
+	public int getScore()
+	{
 		return score;
 	}
 
-	public void setScore(int score) {
+	public void setScore(int score)
+	{
 		this.score = score;
 	}
 
-	public boolean isCrash() {
+	public boolean isCrash()
+	{
 		return crash;
 	}
 
-	public void setCrash(boolean crash) {
+	public void setCrash(boolean crash)
+	{
 		this.crash = crash;
 	}
 
@@ -144,7 +172,8 @@ public class GameReport implements Serializable
 		return gameTimeout;
 	}
 
-	public void setGameTimeout(boolean gameTimeout) {
+	public void setGameTimeout(boolean gameTimeout)
+	{
 		this.gameTimeout = gameTimeout;
 	}
 
@@ -152,19 +181,23 @@ public class GameReport implements Serializable
 		return finalFrame;
 	}
 
-	public void setFinalFrame(int finalFrame) {
+	public void setFinalFrame(int finalFrame)
+	{
 		this.finalFrame = finalFrame;
 	}
 
-	public int getRound() {
+	public int getRound()
+	{
 		return round;
 	}
 
-	public long getTime() {
+	public long getTime()
+	{
 		return time;
 	}
 
-	public void setTime(long time) {
+	public void setTime(long time)
+	{
 		this.time = time;
 	}
 

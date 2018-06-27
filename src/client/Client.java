@@ -378,8 +378,8 @@ public class Client extends Thread
 				instructions.round_id, 
 				instructions.map,
 				(instructions.isHost ? instructions.hostBot : instructions.awayBot),
-				instructions.isHost,
-				listener.getAddress()
+				(instructions.isHost ? instructions.awayBot : instructions.hostBot),
+				instructions.isHost
 			);
 						
 			// Reset the files for next game

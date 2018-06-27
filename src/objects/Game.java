@@ -9,11 +9,8 @@ public class Game implements Serializable
 	private Bot 			homebot;
 	private Bot 			awaybot;
 	
-	//private String          homeAddress;
-	//private String          awayAddress;
-	
-	private GameReport      homeReport;
-	private GameReport      awayReport;
+	private String          homeAddress;
+	private String          awayAddress;
 	
 	private GameStatus 		status;
 	private Map 			map;
@@ -45,93 +42,61 @@ public class Game implements Serializable
 		startDate = date;		
 	}*/
 	
-	public GameStatus getStatus() {
+	public GameStatus getStatus()
+	{
 		return status;
 	}
 
-	public void setStatus(GameStatus status) {
+	public void setStatus(GameStatus status)
+	{
 		this.status = status;
 	}
 
-	public Bot getHomebot() {
+	public Bot getHomebot()
+	{
 		return homebot;
 	}
 	
-	public Bot getAwaybot() {
+	public Bot getAwaybot()
+	{
 		return awaybot;
 	}
 
-	/*public void setHomeAddress(String address) {
+	public void setHomeAddress(String address)
+	{
 		homeAddress = address;
 	}
 	
-	public void setAwayAddress(String address) {
+	public void setAwayAddress(String address)
+	{
 		awayAddress = address;
-	}*/
+	}
 	
-	public Map getMap() {
+	public String getHomeAddress()
+	{
+		return homeAddress;
+	}
+	
+	public String getAwayAddress()
+	{
+		return awayAddress;
+	}
+	
+	public Map getMap()
+	{
 		return map;
 	}
 
-	public boolean isHostwon() {
-		return homeReport.isWon();
-	}
-
-	public int getGameID() {
+	public int getGameID()
+	{
 		return gameID;
-	}
-
-	/**
-	 * @return the hostScore
-	 */
-	public int getHostScore() {
-		return homeReport.getScore();
-	}
-
-	/**
-	 * @return the awayScore
-	 */
-	public int getAwayScore() {
-		return awayReport.getScore();
-	}
-
-	
-	/**
-	 * Getter for the boolean value indicating that the host bot has crashed
-	 * 
-	 * @return the hostcrash
-	 */
-	public boolean isHostcrash() {
-		return homeReport.isCrash();
-	}
-
-	/**
-	 * Getter for the boolean value indicating that the away bot has crashed
-	 * 
-	 * @return the awaycrash
-	 */
-	public boolean isAwaycrash() {
-		return awayReport.isCrash();
 	}
 
 	/**
 	 * @return the round
 	 */
-	public int getRound() {
-		return round;
-	}
-		
-	public void addReport(GameReport report)
+	public int getRound()
 	{
-		if (report.isHost())
-		{
-			homeReport = report;
-		}
-		else
-		{
-			awayReport = report;
-		}
-		
-		setStatus(GameStatus.DONE);
+		return round;
 	}
 }
