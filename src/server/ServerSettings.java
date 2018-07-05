@@ -44,6 +44,8 @@ public class ServerSettings
 
 	private static final ServerSettings INSTANCE = new ServerSettings();
 	
+	private String settingsFile = "";
+	
 	private ServerSettings()
 	{
 		
@@ -66,12 +68,19 @@ public class ServerSettings
 		
 		return null;
 	}
+	
+	public void updateSettings()
+	{
+		parseSettingsFile(settingsFile);
+	}
 		
 	public void parseSettingsFile(String filename)
 	{	
 		try
 		{
-			BufferedReader br = new BufferedReader(new FileReader("server_settings.JSON"));
+			settingsFile = filename;
+			
+			BufferedReader br = new BufferedReader(new FileReader(filename));
 			JsonObject jo = Json.parse(br).asObject();
 			br.close();
 			
@@ -94,7 +103,19 @@ public class ServerSettings
 						
 					}
 				}
-				BotVector.add(new Bot(bot.get("BotName").asString(),bot.get("Race").asString(), bot.get("BotType").asString(), bot.get("BWAPIVersion").asString(), requirements));
+				Bot existingBot = getBotFromBotName(bot.get("BotName").asString());
+				if (existingBot != null)
+				{
+					//update existing bot
+					existingBot.setRace(bot.get("Race").asString());
+					existingBot.setType(bot.get("BotType").asString());
+					existingBot.setBWAPIVersion(bot.get("BWAPIVersion").asString());
+					existingBot.setRequirements(requirements);
+				}
+				else
+				{
+					BotVector.add(new Bot(bot.get("BotName").asString(),bot.get("Race").asString(), bot.get("BotType").asString(), bot.get("BWAPIVersion").asString(), requirements));
+				}
 			}
 			
 			JsonArray maps = jo.get("maps").asArray();
@@ -185,6 +206,8 @@ public class ServerSettings
 		// check all bot directories
 		for (Bot b : BotVector)
 		{
+			boolean botValid = true;
+			
 			String botDir 		= ServerBotDir + b.getName() + "/";
 			String botAIDir 	= botDir + "AI/";
 			String botDLLFile	= botAIDir + b.getName() + ".dll";
@@ -194,18 +217,24 @@ public class ServerSettings
 			String botBWAPIReq  = ServerRequiredDir + "Required_" + b.getBWAPIVersion() + ".zip";
 			
 			// Check if all the bot files exist
-			if (!new File(botDir).exists()) 		{ System.err.println("Bot Error: " + b.getName() + " bot directory " + botDir + " does not exist."); valid = false; }
-			if (!new File(botAIDir).exists()) 		{ System.err.println("Bot Error: " + b.getName() + " bot AI directory " + botAIDir + " does not exist."); valid = false; }
-			if (!new File(botDLLFile).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot dll file " + botDLLFile + " does not exist."); valid = false; }
-			if (!new File(botWriteDir).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot write directory " + botWriteDir + " does not exist."); valid = false; }
-			if (!new File(botReadDir).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot read directory " + botReadDir + " does not exist."); valid = false; }
-			if (!new File(botBWAPIReq).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot required BWAPI files " + botBWAPIReq + " does not exist."); valid = false; }
+			if (!new File(botDir).exists()) 		{ System.err.println("Bot Error: " + b.getName() + " bot directory " + botDir + " does not exist."); botValid = false; }
+			if (!new File(botAIDir).exists()) 		{ System.err.println("Bot Error: " + b.getName() + " bot AI directory " + botAIDir + " does not exist."); botValid = false; }
+			if (!new File(botDLLFile).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot dll file " + botDLLFile + " does not exist."); botValid = false; }
+			if (!new File(botWriteDir).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot write directory " + botWriteDir + " does not exist."); botValid = false; }
+			if (!new File(botReadDir).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot read directory " + botReadDir + " does not exist."); botValid = false; }
+			if (!new File(botBWAPIReq).exists()) 	{ System.err.println("Bot Error: " + b.getName() + " bot required BWAPI files " + botBWAPIReq + " does not exist."); botValid = false; }
 			
 			// Check if the bot is proxy and the proxy bot exists
 			if (b.isProxyBot() && !new File(proxyScript).exists()) 
 			{ 
 				System.err.println("Bot Error: " + b.getName() + " listed as proxy but " + proxyScript + " does not exist."); 
-				valid = false; 
+				botValid = false; 
+			}
+			
+			b.setValid(botValid);
+			if (!LadderMode && !botValid)
+			{
+				valid = false;
 			}
 		}
 		
@@ -220,5 +249,24 @@ public class ServerSettings
 		}*/
 		
 		return valid;
+	}
+	
+	private void createBotDir(String botName)
+	{
+		File AIDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botName + "/AI");
+		if (!AIDir.exists())
+		{
+			AIDir.mkdirs();
+		}
+		File readDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botName + "/read");
+		if (!readDir.exists())
+		{
+			readDir.mkdirs();
+		}
+		File writeDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botName + "/write");
+		if (!writeDir.exists())
+		{
+			writeDir.mkdirs();
+		}
 	}
 }

@@ -130,6 +130,11 @@ public class Server  extends Thread
 				
 				if (ServerSettings.Instance().StartGamesSimul)
 				{
+					if (ServerSettings.Instance().LadderMode)
+					{
+						updateBotFiles();
+					}
+					
 					// we can start multiple games at same time
 					nextGame = games.getNextGame(startingBots, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
 					if (nextGame == null)
@@ -153,6 +158,11 @@ public class Server  extends Thread
 				}
 				else if (startingBots.isEmpty())
 				{
+					if (ServerSettings.Instance().LadderMode)
+					{
+						updateBotFiles();
+					}
+					
 					// can only start one game at a time, but none others are starting
 					nextGame = games.getNextGame(null, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
 					if (nextGame == null)
@@ -211,7 +221,20 @@ public class Server  extends Thread
 				
 				notEnoughClients = false;
 				requirementsNotMet = false;
-				start1v1Game(nextGame);
+				
+				if (ServerSettings.Instance().LadderMode)
+				{
+					// for ladder mode have to check if bots are valid
+					if (checkValidGame(nextGame))
+					{
+						start1v1Game(nextGame);
+					}
+				}
+				else
+				{
+					start1v1Game(nextGame);
+				}
+								
 				previousScheduledGame = nextGame;
 			}
 			catch (Exception e)
@@ -533,12 +556,53 @@ public class Server  extends Thread
 		return -1;
 	}
 	
+	/**
+	 * In Ladder mode, instead of starting a game, output results showing it couldn't be played because of bot issues if needed
+	 */
+	private boolean checkValidGame(Game game)
+	{
+		if (!game.getHomebot().isValid() || !game.getAwaybot().isValid())
+		{
+			games.removeGame(game.getGameID());
+			log("Unable to play game " + game.getGameID() + ". Bot " + (!game.getHomebot().isValid() ? game.getHomebot().getName() : game.getAwaybot().getName()) + " is not valid.");
+	        
+			try 
+			{
+	        	JsonObject gameIncomplete = new JsonObject();
+	        	gameIncomplete.add("gameID", game.getGameID());
+	        	gameIncomplete.add("bots", new JsonArray().add(game.getHomebot().getName()).add(game.getAwaybot().getName()));
+	        	JsonArray invalidBots = new JsonArray();
+	        	if (!game.getHomebot().isValid())
+	        	{
+	        		invalidBots.add(game.getHomebot().getName());
+	        	}
+	        	if (!game.getAwaybot().isValid())
+	        	{
+	        		invalidBots.add(game.getAwaybot().getName());
+	        	}
+	        	gameIncomplete.add("invalidBots", invalidBots);
+	        	
+	            FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
+	            BufferedWriter out = new BufferedWriter(fstream);
+	            out.write(gameIncomplete.toString() + "\n");
+	            out.close();
+	        } 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				
+	        }
+			return false;
+		}
+		return true;
+	}
+	
     /**
      * Handles all of the code needed to start a 1v1 game
      */
     private synchronized void start1v1Game(Game game) throws Exception
 	{	
-		// get the clients and their instructions
+    	// get the clients and their instructions
     	int[] gameClients = getClientsForGame(game);
 		ServerClientThread hostClient = free.get(gameClients[0]);
 		ServerClientThread awayClient = free.get(gameClients[1]);
@@ -698,6 +762,7 @@ public class Server  extends Thread
         }
     }
 	
+    //write out server status for Ladder
 	private void writeServerStatus() {
 		Vector<Vector<String>> tableData = gui.getTableData();
 		JsonObject status = Json.object();
@@ -720,4 +785,85 @@ public class Server  extends Thread
 		status.add("updateTime", ServerGUI.getTimeStamp());
 		FileUtils.writeToFile(status.toString(WriterConfig.PRETTY_PRINT), "server_status.json");
 	}
+	
+	//check for new versions of bots for Ladder
+	private void updateBotFiles() throws IOException
+	{
+		boolean foundNewFiles = false;
+		
+		File botsDir = new File(ServerSettings.Instance().ServerBotDir);
+		for (String botDir : botsDir.list())
+		{
+			//find dirs like "server/bots/new_BotName/"
+			if (botDir.length() >= 4 && botDir.substring(0, 4).equals("new_"))
+			{
+				File newFilesDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir);
+				if (newFilesDir.isDirectory())
+				{
+					if (new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/processed.txt").exists())
+					{
+						//these files have already been copied
+						continue;
+					}
+					
+					//find all subdirectories of "new_BotName/" 
+					for (String dirName : newFilesDir.list())
+					{
+						File dir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName);
+						if (!dir.isDirectory())
+						{
+							continue;
+						}
+						
+						//only looking for 'AI/' or 'read/' dir
+						if (!dirName.equals("AI") && !dirName.equals("read"))
+						{
+							continue;
+						}
+						
+						//find most recently modified file
+						File newFile = null;
+						for (String zipFile : dir.list())
+						{
+							File candidate = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName + "/" + zipFile);
+							if (candidate.isDirectory())
+							{
+								continue;
+							}
+							if (newFile == null)
+							{
+								newFile = candidate;
+							}
+							else if (candidate.lastModified() > newFile.lastModified())
+							{
+								newFile = candidate;
+							}
+						}
+						
+						if (newFile != null)
+						{
+							File dest = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir.substring(4) + "/" + dirName);
+							if (!dest.exists())
+							{
+								dest.mkdirs();
+							}
+							FileUtils.CleanDirectory(dest);
+							ZipTools.UnzipFileToDir(newFile, dest);
+							foundNewFiles = true;
+						}
+					}
+					
+					//add file indicating these new files have been processed
+					FileUtils.writeToFile("processed", newFilesDir.getPath() + "/processed.txt");
+				}
+				
+			}
+		}
+		if (foundNewFiles)
+		{
+			//if a bot has been updated in some way, reparse the settings file to check that the bot is valid
+			ServerSettings.Instance().updateSettings();
+		}
+	}
+	
 }
