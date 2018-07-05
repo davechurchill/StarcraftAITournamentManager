@@ -570,7 +570,6 @@ public class Server  extends Thread
 		game.setHomeAddress(hostClient.toString());
 		game.setAwayAddress(awayClient.toString());
 		//game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
-        game.setStatus(GameStatus.RUNNING);
        //game.startTime();
 		
 		// remove the clients from the free list
@@ -613,7 +612,6 @@ public class Server  extends Thread
 			System.out.println("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");
 			
 			Game g = games.lookupGame(report.getGameID());
-			g.setStatus(GameStatus.DONE);
 			games.receivedResult(report.getGameID());
 			
 			report.setAddress((report.isHost() ? g.getHomeAddress() : g.getAwayAddress()));

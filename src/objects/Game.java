@@ -12,7 +12,6 @@ public class Game implements Serializable
 	private String          homeAddress;
 	private String          awayAddress;
 	
-	private GameStatus 		status;
 	private Map 			map;
 
 	private int 			gameID;
@@ -28,8 +27,6 @@ public class Game implements Serializable
 		this.homebot = home;
 		this.awaybot = away;
 		this.map = map;
-		
-		status = GameStatus.WAITING;
 	}
 
 	/*public void setFinishDate(String date)
@@ -42,16 +39,6 @@ public class Game implements Serializable
 		startDate = date;		
 	}*/
 	
-	public GameStatus getStatus()
-	{
-		return status;
-	}
-
-	public void setStatus(GameStatus status)
-	{
-		this.status = status;
-	}
-
 	public Bot getHomebot()
 	{
 		return homebot;
