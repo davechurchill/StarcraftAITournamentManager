@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.File;
 import java.util.Vector;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
 import objects.*;
 import server.ServerSettings;
 
@@ -61,15 +64,28 @@ public class GameParser
 		}
 	}
 	
-	private static void parseGames(BufferedReader br) throws NumberFormatException, Exception 
+	private static void parseGames(BufferedReader br) throws Exception 
 	{
-		String line = br.readLine();
-		while (line.startsWith("#")) 
+		String line;
+		
+		while ((line = br.readLine()) != null)
 		{
-			line = br.readLine();
+			if (line.trim().length() > 0)
+			{
+				JsonObject game = Json.parse(line).asObject();
+				
+				int gameID = game.get("gameID").asInt();
+				int roundID = game.get("roundID").asInt();
+				String homeBot = game.get("homeBot").asString();
+				String awayBot = game.get("awayBot").asString();
+				String map = game.get("map").asString();
+				
+				Game newGame = new Game(gameID, roundID, findBot(homeBot), findBot(awayBot), findMap(map)); 
+				games.addGame(newGame);
+			}
 		}
 		
-		line = line.trim();
+		
 		while (line != null) 
 		{
 			if(!line.startsWith("#") && line.length() > 0)
