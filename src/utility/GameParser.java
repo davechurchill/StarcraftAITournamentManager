@@ -39,11 +39,14 @@ public class GameParser
 
 	private static void parse() throws NumberFormatException, Exception 
 	{
-		games = new GameStorage();
+		if (games == null) {
+			games = new GameStorage();
+		}
+		
 		try 
 		{
-		
-			if (!new File(ServerSettings.Instance().GamesListFile).exists())
+			File gamesFile = new File(ServerSettings.Instance().GamesListFile);
+			if (!gamesFile.exists())
 			{
 				return;
 			}
@@ -51,7 +54,10 @@ public class GameParser
 			BufferedReader br = new BufferedReader(new FileReader(ServerSettings.Instance().GamesListFile));
 			parseGames(br);
 			br.close();
-		} 
+			
+			// in ladder mode games list should be deleted after parsing
+			FileUtils.DeleteFile(gamesFile);
+		}
 		catch (FileNotFoundException e) 
 		{
 			System.out.println("Could not read settings file");
@@ -59,7 +65,7 @@ public class GameParser
 		} 
 		catch (IOException e) 
 		{
-			System.out.println("IOException while reading settings.ini");
+			System.out.println("IOException while reading settings file");
 			e.printStackTrace();
 		}
 	}
@@ -83,19 +89,6 @@ public class GameParser
 				Game newGame = new Game(gameID, roundID, findBot(homeBot), findBot(awayBot), findMap(map)); 
 				games.addGame(newGame);
 			}
-		}
-		
-		
-		while (line != null) 
-		{
-			if(!line.startsWith("#") && line.length() > 0)
-			{
-				line = line.trim();
-				String[] args = line.split("\\s+");
-				Game newGame = new Game(Integer.parseInt(args[0]), Integer.parseInt(args[1]), findBot(args[2]), findBot(args[3]), findMap(args[4])); 
-				games.addGame(newGame);
-			}
-			line = br.readLine();
 		}
 	}
 	

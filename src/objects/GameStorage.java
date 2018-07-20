@@ -8,7 +8,7 @@ import java.util.Vector;
 
 public class GameStorage 
 {
-	private TreeMap<Integer, Game> gamesToPlay; //Unplayed games, but does not include games that are scheduled or in progress
+	private TreeMap<Integer, Game> gamesToPlay; //Unplayed games, but does not include games that are scheduled (about to start) or in progress
 	private HashMap<Integer, Game> allGames; //"all" here means unplayed games AND currently scheduled/in-progress games
 	private HashMap<Integer, Game> receivedOneResult; //games that one client has reported on
 	

@@ -31,12 +31,12 @@ public class Server  extends Thread
     Server()
 	{
     	gui = new ServerGUI(this);
-		boolean resumed = gui.handleTournamentResume();
+    	boolean resumed = gui.handleTournamentResume();
 		gui.handleFileDialogues();
     	
 		games = GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
 		totalGames = games.getNumTotalGames();
-		if (resumed)
+		if (resumed && !ServerSettings.Instance().LadderMode)
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 			gui.updateServerStatus(totalGames, rp.getGameIDs().size());
@@ -63,7 +63,7 @@ public class Server  extends Thread
 
 	public void run()
 	{
-		if (!games.hasMoreGames())
+		if (!games.hasMoreGames() && !ServerSettings.Instance().LadderMode)
 		{
 			System.err.println("Server: Games list had no valid games in it");
 			System.exit(-1);
@@ -73,9 +73,10 @@ public class Server  extends Thread
 		
 		Game nextGame = null;
 		
-		//only one message of each kind is logged per instance
+		// only one message of each kind is logged per instance
 		boolean notEnoughClients = false;
 		boolean requirementsNotMet = false;
+		boolean noGamesInGamesList = false;
 		
 		// keep trying to schedule games
 		while (true)
@@ -87,31 +88,47 @@ public class Server  extends Thread
 				if (ServerSettings.Instance().LadderMode)
 				{
 					writeServerStatus();
+					ServerSettings.Instance().updateSettings();
+					GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
+					totalGames = games.getNumTotalGames();
 				}
 				
 				if (!games.hasMoreGames())
 				{
-					if (free.size() == clients.size())
+					if (ServerSettings.Instance().LadderMode)
 					{
-						log("No more games in games list, please shut down tournament!\n");
-						break;
+						if (!noGamesInGamesList)
+						{
+							log("Ladder Mode: No games in games list, waiting for new games.\n");
+							noGamesInGamesList = true;
+						}
+						continue;
 					}
 					else
 					{
-						log("No more games in games list, please wait for all games to finish.\n");
-						while (free.size() < clients.size())
-	                    {
-	                        Thread.sleep(gameRescheduleTimer);
-	                        if (ServerSettings.Instance().LadderMode)
-	        				{
-	        					writeServerStatus();
-	        				}
-	                    }
+						if (free.size() == clients.size())
+						{
+							log("No more games in games list, please shut down tournament!\n");
+							break;
+						}
+						else
+						{
+							log("No more games in games list, please wait for all games to finish.\n");
+							while (free.size() < clients.size())
+		                    {
+		                        Thread.sleep(gameRescheduleTimer);
+		                        if (ServerSettings.Instance().LadderMode)
+		        				{
+		        					writeServerStatus();
+		        				}
+		                    }
+						}
+						continue;
 					}
-					continue;
 				}
-				
-				// we can't start a game if we don't have enough clients
+				noGamesInGamesList = false;
+								
+				// we can't start a game if we don't have enough clients0
 				if (free.size() < neededClients) 
 				{
 					if (!notEnoughClients)
@@ -564,7 +581,17 @@ public class Server  extends Thread
 		if (!game.getHomebot().isValid() || !game.getAwaybot().isValid())
 		{
 			games.removeGame(game.getGameID());
-			log("Unable to play game " + game.getGameID() + ". Bot " + (!game.getHomebot().isValid() ? game.getHomebot().getName() : game.getAwaybot().getName()) + " is not valid.");
+			
+			String message = "Unable to play game " + game.getGameID() + ".";
+			if (!game.getHomebot().isValid())
+			{
+				message +=" Bot " + game.getHomebot().getName() + " is not valid.";
+			}
+			if (!game.getAwaybot().isValid())
+			{
+				message +=" Bot " + game.getAwaybot().getName() + " is not valid.";
+			}
+			log(message + "\n");
 	        
 			try 
 			{
@@ -682,7 +709,10 @@ public class Server  extends Thread
 			report.setOpponentAddress((report.isHost() ? g.getAwayAddress() : g.getHomeAddress()));
 			appendGameData(report);
 			
-			updateResults();
+			if (!ServerSettings.Instance().LadderMode)
+			{
+				updateResults();
+			}
 		}
 		catch (Exception e)
 		{
@@ -763,16 +793,18 @@ public class Server  extends Thread
     }
 	
     //write out server status for Ladder
-	private void writeServerStatus() {
+	private void writeServerStatus()
+	{
 		Vector<Vector<String>> tableData = gui.getTableData();
 		JsonObject status = Json.object();
 		//JsonObject clients = Json.object();
 		JsonArray clients = (JsonArray) Json.array();
-		for (Vector<String> vec : tableData) {
+		for (Vector<String> vec : tableData)
+		{
 			JsonObject client = Json.object();
 			client.add("Client", vec.get(0));
 			client.add("Status", vec.get(1));
-			client.add("Game", vec.get(2));
+			client.add("Game", vec.get(2));			
 			client.add("Self", vec.get(3));
 			client.add("Enemy", vec.get(4));
 			client.add("Map", vec.get(5));
@@ -783,6 +815,8 @@ public class Server  extends Thread
 		}
 		status.add("clients", clients);
 		status.add("updateTime", ServerGUI.getTimeStamp());
+		status.add("totalGames", games.getNumTotalGames());
+		status.add("gamesRemaining", games.getNumGamesRemaining());
 		FileUtils.writeToFile(status.toString(WriterConfig.PRETTY_PRINT), "server_status.json");
 	}
 	

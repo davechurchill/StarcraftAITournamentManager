@@ -399,7 +399,10 @@ public class ServerGUI
 		}
 		
 		handleTournamentData();
-		handleNoGamesFile();
+		if (!ServerSettings.Instance().LadderMode)
+		{
+			handleNoGamesFile();
+		}
 		setupTimer();
 	}
 	

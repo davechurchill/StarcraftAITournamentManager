@@ -78,6 +78,10 @@ public class ServerSettings
 	{	
 		try
 		{
+			Vector<Map> newMapVector = new Vector<Map>();
+			Vector<String>	newExcludeFromResults = new Vector<String>();
+			TournamentModuleSettingsMessage newTmSettings = new TournamentModuleSettingsMessage();
+			
 			settingsFile = filename;
 			
 			BufferedReader br = new BufferedReader(new FileReader(filename));
@@ -122,7 +126,7 @@ public class ServerSettings
 			for (JsonValue mapValue : maps)
 			{
 				JsonObject map = mapValue.asObject();
-				MapVector.add(new Map(map.get("mapFile").asString()));
+				newMapVector.add(new Map(map.get("mapFile").asString()));
 			}
 			
 			GamesListFile = jo.get("gamesListFile").asString();
@@ -139,25 +143,28 @@ public class ServerSettings
 			for (JsonValue excludedBot : excludedBots)
 			{
 				JsonObject exclude = excludedBot.asObject();
-				ExcludeFromResults.add(exclude.get("BotName").asString());
+				newExcludeFromResults.add(exclude.get("BotName").asString());
 			}
 					
 			JsonObject tmSettingsJO = jo.get("tournamentModuleSettings").asObject();
-			tmSettings.LocalSpeed = tmSettingsJO.get("localSpeed").asInt();
-			tmSettings.FrameSkip = tmSettingsJO.get("frameSkip").asInt();
-			tmSettings.GameFrameLimit = tmSettingsJO.get("gameFrameLimit").asInt();
-			tmSettings.DrawBotNames = tmSettingsJO.get("drawBotNames").asBoolean() ? "true" : "false";
-			tmSettings.DrawTournamentInfo = tmSettingsJO.get("drawTournamentInfo").asBoolean() ? "true" : "false";
-			tmSettings.DrawUnitInfo = tmSettingsJO.get("drawUnitInfo").asBoolean() ? "true" : "false";
+			newTmSettings.LocalSpeed = tmSettingsJO.get("localSpeed").asInt();
+			newTmSettings.FrameSkip = tmSettingsJO.get("frameSkip").asInt();
+			newTmSettings.GameFrameLimit = tmSettingsJO.get("gameFrameLimit").asInt();
+			newTmSettings.DrawBotNames = tmSettingsJO.get("drawBotNames").asBoolean() ? "true" : "false";
+			newTmSettings.DrawTournamentInfo = tmSettingsJO.get("drawTournamentInfo").asBoolean() ? "true" : "false";
+			newTmSettings.DrawUnitInfo = tmSettingsJO.get("drawUnitInfo").asBoolean() ? "true" : "false";
 			
 			JsonArray limits = tmSettingsJO.get("timeoutLimits").asArray();
 			for (JsonValue limitValue : limits)
 			{
 				JsonObject limit = limitValue.asObject();
-				tmSettings.TimeoutLimits.add(limit.get("timeInMS").asInt());
-				tmSettings.TimeoutBounds.add(limit.get("frameCount").asInt());
+				newTmSettings.TimeoutLimits.add(limit.get("timeInMS").asInt());
+				newTmSettings.TimeoutBounds.add(limit.get("frameCount").asInt());
 			}
 			
+			MapVector = newMapVector;
+			ExcludeFromResults = newExcludeFromResults;
+			tmSettings = newTmSettings;						
 		}
 		catch (Exception e)
 		{
@@ -178,11 +185,11 @@ public class ServerSettings
 		boolean valid = true;
 		
 		// check if all setting variables are valid
-		if (BotVector.size() <= 1) 		{ System.err.println("ServerSettings: Must have at least 2 bots in settings file"); valid = false; }
-		if (MapVector.size() <= 0)		{ System.err.println("ServerSettings: Must have at least 1 map in settings file"); valid = false; }
-		if (GamesListFile == null)		{ System.err.println("ServerSettings: GamesListFile not specified in settings file"); valid = false; }
-		if (ResultsFile == null)		{ System.err.println("ServerSettings: ResultsFile must be specified in settings file"); valid = false; }
-		if (ServerPort == -1)			{ System.err.println("ServerSettings: ServerPort must be specified as an integer in settings file"); valid = false; }
+		if (!LadderMode && BotVector.size() <= 1) { System.err.println("ServerSettings: Must have at least 2 bots in settings file"); valid = false; }
+		if (MapVector.size() <= 0)                { System.err.println("ServerSettings: Must have at least 1 map in settings file"); valid = false; }
+		if (GamesListFile == null)                { System.err.println("ServerSettings: GamesListFile not specified in settings file"); valid = false; }
+		if (ResultsFile == null)                  { System.err.println("ServerSettings: ResultsFile must be specified in settings file"); valid = false; }
+		if (ServerPort == -1)                     { System.err.println("ServerSettings: ServerPort must be specified as an integer in settings file"); valid = false; }
 		
 		if (!ClearResults.equalsIgnoreCase("yes") && !ClearResults.equalsIgnoreCase("no") && !ClearResults.equalsIgnoreCase("ask"))
 		{
@@ -215,6 +222,9 @@ public class ServerSettings
 			String botReadDir 	= botDir + "read/";
 			String proxyScript	= botAIDir + "run_proxy.bat";
 			String botBWAPIReq  = ServerRequiredDir + "Required_" + b.getBWAPIVersion() + ".zip";
+			
+			//create the read and write dirs if they don't exist
+			createBotRequiredDirs(b.getName());
 			
 			// Check if all the bot files exist
 			if (!new File(botDir).exists()) 		{ System.err.println("Bot Error: " + b.getName() + " bot directory " + botDir + " does not exist."); botValid = false; }
@@ -251,13 +261,8 @@ public class ServerSettings
 		return valid;
 	}
 	
-	private void createBotDir(String botName)
+	private void createBotRequiredDirs(String botName)
 	{
-		File AIDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botName + "/AI");
-		if (!AIDir.exists())
-		{
-			AIDir.mkdirs();
-		}
 		File readDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botName + "/read");
 		if (!readDir.exists())
 		{
