@@ -278,7 +278,7 @@ public class Server  extends Thread
 		}
 		
 		rp.writeWinPercentageGraph();
-		FileUtils.writeToFile(rp.getResultsSummary(), "html/results/results_summary_json.js");
+		FileUtils.writeToFile(rp.getResultsSummary(), "html/results/results_summary_json.js", false);
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost, int gameID)
@@ -729,17 +729,17 @@ public class Server  extends Thread
     private synchronized void appendGameData(GameReport report) 
 	{
     	System.out.println("Writing out replay data for gameID " + report.getGameID());
-        try 
+    	String line = report.getResultJSON(ServerSettings.Instance().tmSettings.TimeoutLimits) + "\n";
+    	try
 		{
-            FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
-            BufferedWriter out = new BufferedWriter(fstream);
-            out.write(report.getResultJSON(ServerSettings.Instance().tmSettings.TimeoutLimits) + "\n");
-            out.close();
-        } 
-		catch (Exception e) 
+    		FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+    		FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
+    		FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
+		}
+    	catch (Exception e)
 		{
 			e.printStackTrace();
-        }
+		}
     }
     
     
@@ -817,7 +817,17 @@ public class Server  extends Thread
 		status.add("updateTime", ServerGUI.getTimeStamp());
 		status.add("totalGames", games.getNumTotalGames());
 		status.add("gamesRemaining", games.getNumGamesRemaining());
-		FileUtils.writeToFile(status.toString(WriterConfig.PRETTY_PRINT), "server_status.json");
+		
+		try
+		{
+			FileUtils.lockFile("server_status.json.lock", 10, 20, 60000);
+			FileUtils.writeToFile(status.toString(WriterConfig.PRETTY_PRINT), "server_status.json", false);
+			FileUtils.unlockFile("server_status.json.lock");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	//check for new versions of bots for Ladder
@@ -834,63 +844,64 @@ public class Server  extends Thread
 				File newFilesDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir);
 				if (newFilesDir.isDirectory())
 				{
-					if (new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/processed.txt").exists())
+					//obtain lock on this directory and process its contents
+					try
 					{
-						//these files have already been copied
-						continue;
-					}
-					
-					//find all subdirectories of "new_BotName/" 
-					for (String dirName : newFilesDir.list())
-					{
-						File dir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName);
-						if (!dir.isDirectory())
-						{
-							continue;
-						}
+						FileUtils.lockFile(ServerSettings.Instance().ServerBotDir + "/" + botDir + ".lock", 4, 50, 60000);
 						
-						//only looking for 'AI/' or 'read/' dir
-						if (!dirName.equals("AI") && !dirName.equals("read"))
+						//find all subdirs of "new_BotName/" 
+						for (String dirName : newFilesDir.list())
 						{
-							continue;
-						}
-						
-						//find most recently modified file
-						File newFile = null;
-						for (String zipFile : dir.list())
-						{
-							File candidate = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName + "/" + zipFile);
-							if (candidate.isDirectory())
+							File dir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName);
+							if (!dir.isDirectory())
 							{
 								continue;
 							}
-							if (newFile == null)
+							
+							//only looking for 'AI/' or 'read/' dir
+							if (!dirName.equals("AI") && !dirName.equals("read"))
 							{
-								newFile = candidate;
+								continue;
 							}
-							else if (candidate.lastModified() > newFile.lastModified())
+							
+							//expecting a single zip file
+							File newFile = null;
+							for (String zipFile : dir.list())
 							{
-								newFile = candidate;
+								File candidate = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName + "/" + zipFile);
+								if (candidate.isDirectory())
+								{
+									continue;
+								}
+								else if (candidate.getPath().substring(candidate.getPath().length() - 4, candidate.getPath().length()).equalsIgnoreCase(".zip"))
+								{
+									newFile = candidate;
+									break;
+								}
+							}
+							
+							if (newFile != null)
+							{
+								File dest = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir.substring(4) + "/" + dirName);
+								if (!dest.exists())
+								{
+									dest.mkdirs();
+								}
+								FileUtils.CleanDirectory(dest);
+								ZipTools.UnzipFileToDir(newFile, dest);
+								foundNewFiles = true;
 							}
 						}
 						
-						if (newFile != null)
-						{
-							File dest = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir.substring(4) + "/" + dirName);
-							if (!dest.exists())
-							{
-								dest.mkdirs();
-							}
-							FileUtils.CleanDirectory(dest);
-							ZipTools.UnzipFileToDir(newFile, dest);
-							foundNewFiles = true;
-						}
+						// delete directory and remove lock
+						FileUtils.DeleteDirectory(newFilesDir);
+						FileUtils.unlockFile(ServerSettings.Instance().ServerBotDir + "/" + botDir + ".lock");
 					}
-					
-					//add file indicating these new files have been processed
-					FileUtils.writeToFile("processed", newFilesDir.getPath() + "/processed.txt");
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
-				
 			}
 		}
 		if (foundNewFiles)

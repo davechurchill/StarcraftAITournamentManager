@@ -84,9 +84,13 @@ public class ServerSettings
 			
 			settingsFile = filename;
 			
+			FileUtils.lockFile(filename + ".lock", 25, 20, 60000);
+			
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			JsonObject jo = Json.parse(br).asObject();
 			br.close();
+			
+			FileUtils.unlockFile(filename + ".lock");
 			
 			JsonArray bots = jo.get("bots").asArray();
 			for (JsonValue botValue : bots)

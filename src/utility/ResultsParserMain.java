@@ -28,7 +28,7 @@ public class ResultsParserMain
 		{
 			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 			
-			FileUtils.writeToFile(rp.getResultsSummary(), "html/results/results_summary_json.js");
+			FileUtils.writeToFile(rp.getResultsSummary(), "html/results/results_summary_json.js", false);
 			rp.writeWinPercentageGraph();
 			rp.writeDetailedResults();
 			

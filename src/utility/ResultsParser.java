@@ -261,8 +261,8 @@ public class ResultsParser
 		roundWins.append("];");
 		
 		FileUtils.CreateDirectory("html/results");
-		FileUtils.writeToFile(winPercentage.toString(), "html/results/winpercentage.js");
-		FileUtils.writeToFile(roundWins.toString(), "html/results/roundwins.js");
+		FileUtils.writeToFile(winPercentage.toString(), "html/results/winpercentage.js", false);
+		FileUtils.writeToFile(roundWins.toString(), "html/results/roundwins.js", false);
 	}
 	
 	public boolean hasGameResult(int gameID)
@@ -300,8 +300,8 @@ public class ResultsParser
 		out.append("];");
 		
 		FileUtils.CreateDirectory("html/results");
-		FileUtils.writeToFile(out.toString(), "html/results/detailed_results_json.js");
-		FileUtils.writeToFile(outtxt.toString(), "html/results/detailed_results.txt");
+		FileUtils.writeToFile(out.toString(), "html/results/detailed_results_json.js", false);
+		FileUtils.writeToFile(outtxt.toString(), "html/results/detailed_results.txt", false);
 	}
 	
 	public String getResultsSummary()

@@ -50,6 +50,8 @@ public class GameParser
 			{
 				return;
 			}
+			
+			FileUtils.lockFile(ServerSettings.Instance().GamesListFile + ".lock", 5, 100, 60000);
 		
 			BufferedReader br = new BufferedReader(new FileReader(ServerSettings.Instance().GamesListFile));
 			parseGames(br);
@@ -57,6 +59,8 @@ public class GameParser
 			
 			// in ladder mode games list should be deleted after parsing
 			FileUtils.DeleteFile(gamesFile);
+			
+			FileUtils.unlockFile(ServerSettings.Instance().GamesListFile + ".lock");
 		}
 		catch (FileNotFoundException e) 
 		{
