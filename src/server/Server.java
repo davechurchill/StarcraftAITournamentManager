@@ -91,6 +91,7 @@ public class Server  extends Thread
 					ServerSettings.Instance().updateSettings();
 					GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
 					totalGames = games.getNumTotalGames();
+					gui.updateServerStatus(totalGames, totalGames - games.getNumGamesRemaining());
 				}
 				
 				if (!games.hasMoreGames())
