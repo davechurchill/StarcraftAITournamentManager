@@ -32,16 +32,16 @@
 	
 	"maps": 
 	[
-		{ "mapFile": "maps/aiide/(2)Benzene.scx" },
-		{ "mapFile": "maps/aiide/(2)Destination.scx" },
-		{ "mapFile": "maps/aiide/(2)HeartbreakRidge.scx" },
-		{ "mapFile": "maps/aiide/(3)Aztec.scx"	},
-		{ "mapFile": "maps/aiide/(3)TauCross.scx" },
-		{ "mapFile": "maps/aiide/(4)Andromeda.scx"	},
-		{ "mapFile": "maps/aiide/(4)CircuitBreaker.scx" },
-		{ "mapFile": "maps/aiide/(4)EmpireoftheSun.scm" },
-		{ "mapFile": "maps/aiide/(4)Fortress.scx" },
-		{ "mapFile": "maps/aiide/(4)Python.scx" }
+		"maps/aiide/(2)Benzene.scx",
+		"maps/aiide/(2)Destination.scx",
+		"maps/aiide/(2)HeartbreakRidge.scx",
+		"maps/aiide/(3)Aztec.scx",
+		"maps/aiide/(3)TauCross.scx",
+		"maps/aiide/(4)Andromeda.scx",
+		"maps/aiide/(4)CircuitBreaker.scx",
+		"maps/aiide/(4)EmpireoftheSun.scm",
+		"maps/aiide/(4)Fortress.scx",
+		"maps/aiide/(4)Python.scx"
 	],
 	
 	"gamesListFile"				:	"games.txt",
@@ -53,7 +53,7 @@
 	"tournamentType"			:	"AllVsAll",
 	"lobbyGameSpeed"            :   "Normal",
 	"enableBotFileIO"           :   true,
-	"excludeFromResults"		:	[{"BotName": "ExampleExcludedBot"}],
+	"excludeFromResults"		:	["ExampleExcludedBot"],
 	
 	"tournamentModuleSettings":
 	{

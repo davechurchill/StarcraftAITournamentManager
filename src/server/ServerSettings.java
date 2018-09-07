@@ -87,12 +87,10 @@ public class ServerSettings
 					JsonArray reqs = reqArray.asArray();
 					if (reqs.size() > 0)
 					{
-						for (JsonValue reqObject : reqs)
+						for (JsonValue req : reqs)
 						{
-							JsonObject req = reqObject.asObject();
-							requirements.add(req.get("Property").asString());
+							requirements.add(req.asString());
 						}
-						
 					}
 				}
 				BotVector.add(new Bot(bot.get("BotName").asString(),bot.get("Race").asString(), bot.get("BotType").asString(), bot.get("BWAPIVersion").asString(), requirements));
@@ -101,8 +99,7 @@ public class ServerSettings
 			JsonArray maps = jo.get("maps").asArray();
 			for (JsonValue mapValue : maps)
 			{
-				JsonObject map = mapValue.asObject();
-				MapVector.add(new Map(map.get("mapFile").asString()));
+				MapVector.add(new Map(mapValue.asString()));
 			}
 			
 			GamesListFile = jo.get("gamesListFile").asString();
@@ -125,8 +122,7 @@ public class ServerSettings
 			JsonArray excludedBots = jo.get("excludeFromResults").asArray();
 			for (JsonValue excludedBot : excludedBots)
 			{
-				JsonObject exclude = excludedBot.asObject();
-				ExcludeFromResults.add(exclude.get("BotName").asString());
+				ExcludeFromResults.add(excludedBot.asString());
 			}
 					
 			JsonObject tmSettingsJO = jo.get("tournamentModuleSettings").asObject();
