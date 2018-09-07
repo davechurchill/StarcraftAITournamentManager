@@ -454,6 +454,14 @@ public class Server  extends Thread
                 clients.add(c);
                 log("New Client Added: " + c.toString() + "\n");
                 c.sendTournamentModuleSettings();
+                try
+				{
+					c.sendMessage(new InitialSettingsMessage());
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+					System.exit(-1);
+				}
             }
             if (c.getStatus() == ClientStatus.READY && !free.contains(c)) 
 			{

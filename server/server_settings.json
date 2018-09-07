@@ -44,6 +44,7 @@
 	"clearResults"				: 	"ask",
 	"startGamesSimultaneously"	:	false,
 	"tournamentType"			:	"AllVsAll",
+	"lobbyGameSpeed"            :   "Normal",
 	"enableBotFileIO"           :   true,
 	"ladderMode"				:	true,
 	"excludeFromResults"		:	[{"BotName": "ExampleExcludedBot"}],
