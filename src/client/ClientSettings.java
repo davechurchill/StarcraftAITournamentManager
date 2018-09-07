@@ -21,8 +21,6 @@ public class ClientSettings
 	public String 			DefaultBWAPISettingsFileName;
 	
 	Vector<String>			ClientProperties;
-	
-	public BWAPISettings	bwapi = new BWAPISettings();
 
 	private static final ClientSettings INSTANCE = new ClientSettings();
 	
@@ -68,7 +66,5 @@ public class ClientSettings
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		
-		bwapi.loadFromFile(DefaultBWAPISettingsFileName);
 	}
 }

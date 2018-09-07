@@ -523,13 +523,6 @@ Example server_settings.json:
     </td>
 </tr>
 <tr>
-	<td>DefaultBWAPISettings</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Location of default BWAPI settings file, relative to client.jar; no spaces.
-    </td>
-</tr>
-<tr>
 	<td>TournamentModule</td>
 	<td>
     	<b>Type:</b> String<br><br>
@@ -558,7 +551,6 @@ Example client_settings.json:
 ```json
 {
 	"ClientStarcraftDir"  : "C:\\TM\\Starcraft\\",
-	"DefaultBWAPISettings": "BWAPI.ini",
 	"TournamentModule"    : "bwapi-data/TournamentModule.dll",
 	"ServerAddress"       : "192.168.1.100:1337",
 	"ClientProperties"    : ["GPU"]
