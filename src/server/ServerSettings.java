@@ -13,6 +13,7 @@ import com.eclipsesource.json.JsonValue;
 
 import objects.BWAPISettings;
 import objects.Bot;
+import objects.LobbyGameSpeed;
 import objects.Map;
 
 public class ServerSettings
@@ -34,6 +35,7 @@ public class ServerSettings
 	public boolean			DetailedResults		= false;
 	public boolean			StartGamesSimul		= false;
 	public String			TournamentType		= "AllVsAll";
+	public LobbyGameSpeed   lobbyGameSpeed      = LobbyGameSpeed.NORMAL;
 	public boolean			EnableBotFileIO		= true;
 	public Vector<String>	ExcludeFromResults	= new Vector<String>();
 	
@@ -110,6 +112,14 @@ public class ServerSettings
 			ClearResults = jo.get("clearResults").asString();
 			StartGamesSimul = jo.get("startGamesSimultaneously").asBoolean();
 			TournamentType = jo.get("tournamentType").asString();
+			try {
+				lobbyGameSpeed = LobbyGameSpeed.valueOf(jo.get("lobbyGameSpeed").asString().toUpperCase());
+			}
+			catch (Exception e1) {
+				System.err.println("ServerSettings: lobbyGameSpeed must be one of \"Slowest\", \"Slower\", \"Slow\", \"Normal\", \"Fast\", \"Faster\",or \"Fastest\"");
+				throw new Exception();
+			}
+			
 			EnableBotFileIO = jo.get("enableBotFileIO").asBoolean();
 			
 			JsonArray excludedBots = jo.get("excludeFromResults").asArray();

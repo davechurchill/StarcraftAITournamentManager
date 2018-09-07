@@ -264,6 +264,10 @@ public class Client extends Thread
 		{
 			tmSettings = (TournamentModuleSettingsMessage)m;
 		}
+		else if (m instanceof InitialSettingsMessage)
+		{
+			ClientCommands.Client_SetLobbySpeed(((InitialSettingsMessage) m).lobbyGameSpeed);
+		}
 		else if (m instanceof RequestClientScreenshotMessage)
 		{
 			try

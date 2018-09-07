@@ -62,7 +62,22 @@ public class ClientCommands
 		WindowsCommandTools.RegEdit(sc64KeyName, "Program",     "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64KeyName, "GamePath",    "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64UserKeyName, "introX",      "REG_DWORD", "00000000");
-	}	
+	}
+	
+	public static void Client_SetLobbySpeed(LobbyGameSpeed speed)
+	{
+		Client.log("      Client_SetLobbySpeed()\n");
+		
+		// 32-bit machine StarCraft settings
+		String sc32UserKeyName = "HKEY_CURRENT_USER\\SOFTWARE\\Blizzard Entertainment\\Starcraft";
+		WindowsCommandTools.RegEdit(sc32UserKeyName, "Game Speed", "REG_SZ",    speed.toString().substring(0, 1) + speed.toString().toLowerCase().substring(1));
+		WindowsCommandTools.RegEdit(sc32UserKeyName, "speed",      "REG_DWORD", "0000000" + speed.ordinal());
+		
+		// 64-bit machine StarCraft settings
+		String sc64UserKeyName = "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\Blizzard Entertainment\\Starcraft";
+		WindowsCommandTools.RegEdit(sc64UserKeyName, "Game Speed", "REG_SZ",    speed.toString().substring(0, 1) + speed.toString().toLowerCase().substring(1));
+		WindowsCommandTools.RegEdit(sc64UserKeyName, "speed",      "REG_DWORD", "0000000" + speed.ordinal());
+	}
 	
 	public static void Client_KillStarcraft()
 	{
