@@ -56,10 +56,9 @@ public class ClientSettings
 			if (propertiesArray != null)
 			{
 				JsonArray properties = propertiesArray.asArray();
-				for (JsonValue propObject : properties)
+				for (JsonValue property : properties)
 				{
-					JsonObject prop = propObject.asObject();
-					ClientProperties.add(prop.get("Property").asString());
+					ClientProperties.add(property.asString());
 				}
 			}
 		}

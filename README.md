@@ -292,9 +292,9 @@ This file must parse as valid JSON or the server will not start.
         <li><b>Race:</b> "Random" | "Terran" | "Zerg" | "Protoss"</li>
         <li><b>BotType:</b> "dll" | "proxy"</li>
         <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"</li>
-        <li><b>ClientRequirements</b> (OPTIONAL): array of json objects with required properties</li>
+        <li><b>ClientRequirements</b> (OPTIONAL): array of strings with required properties</li>
         	<ul>
-            	<li>Example: [{"Property": "GPU"}, {"Property": "Extra RAM"}]
+            	<li>Example: ["GPU", "Extra RAM"]
                 <li>Bot requirements must match a client in the tournament (see Client Settings) or the tournament will not be able to finish
             </ul>
         </ul>
@@ -304,12 +304,9 @@ This file must parse as valid JSON or the server will not start.
 <tr>
 	<td>maps</td>
 	<td>
-    	<b>Type:</b> Array of json objects<br><br>
-        Each round of the tournament will be played on these maps in the order they are listed in. Each map object must contain the following name/value pair:
-        <ul>
-        <li><b>mapFile:</b> String - path to the map relative to the Starcraft directory; no spaces</li>
-        </ul>
-     	Example: {"mapFile": "maps/aiide/(2)Benzene.scx"}
+    	<b>Type:</b> Array of strings<br><br>
+        Each round of the tournament will be played on these maps in the order they are listed in. The value should be the path to the map relative to the Starcraft directory; no spaces
+     	Example: "maps/aiide/(2)Benzene.scx"
     </td>
 </tr>
 <tr>
@@ -369,8 +366,17 @@ This file must parse as valid JSON or the server will not start.
         <ul>
         	<li>AllVsAll - Standard round robin tournament</li>
             <li>1VsAll - First bot in <b>bots</b> list will play all the others.
-         	Usefull for testing changes to your bot.</li>
+         	Useful for testing changes to your bot.</li>
         </ul>
+    </td>
+</tr>
+<tr>
+	<td>lobbyGameSpeed</td>
+	<td>
+    	<b>Type:</b> String<br><br>
+    	Allowed values: "Slowest" | "Slower" | "Slow" | "Normal" | "Fast" | "Faster" | "Fastest"<br>
+        This setting changes registry entries on the client machines so that the game speed slider in the game creation lobby is set appropriately.
+		The actual game speed will be overridden by the tournamentModuleSettings.localSpeed setting, but the slider affects the number of latency frames in the game (the number of frames between a command and its execution).
     </td>
 </tr>
 <tr>
@@ -386,13 +392,10 @@ This file must parse as valid JSON or the server will not start.
 <tr>
 	<td>excludeFromResults</td>
 	<td>
-    	<b>Type:</b> Array of json objects<br><br>
+    	<b>Type:</b> Array of strings<br><br>
     	Bots listed in this array will be excluded from the results summary and detailed results output, but games that include them will still be played.
-        This feature is useful if you need to disqualify a bot from a tournament, or want to see the overall effects of a bot on the results.<br><br>
-        Each excluded bot object must contain the following name/value pair: <br>
-        <ul>
-        	<li><b>BotName:</b> String - Bot to be excluded</li>
-        </ul>
+        This feature is useful if you need to disqualify a bot from a tournament, or want to see the overall effects of a bot on the results.
+		The values in this array should match bot names given in the array of competing bots.
     </td>
 </tr>
 <tr>
@@ -475,8 +478,8 @@ Example server_settings.json:
 	
 	"maps": 
 	[
-		{"mapFile": "maps/aiide/(2)Benzene.scx"},
-		{"mapFile": "maps/aiide/(2)Destination.scx"}
+		"maps/aiide/(2)Benzene.scx",
+		"maps/aiide/(2)Destination.scx"
 	],
 	
 	"gamesListFile"           : "games.txt",
@@ -484,10 +487,11 @@ Example server_settings.json:
 	"detailedResults"         : false,
 	"serverPort"              : 1337,
 	"clearResults"            : "ask",
-	"resumeTournament"        : "ask",
 	"startGamesSimultaneously": false,
 	"tournamentType"          : "AllVsAll",
-	"excludeFromResults"      : [{"BotName": "ExampleBot"}],
+	"lobbyGameSpeed"          : "Normal",
+	"enableBotFileIO"         : true,
+	"excludeFromResults"      : ["ExampleBot"],
 	
 	"tournamentModuleSettings":
 	{
@@ -542,12 +546,8 @@ Example server_settings.json:
 <tr>
 	<td>ClientProperties<br>(Optional)</td>
 	<td>
-    	<b>Type:</b> Array of json objects<br><br>
+    	<b>Type:</b> Array of strings<br><br>
     	Features of this client that a bot can take advantage of if matched to its <b>ClientRequirements</b> in server settings.
-        Each ClientProperty object must contain the following name/value pair:
-        <ul>
-        <li><b>Property:</b> String</li>
-        </ul>
 		This array can be empty if you are not using the properties feature.
     </td>
 </tr>
@@ -561,7 +561,7 @@ Example client_settings.json:
 	"DefaultBWAPISettings": "BWAPI.ini",
 	"TournamentModule"    : "bwapi-data/TournamentModule.dll",
 	"ServerAddress"       : "192.168.1.100:1337",
-	"ClientProperties"    : [{"Property": "GPU"}]
+	"ClientProperties"    : ["GPU"]
 }
 ```
 
