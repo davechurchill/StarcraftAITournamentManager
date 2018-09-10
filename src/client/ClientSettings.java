@@ -18,11 +18,8 @@ public class ClientSettings
 	public String			TournamentModuleFilename;
 	
 	public String			ServerAddress;
-	public String 			DefaultBWAPISettingsFileName;
 	
 	Vector<String>			ClientProperties;
-	
-	public BWAPISettings	bwapi = new BWAPISettings();
 
 	private static final ClientSettings INSTANCE = new ClientSettings();
 	
@@ -46,10 +43,8 @@ public class ClientSettings
 			
 			ClientStarcraftDir = jo.get("ClientStarcraftDir").asString();
 			System.out.println("StarCraft Dir:   " + ClientStarcraftDir);
-			DefaultBWAPISettingsFileName = jo.get("DefaultBWAPISettings").asString();
 			TournamentModuleFilename = jo.get("TournamentModule").asString();
 			ServerAddress = jo.get("ServerAddress").asString();
-			
 			
 			ClientProperties = new Vector<String>();
 			JsonValue propertiesArray = jo.get("ClientProperties");
@@ -68,7 +63,5 @@ public class ClientSettings
 			e.printStackTrace();
 			System.exit(-1);
 		}
-		
-		bwapi.loadFromFile(DefaultBWAPISettingsFileName);
 	}
 }
