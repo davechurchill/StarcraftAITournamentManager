@@ -4,20 +4,7 @@ import java.io.*;
 import java.util.*;
 
 public class WindowsCommandTools
-{
-	public static void DeleteDirectory(String dir) 
-	{
-		try
-		{
-			//FileUtils.deleteDirectory(new File(dir));
-			WindowsCommandTools.RunWindowsCommand("rmdir /S /Q " + dir, true, false);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
+{	
 	public static void RunWindowsExeLocal(String dir, String exe, boolean waitFor, boolean exitIfException)
 	{
 		try
