@@ -92,7 +92,7 @@ public class ResultsParser
 		return results.size();
 	}
 		
-	public void parseResults(Vector<GameResult> results)
+	public void parseResults(Vector<GameResult> results) throws Exception
 	{
 		for (int i=0; i<numBots; ++i)
 		{
@@ -114,56 +114,64 @@ public class ResultsParser
 				continue;
 			}
 			
-			if (result.timeout != -1)
+			try
 			{
-				timeout[getIndex(result.getTimeoutName())]++;
-			}
-			
-			if (result.crash != -1)
-			{
-				crash[getIndex(result.getCrashName())]++;
-			}
-			
-			int winner = getIndex(result.getWinnerName());
-			int map = getMapIndex(result.map);
-			mapUsage[map]++;
-			mapWins[winner][map]++;
-			
-			for (int j = 0; j < result.bots.size(); j++)
-			{
-				int b1 = getIndex(result.bots.get(j));
-				hour[b1] += (result.gameTimeout) ? 1 : 0;
-				games[b1]++;
-				frames[b1] += result.finalFrame;
-				mapGames[b1][map]++;
-				
-				//record all results for combinations of bots in the game
-				for (int k = j + 1; k < result.bots.size(); k++)
+				if (result.timeout != -1)
 				{
-					int b2 = getIndex(result.bots.get(k));
-					wins[b1][b2] += (result.winner == j) ? 1 : 0;
-					wins[b2][b1] += (result.winner == k) ? 1 : 0;
-					updateElo(b1, b2, winner == b1);
+					timeout[getIndex(result.getTimeoutName())]++;
 				}
 				
-				// update win percentage arrays
-				// if it's a new round, add it to the end of the vector
-				if (result.roundID >= gamesAfterRound.get(b1).size())
+				if (result.crash != -1)
 				{
-					gamesAfterRound.get(b1).add(gamesAfterRound.get(b1).lastElement() + 1);
-				}
-				// otherwise just add 1 to the back
-				else
-				{
-					gamesAfterRound.get(b1).set(result.roundID, gamesAfterRound.get(b1).get(result.roundID) + 1);
+					crash[getIndex(result.getCrashName())]++;
 				}
 				
-				while (result.roundID >= winsAfterRound.get(b1).size())
+				int winner = getIndex(result.getWinnerName());
+				int map = getMapIndex(result.map);
+				mapUsage[map]++;
+				mapWins[winner][map]++;
+				
+				for (int j = 0; j < result.bots.size(); j++)
 				{
-					winsAfterRound.get(b1).add(winsAfterRound.get(b1).lastElement());		
-				}	
+					int b1 = getIndex(result.bots.get(j));
+					hour[b1] += (result.gameTimeout) ? 1 : 0;
+					games[b1]++;
+					frames[b1] += result.finalFrame;
+					mapGames[b1][map]++;
+					
+					//record all results for combinations of bots in the game
+					for (int k = j + 1; k < result.bots.size(); k++)
+					{
+						int b2 = getIndex(result.bots.get(k));
+						wins[b1][b2] += (result.winner == j) ? 1 : 0;
+						wins[b2][b1] += (result.winner == k) ? 1 : 0;
+						updateElo(b1, b2, winner == b1);
+					}
+					
+					// update win percentage arrays
+					// if it's a new round, add it to the end of the vector
+					if (result.roundID >= gamesAfterRound.get(b1).size())
+					{
+						gamesAfterRound.get(b1).add(gamesAfterRound.get(b1).lastElement() + 1);
+					}
+					// otherwise just add 1 to the back
+					else
+					{
+						gamesAfterRound.get(b1).set(result.roundID, gamesAfterRound.get(b1).get(result.roundID) + 1);
+					}
+					
+					while (result.roundID >= winsAfterRound.get(b1).size())
+					{
+						winsAfterRound.get(b1).add(winsAfterRound.get(b1).lastElement());		
+					}	
+				}
+				winsAfterRound.get(winner).set(result.roundID, winsAfterRound.get(winner).get(result.roundID) + 1);
 			}
-			winsAfterRound.get(winner).set(result.roundID, winsAfterRound.get(winner).get(result.roundID) + 1);
+			catch (Exception e)
+			{
+				e.printStackTrace();
+				throw new Exception("Exception while parsing results for game " + result.gameID);
+			}
 		}
 		
 		for (int i=0; i<numBots; i++)
@@ -393,7 +401,7 @@ public class ResultsParser
 		return out.toString();
 	}
 		
-	public int getIndex(String botName)
+	public int getIndex(String botName) throws Exception
 	{
 		for (int i=0; i<botNames.length; i++)
 		{
@@ -402,10 +410,10 @@ public class ResultsParser
 				return i;
 			}
 		}
-		return -1;
+		throw new Exception("Bot '" + botName + "' not found.");
 	}
 	
-	public int getMapIndex(String mapName)
+	public int getMapIndex(String mapName) throws Exception
 	{
 		for (int i=0; i<mapNames.length; i++)
 		{
@@ -414,7 +422,7 @@ public class ResultsParser
 				return i;
 			}
 		}
-		return -1;
+		throw new Exception("Map '" + mapName + "' not found.");
 	}
 	
 	public Set<Integer> getGameIDs() {
