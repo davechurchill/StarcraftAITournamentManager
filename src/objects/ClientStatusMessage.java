@@ -27,6 +27,6 @@ public class ClientStatusMessage implements Message
 	
 	public String toString()
 	{
-		return "Game " + game.getGameID() + " status: " + status.toString();
+		return status.toString();
 	}
 }
