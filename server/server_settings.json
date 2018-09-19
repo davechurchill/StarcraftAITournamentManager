@@ -53,7 +53,7 @@
 	"tournamentType"			:	"AllVsAll",
 	"lobbyGameSpeed"            :   "Normal",
 	"enableBotFileIO"           :   true,
-	"ladderMode"				:	true,
+	"ladderMode"				:	false,
 	"excludeFromResults"		:	["ExampleExcludedBot"],
 	
 	"tournamentModuleSettings":
