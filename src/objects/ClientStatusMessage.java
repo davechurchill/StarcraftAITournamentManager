@@ -24,4 +24,9 @@ public class ClientStatusMessage implements Message
 		this.isHost = isHost;
 		this.startingTime = startingTime;
 	}
+	
+	public String toString()
+	{
+		return "Game " + game.getGameID() + " status: " + status.toString();
+	}
 }

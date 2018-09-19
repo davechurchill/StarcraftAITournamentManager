@@ -23,7 +23,7 @@ public class TournamentModuleSettingsMessage implements Message
 	
 	public String toString()
 	{
-		return "(" + LocalSpeed + "," + FrameSkip + "," + GameFrameLimit + ")";
+		return "Tournament Module Settings (" + LocalSpeed + "," + FrameSkip + "," + GameFrameLimit + ")";
 	}
 	
 	public String getSettingsFileString()
