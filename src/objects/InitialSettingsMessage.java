@@ -8,8 +8,14 @@ public class InitialSettingsMessage implements Message
 	private static final long serialVersionUID = 1L;
 	public LobbyGameSpeed lobbyGameSpeed;
 	
-	public InitialSettingsMessage() {
+	public InitialSettingsMessage()
+	{
 		lobbyGameSpeed = ServerSettings.Instance().lobbyGameSpeed;
+	}
+	
+	public String toString()
+	{
+		return "Initial settings message: lobbyGameSpeed=" + lobbyGameSpeed.toString(); 
 	}
 }
 

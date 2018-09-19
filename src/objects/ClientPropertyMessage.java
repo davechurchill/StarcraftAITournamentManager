@@ -12,5 +12,19 @@ public class ClientPropertyMessage implements Message
 	{
 		this.properties = properties;
 	}
+	
+	public String toString()
+	{
+		String p = "Client properties:";
+		for (int i = 0; i < properties.size(); i++)
+		{
+			p += " " + properties.get(i);
+			if (i != properties.size() - 1)
+			{
+				p += ",";
+			}
+		}
+		return p;
+	}
 
 }
