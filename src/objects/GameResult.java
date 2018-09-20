@@ -125,7 +125,17 @@ public class GameResult implements Comparable<Object>
 		}
 		else
 		{
-			// set index of crashing bot
+			// with gameEndTypes crashing bot should be correctly assigned by this time
+			// but for testing old results converted to new format, crash type is STARCRAFT_CRASH
+			// in old format when final frame is -1 for both bots, the second bot to report is chosen as crasher/loser
+			// this only affects detailed results, not result summary, since games that never started are not counted
+			if (gameEndType == GameEndType.STARCRAFT_CRASH && finalFrame == -1)
+			{
+				gameEndType = GameEndType.NO_GAME_START;
+				crash = 1;
+			}
+			
+			// set index of winner based on crashing bot
 			if (crash != -1)
 			{
 				winner = (crash + 1) % 2;
