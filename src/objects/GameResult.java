@@ -71,6 +71,10 @@ public class GameResult implements Comparable<Object>
 		{
 			host = botIndex;
 		}
+		else
+		{
+			host = (botIndex + 1) % 2;
+		}
 		
 		if (result.get("won").asBoolean())
 		{
@@ -229,7 +233,12 @@ public class GameResult implements Comparable<Object>
 		resultObject.add("timers", timersArrayArray);
 		
 		double maxScore = Math.max(scores.get(0), scores.get(1)) + 1;
-		double closeness = (scores.get(winner) - scores.get((winner + 1) % 2)) / maxScore; 
+		double closeness = 0;
+		if (scores.size() > 1 && winner != -1)
+		{
+			closeness = (scores.get(winner) - scores.get((winner + 1) % 2)) / maxScore;
+		}
+		 
 		closeness = (double)Math.round(closeness * 100000) / 100000;
 		resultObject.add("(W-L)/Max", closeness);
 		
@@ -279,6 +288,27 @@ public class GameResult implements Comparable<Object>
 	
 	public String getResultString()
 	{
+		if (winner == -1)
+		{
+			if (!complete)
+			{
+				winner = 0;
+				crash = 1;
+			}
+			else if (crash != -1)
+			{
+				winner = (crash + 1) % 2;
+			}
+			else if (finalFrame == -1)
+			{
+				winner = 0;
+			}
+			else
+			{
+				winner = 1;
+			}
+		}
+		
 		String winnerName = getWinnerName();
 		String loserName = bots.get((winner + 1) % 2);
 		

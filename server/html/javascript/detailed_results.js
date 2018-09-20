@@ -91,6 +91,27 @@ function fillDetailedResultsTable(data, replayDir)
 	
 	for (var i=0; i<numResults; ++i)
 	{
+		if (data[i].winner == -1)
+		{
+			if (data[i].gameEndType == "NO_REPORT")
+			{
+				data[i].winner = 0;
+				data[i].crash = 1;
+			}
+			else if (data[i].crash != -1)
+			{
+				data[i].winner = (data[i].crash + 1) % 2;
+			}
+			else if (data[i].duration == "00:00:00")
+			{
+				data[i].winner = 0;
+			}
+			else
+			{
+				data[i].winner = 1;
+			}
+		}
+		
 		//check filters
 		if (!filterResult(data[i], crashFilter, botFilter, winnerFilter, loserFilter, mapFilter))
 		{
