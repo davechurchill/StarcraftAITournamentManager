@@ -37,6 +37,7 @@ public class Client extends Thread
 	private int 		gameStateReadAttempts 	= 0;
 	private boolean 	haveGameStateFile		= false;
 	private boolean 	starcraftIsRunning		= false;
+	private boolean     starcraftDetected       = false;
 	
 	public boolean 		shutDown = false;
 
@@ -157,6 +158,10 @@ public class Client extends Thread
 			// try to read in the game state file
 			haveGameStateFile = gameState.readData(settings.ClientStarcraftDir + "gameState.txt");
 			starcraftIsRunning = WindowsCommandTools.IsWindowsProcessRunning("StarCraft.exe");
+			if (starcraftIsRunning)
+			{
+				starcraftDetected = true;
+			}
 			
 			//System.out.println("Client Main Loop: " + status + " " + haveGameStateFile + " " + starcraftIsRunning);
 			
@@ -186,7 +191,15 @@ public class Client extends Thread
 						log("MainLoop: Game didn't start for " + gameStartingTimeout + "ms\n");
 						//System.out.println("MONITOR: I could not read the file in 60 seconds, reporting crash");
 						setEndTime();
-						report.setGameEndType(starcraftIsRunning ? GameEndType.NO_GAME_START : GameEndType.NO_STARCRAFT);
+						if (starcraftDetected)
+						{
+							report.setGameEndType(starcraftIsRunning ? GameEndType.NO_GAME_START : GameEndType.STARCRAFT_CRASH);
+						}
+						else
+						{
+							report.setGameEndType(GameEndType.NO_STARCRAFT);
+						}
+						
 						prepCrash(gameState);
 					}
 				}
@@ -441,6 +454,7 @@ public class Client extends Thread
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
 		ClientCommands.Client_KillStarcraft();
+		starcraftDetected = false;
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		setStatus(ClientStatus.SENDING);
 		sendFilesToServer(false);
@@ -452,6 +466,7 @@ public class Client extends Thread
 	{
 		sendFilesToServer(true);
 		ClientCommands.Client_KillStarcraft();
+		starcraftDetected = false;
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		ClientCommands.Client_CleanStarcraftDirectory();
 	}
