@@ -6,17 +6,17 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import server.ServerSettings;
+
 public class GameStorage 
 {
 	private TreeMap<Integer, Game> gamesToPlay; //once a game from here is scheduled it is removed
-	private HashMap<Integer, Game> allGames; //"all" here means unplayed games and currently scheduled/in-progress games
-	private HashMap<Integer, Game> receivedOneResult; //games that one client has reported on
+	private HashMap<Integer, Game> allGames; // all games in tournament
 	
 	public GameStorage()
 	{
 		gamesToPlay = new TreeMap<Integer, Game>();
 		allGames = new HashMap<Integer, Game>();
-		receivedOneResult = new HashMap<Integer, Game>();
 	}
 	
 	public void addGame(Game game)
@@ -41,59 +41,48 @@ public class GameStorage
 		return !gamesToPlay.isEmpty();
 	}
 	
-	public Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties, boolean waitForPreviousRound)
+	/**
+	 * @param freeClientProperties for each free TM client, a list of properties form it's client_settings.json.
+	 * We don't care which clients are which here, only if a game has SOME two clients that could host it.
+	 * @return next Game to play.
+	 */
+	public Game getNextGame(Vector<Vector<String>> freeClientProperties)
 	{
+		return getNextGame(null, freeClientProperties);
+	}
+	
+	
+	/**
+	 * @param currentHosts list of bots currently hosting games in lobby. With BWAPI >=4.2.0 bots only we can start simultaneous games if all hosts in lobby are different. 
+	 * @param freeClientProperties for each free TM client, a list of properties form it's client_settings.json.
+	 * We don't care which clients are which here, only if a game has SOME two clients that could host it.
+	 * @return next Game to play.
+	 */
+	public Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties)
+	{
+		//if Server File IO is turned on we need to completely finish one round before starting a game from a new one.
+		boolean waitForPreviousRound = ServerSettings.Instance().EnableBotFileIO;
+		
 		//if bot File IO is turned on, don't return a game if all games from previous rounds have not already been removed
 		int currentRound = gamesToPlay.get(gamesToPlay.firstKey()).getRound();
-		for (int i = gamesToPlay.firstKey(); !waitForPreviousRound || allGames.get(i).getRound() == currentRound; i++)
+		for (int i = gamesToPlay.firstKey(); allGames.containsKey(i) && (!waitForPreviousRound || allGames.get(i).getRound() == currentRound); i++)
 		{
-			if (gamesToPlay.get(i) == null)
+			//skip games already in progress or finished
+			if (!gamesToPlay.containsKey(i))
 			{
 				continue;
 			}
+			
+			//if currentHosts is not null, we use it to skip games with a host which is currently hosting another game in the lobby
 			if (currentHosts != null && currentHosts.contains(gamesToPlay.get(i).getHomebot().getName()))
 			{
 				continue;
 			}
 			
 			//check for bot requirements
-			
-			//check all combinations of free clients to see if there are two that match
-			for (int j = 0; j < freeClientProperties.size(); j++)
+			if (canMeetGameRequirements(freeClientProperties, gamesToPlay.get(i)))
 			{
-				boolean hasAllHomeProperties = true;
-				for (String requirement : gamesToPlay.get(i).getHomebot().getRequirements())
-				{
-					if (!freeClientProperties.get(j).contains(requirement))
-					{
-						hasAllHomeProperties = false;
-						break;
-					}
-				}
-				
-				if (hasAllHomeProperties)
-				{
-					for (int k = 0; k < freeClientProperties.size(); k++)
-					{
-						if (j != k)
-						{
-							boolean hasAllAwayProperties = true;
-							for (String requirement : gamesToPlay.get(i).getAwaybot().getRequirements())
-							{
-								if (!freeClientProperties.get(k).contains(requirement))
-								{
-									hasAllAwayProperties = false;
-									break;
-								}
-							}
-							
-							if (hasAllAwayProperties)
-							{
-								return gamesToPlay.remove(i);
-							}
-						}
-					}
-				}
+				return gamesToPlay.remove(i);
 			}
 		}
 		
@@ -116,16 +105,45 @@ public class GameStorage
 		return allGames.size();
 	}
 	
-	public void receivedResult(int gameID)
+	//checks all combinations of free clients to see if there are two that can match for a given game
+	private boolean canMeetGameRequirements(Vector<Vector<String>> freeClientProperties, Game game)
 	{
-		if (receivedOneResult.containsKey(gameID))
+		for (int i = 0; i < freeClientProperties.size(); i++)
 		{
-			receivedOneResult.remove(gameID);
-			allGames.remove(gameID);
+			boolean hasAllHomeProperties = true;
+			for (String requirement : game.getHomebot().getRequirements())
+			{
+				if (!freeClientProperties.get(i).contains(requirement))
+				{
+					hasAllHomeProperties = false;
+					break;
+				}
+			}
+			
+			if (hasAllHomeProperties)
+			{
+				for (int j = 0; j < freeClientProperties.size(); j++)
+				{
+					if (i != j)
+					{
+						boolean hasAllAwayProperties = true;
+						for (String requirement : game.getAwaybot().getRequirements())
+						{
+							if (!freeClientProperties.get(j).contains(requirement))
+							{
+								hasAllAwayProperties = false;
+								break;
+							}
+						}
+						
+						if (hasAllAwayProperties)
+						{
+							return true;
+						}
+					}
+				}
+			}
 		}
-		else
-		{
-			receivedOneResult.put(gameID, allGames.get(gameID));
-		}
+		return false;
 	}
 }

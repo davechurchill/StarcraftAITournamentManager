@@ -120,7 +120,7 @@ public class Server  extends Thread
 				if (ServerSettings.Instance().StartGamesSimul)
 				{
 					// we can start multiple games at same time
-					nextGame = games.getNextGame(startingBots, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
+					nextGame = games.getNextGame(startingBots, freeClientProperties);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
@@ -143,7 +143,7 @@ public class Server  extends Thread
 				else if (startingBots.isEmpty())
 				{
 					// can only start one game at a time, but none others are starting
-					nextGame = games.getNextGame(null, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
+					nextGame = games.getNextGame(freeClientProperties);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
@@ -607,7 +607,6 @@ public class Server  extends Thread
 			Game g = games.lookupGame(game.getGameID());
 			g.updateWithGame(game);
 			appendGameData(g);
-			games.receivedResult(game.getGameID());
 			updateResults();
 		}
 		catch (Exception e)
