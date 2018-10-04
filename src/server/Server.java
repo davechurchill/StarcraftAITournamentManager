@@ -154,7 +154,7 @@ public class Server  extends Thread
 					}
 					
 					// we can start multiple games at same time
-					nextGame = games.getNextGame(startingBots, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
+					nextGame = games.getNextGame(startingBots, freeClientProperties);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
@@ -182,7 +182,7 @@ public class Server  extends Thread
 					}
 					
 					// can only start one game at a time, but none others are starting
-					nextGame = games.getNextGame(null, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
+					nextGame = games.getNextGame(freeClientProperties);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
@@ -712,7 +712,6 @@ public class Server  extends Thread
 			System.out.println("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");
 			
 			Game g = games.lookupGame(report.getGameID());
-			games.receivedResult(report.getGameID());
 			
 			report.setAddress((report.isHost() ? g.getHomeAddress() : g.getAwayAddress()));
 			report.setOpponentAddress((report.isHost() ? g.getAwayAddress() : g.getHomeAddress()));
