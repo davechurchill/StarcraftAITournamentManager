@@ -84,7 +84,6 @@ public class GameListGenerator
 				for (int k = 1; k < bots.size(); k++) 
 				{
 					out.write(getGameString(gameID, roundNum, bots.get(0).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
-					out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(0).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
 					gameID++;
 				}
 				roundNum++;
