@@ -294,8 +294,9 @@ This file must parse as valid JSON or the server will not start.
         <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"</li>
         <li><b>ClientRequirements</b> (OPTIONAL): array of strings with required properties</li>
         	<ul>
-            	<li>Example: ["GPU", "Extra RAM"]
-                <li>Bot requirements must match a client in the tournament (see Client Settings) or the tournament will not be able to finish
+            	<li>Example: ["GPU", "Extra RAM", "!64-bit Java"]</li>
+                <li>If the first character of a property is "!", then that bot can only use a client that doesn't have that property. In the example above, the bot could play only on a client with both the "GPU" and "Extra RAM" properties and not the "64-bit Java" property.</li>
+                <li>Bot requirements must match a client in the tournament (see Client Settings) or the tournament will not be able to finish</li>
             </ul>
         </ul>
      	Example: {"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420"}

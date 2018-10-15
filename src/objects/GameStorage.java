@@ -32,7 +32,6 @@ public class GameStorage
 		{
 			int current = it.next();
 		    gamesToPlay.remove(current);
-		    allGames.remove(current);
 		}
 	}
 	
@@ -65,7 +64,7 @@ public class GameStorage
 		
 		//if bot File IO is turned on, don't return a game if all games from previous rounds have not already been removed
 		int currentRound = gamesToPlay.get(gamesToPlay.firstKey()).getRound();
-		for (int i = gamesToPlay.firstKey(); allGames.containsKey(i) && (!waitForPreviousRound || allGames.get(i).getRound() == currentRound); i++)
+		for (int i = gamesToPlay.firstKey(); !waitForPreviousRound || allGames.get(i).getRound() == currentRound; i++)
 		{
 			//skip games already in progress or finished
 			if (!gamesToPlay.containsKey(i))
@@ -78,7 +77,6 @@ public class GameStorage
 			{
 				continue;
 			}
-			
 			//check for bot requirements
 			if (canMeetGameRequirements(freeClientProperties, gamesToPlay.get(i)))
 			{
@@ -108,35 +106,58 @@ public class GameStorage
 	//checks all combinations of free clients to see if there are two that can match for a given game
 	private boolean canMeetGameRequirements(Vector<Vector<String>> freeClientProperties, Game game)
 	{
+		//loop over clients searching for suitable host client
 		for (int i = 0; i < freeClientProperties.size(); i++)
 		{
-			boolean hasAllHomeProperties = true;
+			boolean satisfiesHomeBotRequirements = true;
 			for (String requirement : game.getHomebot().getRequirements())
 			{
-				if (!freeClientProperties.get(i).contains(requirement))
+				//check for negated properties
+				if (requirement.startsWith("!"))
 				{
-					hasAllHomeProperties = false;
+					if (freeClientProperties.get(i).contains(requirement.substring(1, requirement.length())))
+					{
+						satisfiesHomeBotRequirements = false;
+						break;
+					}
+				}
+				//check for required properties
+				else if (!freeClientProperties.get(i).contains(requirement))
+				{
+					satisfiesHomeBotRequirements = false;
 					break;
 				}
+				
 			}
 			
-			if (hasAllHomeProperties)
+			if (satisfiesHomeBotRequirements)
 			{
+				//loop over clients searching for suitable away client
 				for (int j = 0; j < freeClientProperties.size(); j++)
 				{
 					if (i != j)
 					{
-						boolean hasAllAwayProperties = true;
+						boolean satisfiesAwayBotRequirements = true;
 						for (String requirement : game.getAwaybot().getRequirements())
 						{
-							if (!freeClientProperties.get(j).contains(requirement))
+							//check for negated properties
+							if (requirement.startsWith("!"))
 							{
-								hasAllAwayProperties = false;
+								if (freeClientProperties.get(j).contains(requirement.substring(1, requirement.length())))
+								{
+									satisfiesAwayBotRequirements = false;
+									break;
+								}
+							}
+							//check for required properties
+							else if (!freeClientProperties.get(j).contains(requirement))
+							{
+								satisfiesAwayBotRequirements = false;
 								break;
 							}
 						}
 						
-						if (hasAllAwayProperties)
+						if (satisfiesAwayBotRequirements)
 						{
 							return true;
 						}

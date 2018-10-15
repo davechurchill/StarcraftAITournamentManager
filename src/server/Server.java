@@ -567,7 +567,17 @@ public class Server  extends Thread
 				boolean hasAllProperties = true;
 				for (String requirement : requirements)
 				{
-					if (!clients.get(i).getProperties().contains(requirement))
+					//check for negated properties
+					if (requirement.startsWith("!"))
+					{
+						if (clients.get(i).getProperties().contains(requirement.substring(1, requirement.length())))
+						{
+							hasAllProperties = false;
+							break;
+						}
+					}
+					//check for required properties
+					else if (!clients.get(i).getProperties().contains(requirement))
 					{
 						hasAllProperties = false;
 						break;
