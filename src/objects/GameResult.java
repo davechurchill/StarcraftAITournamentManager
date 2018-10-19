@@ -92,7 +92,7 @@ public class GameResult implements Comparable<Object>
 		gameEndType = thisGameEnd.ordinal() < gameEndType.ordinal() ? thisGameEnd : gameEndType;
 		
 		//if this bot reports that StarCraft didn't start or crashed before the game, assign it as crashing bot
-		if (thisGameEnd == GameEndType.NO_STARCRAFT)
+		if (thisGameEnd == GameEndType.STARCRAFT_NEVER_DETECTED)
 		{
 			crash = botIndex;
 		}
@@ -131,7 +131,7 @@ public class GameResult implements Comparable<Object>
 			// this only affects detailed results, not result summary, since games that never started are not counted
 			if (gameEndType == GameEndType.STARCRAFT_CRASH && finalFrame == -1)
 			{
-				gameEndType = GameEndType.NO_GAME_START;
+				gameEndType = GameEndType.GAME_STATE_NEVER_DETECTED;
 				crash = 1;
 			}
 			

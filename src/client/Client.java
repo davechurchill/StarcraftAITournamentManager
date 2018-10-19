@@ -193,11 +193,11 @@ public class Client extends Thread
 						setEndTime();
 						if (starcraftDetected)
 						{
-							report.setGameEndType(starcraftIsRunning ? GameEndType.NO_GAME_START : GameEndType.STARCRAFT_CRASH);
+							report.setGameEndType(starcraftIsRunning ? GameEndType.GAME_STATE_NEVER_DETECTED : GameEndType.STARCRAFT_CRASH);
 						}
 						else
 						{
-							report.setGameEndType(GameEndType.NO_STARCRAFT);
+							report.setGameEndType(GameEndType.STARCRAFT_NEVER_DETECTED);
 						}
 						
 						prepCrash(gameState);
@@ -237,7 +237,7 @@ public class Client extends Thread
 						log("MainLoop: We crashed, prepping crash\n");
 						System.out.println("MONITOR: Crash detected, shutting down game");
 						setEndTime();
-						report.setGameEndType(starcraftIsRunning ? GameEndType.NO_ACTIVITY : GameEndType.STARCRAFT_CRASH);
+						report.setGameEndType(starcraftIsRunning ? GameEndType.GAME_STATE_NOT_UPDATED_60S : GameEndType.STARCRAFT_CRASH);
 						prepCrash(gameState);
 					}
 				}
