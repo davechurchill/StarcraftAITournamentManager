@@ -83,7 +83,7 @@ function fillDetailedResultsTable(data, replayDir)
 	}
 	
 	//headers
-	var headerHtml = "<tr><th>Game ID</th><th>Round</th><th>Winner</th><th>Loser</th><th>Crash</th><th>Timeout</th><th>Map</th><th>Duration</th><th>End Type</th><th>W Score</th><th>L Score</th><th>(W-L)/Max</th>";
+	var headerHtml = "<tr><th>Game ID</th><th>Round</th><th>Winner</th><th>Loser</th><th>Crash</th><th>Game Time Limit</th><th>Map</th><th>Duration</th><th>End Type</th><th>W Score</th><th>L Score</th><th>(W-L)/Max</th>";
 	headerHtml += winnerTimerHeaders + loserTimerHeaders;
 	headerHtml += "<th>Win Addr</th><th>Lose Addr</th><th>Start</th><th>Finish</th></tr>";
 	
