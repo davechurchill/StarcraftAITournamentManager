@@ -32,7 +32,7 @@ public class ClientCommands
 	{
         Client.log("      Client_RunProxyScript()\n");
         
-		WindowsCommandTools.RunWindowsCommand("cd " + ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI & "+ ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI\\run_proxy.bat", false, false);
+        WindowsCommandTools.RunWindowsCommand("cd " + ClientSettings.Instance().ClientStarcraftDir + " & "+ ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI\\run_proxy.bat", false, false);
 	}
 	
 	public static void Client_ClearWriteDirectory()
