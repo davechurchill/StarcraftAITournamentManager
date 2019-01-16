@@ -83,7 +83,7 @@ public class FileUtils
 	 * Creates a lock file to ensure uninterrupted access to a resource. Behaves similarly to node package "lockfile".
 	 * @param filename       the name of the lock file to create (not the resource - so use "somefile.txt.lock" to lock "somefile.txt")
 	 * @param retries        number of times to retry locking
-	 * @param retryInterval  ms to wait (blocking) between retires
+	 * @param retryInterval  ms to wait (blocking) between retries
 	 * @param stale          ms until a lock file is considered stale and can be deleted to obtain a new lock. If stale is 0 then lock files can't be stale.
 	 * @throws Exception     if a file can't be locked an exception is thrown
 	 */

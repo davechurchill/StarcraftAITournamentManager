@@ -20,7 +20,6 @@ public class Server  extends Thread
 	private GameStorage						games;
 	
 	private int								gameRescheduleTimer = 2000;
-	private int								totalGames;
 	
 	public ServerGUI 						gui;
 	
@@ -31,20 +30,44 @@ public class Server  extends Thread
     Server()
 	{
     	gui = new ServerGUI(this);
-    	boolean resumed = gui.handleTournamentResume();
-		gui.handleFileDialogues();
     	
-		games = GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
-		totalGames = games.getNumTotalGames();
-		if (resumed && !ServerSettings.Instance().LadderMode)
+    	
+		if (ServerSettings.Instance().LadderMode)
 		{
-			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			gui.updateServerStatus(totalGames, rp.getGameIDs().size());
-			games.removePlayedGames(rp.getGameIDs());
+			games = new LadderGameStorage();
+			try
+			{
+				gui.updateServerStatus(games.getNumTotalGames(), 0);
+			}
+			catch (Exception e)
+			{
+				// couldn't access games storage file
+				e.printStackTrace();
+			}
 		}
 		else
 		{
-			gui.updateServerStatus(totalGames, 0);
+			boolean resumed = gui.handleTournamentResume();
+			gui.handleFileDialogues();
+			
+			games = GameParser.getGames();
+			
+			if (resumed)
+			{
+				ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
+				try
+				{
+					gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
+				}
+				catch (Exception e)
+				{
+					// This shouldn't happen
+					e.printStackTrace();
+				}
+				// This block only executes when not in ladder mode, so the games object
+				// will be a TournamentGameStorage, not a LadderGameStorage
+				((TournamentGameStorage)games).removePlayedGames(rp.getGameIDs());
+			}
 		}
 		
         clients 	= new Vector<ServerClientThread>();
@@ -59,14 +82,24 @@ public class Server  extends Thread
     public static Server Instance() 
 	{
         return INSTANCE;
-    } 
-
-	public void run()
+    }
+    
+    public void run()
 	{
-		if (!games.hasMoreGames() && !ServerSettings.Instance().LadderMode)
+		if (!ServerSettings.Instance().LadderMode)
 		{
-			System.err.println("Server: Games list had no valid games in it");
-			System.exit(-1);
+			try
+			{
+				if (!games.hasMoreGames())
+				{
+					System.err.println("Server: Games list had no valid games in it");
+					System.exit(-1);
+				}
+			}
+			catch (Exception e) {
+				// This shouldn't happen
+				e.printStackTrace();
+			}
 		}
 		
 		int neededClients = 2;
@@ -89,9 +122,7 @@ public class Server  extends Thread
 				{
 					writeServerStatus();
 					ServerSettings.Instance().updateSettings();
-					GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
-					totalGames = games.getNumTotalGames();
-					gui.updateServerStatus(totalGames, totalGames - games.getNumGamesRemaining());
+					gui.updateServerStatus(games.getNumTotalGames(), games.getNumTotalGames() - games.getNumGamesRemaining());
 				}
 				
 				if (!games.hasMoreGames())
@@ -103,7 +134,6 @@ public class Server  extends Thread
 							log("Ladder Mode: No games in games list, waiting for new games.\n");
 							noGamesInGamesList = true;
 						}
-						continue;
 					}
 					else
 					{
@@ -124,12 +154,12 @@ public class Server  extends Thread
 		        				}
 		                    }
 						}
-						continue;
 					}
+					continue;
 				}
 				noGamesInGamesList = false;
 								
-				// we can't start a game if we don't have enough clients0
+				// we can't start a game if we don't have enough clients
 				if (free.size() < neededClients) 
 				{
 					if (!notEnoughClients)
@@ -268,7 +298,7 @@ public class Server  extends Thread
 	{	
 		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 		
-		gui.updateServerStatus(totalGames, rp.getGameIDs().size());
+		gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
 				
 		// only write the all results file every 30 reschedules, saves time
 		if (ServerSettings.Instance().DetailedResults)
@@ -457,7 +487,8 @@ public class Server  extends Thread
                 try
 				{
 					c.sendMessage(new InitialSettingsMessage());
-				} catch (Exception e)
+				}
+                catch (Exception e)
 				{
 					e.printStackTrace();
 					System.exit(-1);
@@ -594,8 +625,9 @@ public class Server  extends Thread
 	
 	/**
 	 * In Ladder mode, instead of starting a game, output results showing it couldn't be played because of bot issues if needed
+	 * @throws Exception 
 	 */
-	private boolean checkValidGame(Game game)
+	private boolean checkValidGame(Game game) throws Exception
 	{
 		if (!game.getHomebot().isValid() || !game.getAwaybot().isValid())
 		{
@@ -833,8 +865,18 @@ public class Server  extends Thread
 		}
 		status.add("clients", clients);
 		status.add("updateTime", ServerGUI.getTimeStamp());
-		status.add("totalGames", games.getNumTotalGames());
-		status.add("gamesRemaining", games.getNumGamesRemaining());
+		
+		try
+		{
+			status.add("totalGames", games.getNumTotalGames());
+			status.add("gamesRemaining", games.getNumGamesRemaining());
+		}
+		catch (Exception e1)
+		{
+			//don't update status if can't access all data
+			e1.printStackTrace();
+			return;
+		}
 		
 		try
 		{
