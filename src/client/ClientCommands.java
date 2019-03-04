@@ -200,7 +200,9 @@ public class ClientCommands
 		BWINI += "; for replays, just set the map to the path of the replay file" + newLine;
 		BWINI += "auto_menu = " + bwapi.auto_menu + newLine + newLine;
 		
-		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		String versionDigits = thisBot.getBWAPIVersion().replaceAll("[^0-9]", "");
+		boolean isBWAPI420OrHigher = (versionDigits.length() >= 3 && versionDigits.substring(0, 3).compareTo("420") >= 0);
+		if (isBWAPI420OrHigher)
 		{
 			BWINI += "; character_name = FIRST | WAIT | <other>" + newLine;
 			BWINI += "; if FIRST (default), use the first character in the list" + newLine;
@@ -266,7 +268,7 @@ public class ClientCommands
 		BWINI += ";           | GREED | SLAUGHTER | SUDDEN_DEATH | TEAM_MELEE | TEAM_FREE_FOR_ALL | TEAM_CAPTURE_THE_FLAG" + newLine;
 		BWINI += "game_type = " + bwapi.game_type + newLine + newLine;
 		
-		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		if (isBWAPI420OrHigher)
 		{
 			BWINI += "; game_type_extra = Text that appears in the drop-down list below the Game Type drop-down list." + newLine;
 			BWINI += "; If empty, the Starcraft default will be used." + newLine;

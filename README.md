@@ -73,7 +73,7 @@ Normally a new game can be started only if:
 2. no clients are **STARTING**.
 
 The reason no clients can be **STARTING** is to prevent multiple StarCraft game lobbies to be open on the same LAN, which may cause mis-scheduled games due to limitations in BWAPI versions previous to 4.2.0 on how we are able to join games automatically.
-If all bots use BWAPI 4.2.0 there is an option in the server settings file to enable multiple games to start at the same time.
+If all bots use BWAPI 4.2.0 or higher there is an option in the server settings file to enable multiple games to start at the same time.
 Once these two conditions are met, the server sends the required bot files, map files, BWAPI version, and DLL injector to the client machines, specifying one client as the host and one as the away machine.
 Those clients' status are then set to **STARTING**.
 
@@ -145,10 +145,11 @@ Download or clone the repository to any directory on your server machine that do
                win_percentage_graph.html      Win % over time for all bots
             replays/                          Replay storage directory * 
             required/                         Required file storage directory
-                Required_BWAPI_374.zip        BWAPI/Starcraft required files (BWAPI 374)
-                Required_BWAPI_401B.zip       BWAPI/Starcraft required files (BWAPI 401B)
-                Required_BWAPI_412.zip        BWAPI/Starcraft required files (BWAPI 412)
-                Required_BWAPI_420.zip        BWAPI/Starcraft required files (BWAPI 420)
+                Required_BWAPI_374.zip        BWAPI/Starcraft required files (BWAPI 3.7.4)
+                Required_BWAPI_401B.zip       BWAPI/Starcraft required files (BWAPI 4.0.1 Beta)
+                Required_BWAPI_412.zip        BWAPI/Starcraft required files (BWAPI 4.1.2)
+                Required_BWAPI_420.zip        BWAPI/Starcraft required files (BWAPI 4.2.0)
+                Required_BWAPI_430.zip        BWAPI/Starcraft required files (BWAPI 4.3.0)
             games.txt                         Default tournament games list filename *
             parse_results.bat                 Script to run results parser
             results.txt                       Default tournament results filename *
@@ -291,7 +292,7 @@ This file must parse as valid JSON or the server will not start.
         <li><b>BotName:</b> String - the name of the bot, matching the bot folder name</li>
         <li><b>Race:</b> "Random" | "Terran" | "Zerg" | "Protoss"</li>
         <li><b>BotType:</b> "dll" | "proxy"</li>
-        <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"</li>
+        <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420" | "BWAPI_430"</li>
         <li><b>ClientRequirements</b> (OPTIONAL): array of strings with required properties</li>
         	<ul>
             	<li>Example: ["GPU", "Extra RAM", "!64-bit Java"]</li>
@@ -355,7 +356,7 @@ This file must parse as valid JSON or the server will not start.
     	<b>Type:</b> Boolean<br><br>
     	If set to <b>true</b> new games will be started while other games are still in the starting process (i.e. other Starcraft instances are in the lobby).
 		If set to <b>false</b> only one game can be <b>STARTING</b> at a time.<br><br>
-        <b>WARNING:</b> This is only useable if all bots are using BWAPI version 4.2.0 or later.
+        <b>WARNING:</b> This is only usable if all bots are using BWAPI version 4.2.0 or higher.
         If using older versions of BWAPI, bots will join any game in the lobby, leading to games with more than 2 players, and generally games that do not match.
     </td>
 </tr>
@@ -568,7 +569,7 @@ Example client_settings.json:
 
 #### New Features
 * Added BWAPI 4.2.0 support.
-* Allow multiple matches to start simultaneously by ensuring that hosts are always different (enable ONLY for BWAPI 4.2.0 bots).
+* Allow multiple matches to start simultaneously by ensuring that hosts are always different (enable ONLY for BWAPI 4.2.0 bots and higher).
 * ChaosLauncher is no longer used for injecting BWAPI; [injectory](https://github.com/blole/injectory) is used instead.
 * Settings files switched to JSON format.
 * Added option to give properties to clients, (e.g. "GPU") and requirements to bots. Requirements and properties have to match for a client to run a game.

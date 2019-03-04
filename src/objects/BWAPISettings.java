@@ -18,7 +18,7 @@ public class BWAPISettings implements Serializable, Cloneable
 	 */
 	public String auto_menu;
 	/**
-	 * BWAPI_420 ONLY
+	 * BWAPI version 4.2.0 and higher ONLY
 	 * character_name = FIRST | WAIT | <other>
 	 * if FIRST (default), use the first character in the list
 	 * if WAIT, stop at this screen
@@ -108,7 +108,7 @@ public class BWAPISettings implements Serializable, Cloneable
 	 */
 	public String game_type;
 	/**
-	 * BWAPI_420 ONLY
+	 * BWAPI version 4.2.0 and higher ONLY
 	 * game_type_extra = Text that appears in the drop-down list below the Game
 	 * Type drop-down list. If empty, the Starcraft default will be used. The
 	 * following are the game types that use this setting, and corresponding
@@ -172,7 +172,7 @@ public class BWAPISettings implements Serializable, Cloneable
 	{
 		tournament = "";
 		auto_menu = "OFF";
-		character_name = "FIRST"; //BWAPI 420 version
+		character_name = "FIRST"; //BWAPI version 4.2.0 and higher
 		pause_dbg = "OFF";
 		lan_mode = "Local Area Network (UDP)";
 		auto_restart = "OFF";
@@ -188,7 +188,7 @@ public class BWAPISettings implements Serializable, Cloneable
 		enemy_race_6 = "Default";
 		enemy_race_7 = "Default";
 		game_type = "MELEE";
-		game_type_extra = ""; //BWAPI 420 version
+		game_type_extra = ""; //BWAPI version 4.2.0 and higher
 		save_replay = "lol";
 		wait_for_min_players = 2;
 		wait_for_max_players = 8;
