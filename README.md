@@ -149,7 +149,7 @@ Download or clone the repository to any directory on your server machine that do
                 Required_BWAPI_401B.zip       BWAPI/Starcraft required files (BWAPI 4.0.1 Beta)
                 Required_BWAPI_412.zip        BWAPI/Starcraft required files (BWAPI 4.1.2)
                 Required_BWAPI_420.zip        BWAPI/Starcraft required files (BWAPI 4.2.0)
-                Required_BWAPI_430.zip        BWAPI/Starcraft required files (BWAPI 4.3.0)
+                Required_BWAPI_440.zip        BWAPI/Starcraft required files (BWAPI 4.4.0)
             games.txt                         Default tournament games list filename *
             parse_results.bat                 Script to run results parser
             results.txt                       Default tournament results filename *
@@ -292,7 +292,7 @@ This file must parse as valid JSON or the server will not start.
         <li><b>BotName:</b> String - the name of the bot, matching the bot folder name</li>
         <li><b>Race:</b> "Random" | "Terran" | "Zerg" | "Protoss"</li>
         <li><b>BotType:</b> "dll" | "proxy"</li>
-        <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420" | "BWAPI_430"</li>
+        <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420" | "BWAPI_440"</li>
         <li><b>ClientRequirements</b> (OPTIONAL): array of strings with required properties</li>
         	<ul>
             	<li>Example: ["GPU", "Extra RAM", "!64-bit Java"]</li>
