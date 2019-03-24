@@ -62,7 +62,7 @@
     </ClCompile>
     <PreLinkEvent />
     <Link>
-      <AdditionalDependencies>Shlwapi.lib;$(BWAPI_DIR)/lib/BWAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Shlwapi.lib;$(BWAPI_DIR)/Release/BWAPILIB.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
