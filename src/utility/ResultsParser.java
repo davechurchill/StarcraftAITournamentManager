@@ -441,7 +441,7 @@ public class ResultsParser
 			//filter for excluded bots
 			for (String excludedBot : ServerSettings.Instance().ExcludeFromResults)
 			{
-				if (excludedBot.equals(result.get("reportingBot").asString()))
+				if (excludedBot.equals(result.get("reportingBot").asString()) || excludedBot.equals(result.get("opponentBot").asString()))
 				{
 					return;
 				}
