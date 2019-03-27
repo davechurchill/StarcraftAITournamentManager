@@ -11,11 +11,12 @@
 #include <sstream>
 #include "AutoObserver.h"
 
-#define MINIMUM_COMMAND_OPTIMIZATION 1
+#define DEFAULT_COMMAND_OPTIMIZATION 1
+#define MINIMUM_COMMAND_OPTIMIZATION 0
 
 class ExampleTournamentModule : public BWAPI::TournamentModule
 {
-  virtual bool onAction(int actionType, void *parameter = nullptr);
+  virtual bool onAction(BWAPI::Tournament::ActionID actionType, void *parameter = nullptr);
   virtual void onFirstAdvertisement();
 };
 

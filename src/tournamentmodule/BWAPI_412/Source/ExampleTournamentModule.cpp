@@ -124,7 +124,7 @@ void ExampleTournamentAI::onStart()
 	BWAPI::Broodwar->printf("Path is %s", buffer);
 
 	// Set the command optimization level (reduces high APM, size of bloated replays, etc)
-	Broodwar->setCommandOptimizationLevel(MINIMUM_COMMAND_OPTIMIZATION);
+	Broodwar->setCommandOptimizationLevel(DEFAULT_COMMAND_OPTIMIZATION);
 
 	timerLimits.push_back(55);
 	timerLimitsBound.push_back(320);
@@ -390,7 +390,7 @@ void ExampleTournamentAI::onSaveGame(std::string gameName)
 {
 }
 
-bool ExampleTournamentModule::onAction(int actionType, void *parameter)
+bool ExampleTournamentModule::onAction(BWAPI::Tournament::ActionID actionType, void *parameter)
 {
 	switch ( actionType )
 	{
@@ -399,22 +399,26 @@ bool ExampleTournamentModule::onAction(int actionType, void *parameter)
 			{
 				case Flag::CompleteMapInformation:		return false;
 				case Flag::UserInput:					return false;
+				default:								break;
 			}
+			// If more flags are added, by default disallow unrecognized flags
+			return false;
 
-		case Tournament::PauseGame:
-	//	case Tournament::RestartGame:
-		case Tournament::ResumeGame:
-		case Tournament::SetFrameSkip:
-		case Tournament::SetGUI:
+		case Tournament::PauseGame:						return false;
+	//	case Tournament::RestartGame:					return false;
+		case Tournament::ResumeGame:					return false;
+		case Tournament::SetFrameSkip:					return false;
+		case Tournament::SetGUI:						return false;
 		case Tournament::SetLocalSpeed:					return false;
-		case Tournament::SetMap:						return false; 
-		case Tournament::LeaveGame:
-	//	case Tournament::ChangeRace:
-		case Tournament::SetLatCom:
-		case Tournament::SetTextSize:
-		case Tournament::SendText:
-		case Tournament::Printf:
-		case Tournament::SetCommandOptimizationLevel:	return false; 
+		case Tournament::SetMap:						return false;
+		case Tournament::LeaveGame:						return true;
+	//	case Tournament::ChangeRace:					return false;
+		case Tournament::SetLatCom:						return true;
+		case Tournament::SetTextSize:					return false;
+		case Tournament::SendText:						return false;
+		case Tournament::Printf:						return false;
+		case Tournament::SetCommandOptimizationLevel:
+			return *(int*)parameter >= MINIMUM_COMMAND_OPTIMIZATION;
 							
 		default:										break;
 	}
