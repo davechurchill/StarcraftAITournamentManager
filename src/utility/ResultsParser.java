@@ -10,6 +10,7 @@ import com.eclipsesource.json.WriterConfig;
 import java.io.*;
 import java.text.*;
 
+import objects.Game;
 import objects.GameResult;
 import server.ServerSettings;
 
@@ -339,9 +340,15 @@ public class ResultsParser
 		
 		for (int i=0; i<numBots; ++i)
 		{
-			JsonObject botSummary = Json.object();
 			int ii = allPairs.get(i).botIndex;
 			
+			//don't include excluded bots in results
+			if (ServerSettings.Instance().isExcludedBot(botNames[ii]))
+			{
+				continue;
+			}
+		
+			JsonObject botSummary = Json.object();
 			botSummary.add("BotName", botNames[ii]);
 			botSummary.add("Rank", i);
 			botSummary.add("Race", ServerSettings.Instance().BotVector.get(ii).getRace());
@@ -373,9 +380,13 @@ public class ResultsParser
 			JsonArray resultPairs = (JsonArray) Json.array();
 			for (int j=0; j<numBots; j++)
 			{
-				JsonObject pair = Json.object();
 				int jj = allPairs.get(j).botIndex;
+				if (ServerSettings.Instance().isExcludedBot(botNames[jj]))
+				{
+					continue;
+				}
 				
+				JsonObject pair = Json.object();				
 				pair.add("Opponent", botNames[jj]);
 				pair.add("Wins", wins[ii][jj]);
 				pair.add("Games", wins[ii][jj] + wins[jj][ii]);

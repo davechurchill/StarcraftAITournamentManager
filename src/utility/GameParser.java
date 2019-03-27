@@ -66,19 +66,13 @@ public class GameParser
 		{
 			if (line.trim().length() > 0)
 			{
-				boolean include = true;
+				//don't play games with excluded bots
 				Game g = parseGame(line);
-				for (String excluded : ServerSettings.Instance().ExcludeFromResults) 
+				if (ServerSettings.Instance().isExcludedBot(g.getHomebot().getName()) || ServerSettings.Instance().isExcludedBot(g.getAwaybot().getName()))
 				{
-					if (g.getHomebot().getName().equals(excluded) || g.getAwaybot().getName().equals(excluded))
-					{
-						include = false;
-					}
+					continue;
 				}
-				if (include)
-				{
-					games.addGame(parseGame(line));
-				}
+				games.addGame(parseGame(line));
 			}
 		}
 	}

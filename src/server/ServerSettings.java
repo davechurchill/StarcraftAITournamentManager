@@ -71,6 +71,18 @@ public class ServerSettings
 		return null;
 	}
 	
+	public boolean isExcludedBot(String botname)
+	{
+		for (String excluded : ExcludeFromResults)
+		{
+			if (excluded.equals(botname))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void updateSettings()
 	{
 		parseSettingsFile(settingsFile);
