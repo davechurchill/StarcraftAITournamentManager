@@ -65,8 +65,20 @@ public class GameParser
 		while ((line = br.readLine()) != null)
 		{
 			if (line.trim().length() > 0)
-			{ 
-				games.addGame(parseGame(line));
+			{
+				boolean include = true;
+				Game g = parseGame(line);
+				for (String excluded : ServerSettings.Instance().ExcludeFromResults) 
+				{
+					if (g.getHomebot().getName().equals(excluded) || g.getAwaybot().getName().equals(excluded))
+					{
+						include = false;
+					}
+				}
+				if (include)
+				{
+					games.addGame(parseGame(line));
+				}
 			}
 		}
 	}
