@@ -26,8 +26,6 @@ public class GameResult implements Comparable<Object>
 	public int timeout = -1;
 	public String map = "";
 	public int finalFrame = -1;
-	public String start = "";
-	public String finish = "";
 	public GameEndType gameEndType  = GameEndType.NORMAL;
 	public boolean gameTimeout		= false;
 	public String startDate			= "unknown";

@@ -1,8 +1,11 @@
 package objects;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import com.eclipsesource.json.Json;
@@ -51,7 +54,7 @@ public class GameReport implements Serializable
 		gameTimeout = false;
 		finalFrame = 0;
 		
-		startDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		startDate = getCurrentTime();
 		finishDate = "unknown";
 	}
 
@@ -207,12 +210,19 @@ public class GameReport implements Serializable
 
 	public void setFinishDate()
 	{
-		finishDate = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+		finishDate = getCurrentTime();
 	}
 
 	public String getStartDate()
 	{
 		return startDate;
+	}
+	
+	private String getCurrentTime() {
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		df.setTimeZone(tz);
+		return df.format(new Date());
 	}
 
 	public boolean isHost()
