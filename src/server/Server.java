@@ -1,6 +1,8 @@
 package server;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import utility.*;
@@ -864,7 +866,13 @@ public class Server  extends Thread
 			clients.add(client);
 		}
 		status.add("clients", clients);
-		status.add("updateTime", ServerGUI.getTimeStamp());
+		
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		df.setTimeZone(tz);
+		String time = df.format(new Date());
+		
+		status.add("updateTime", time);
 		
 		try
 		{
