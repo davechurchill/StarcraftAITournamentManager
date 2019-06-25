@@ -571,11 +571,11 @@ Example client_settings.json:
 
 ### June 2019
 
-### Bug Fixes
+#### Bug Fixes
 * Fix for client crash when there are extra files in the replay directory
-* Fix for some actions that were mistakenly allowed by the Tournament Module in BWAPI 4.1.2 and 4.2.0 [Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/32)
+* Fix for some actions that were mistakenly allowed by the Tournament Module in BWAPI 4.1.2 and 4.2.0 ([Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/32))
 
-### New Features
+#### New Features
 * Client count in server GUI
 * Added win percentage by round to results
 * Menu option to open results in browser
@@ -585,7 +585,7 @@ Example client_settings.json:
 * run_proxy.bat is now run from Starcraft/bwapi-data/AI
 * Bot requirements can have "!" before them to indicate that the client machine should not have that property
 * New ladder mode in settings for use with persistant ladder server (don't use this!)
-* Added BWAPI 4.4.0 support [Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/34)
+* Added BWAPI 4.4.0 support ([Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/34))
 
 ### August 2017
 
