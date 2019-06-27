@@ -231,19 +231,29 @@ It only displays information about the current game or status, and a log.
 
 ### Results Output
 
-* Raw results are written to **server/results.txt** after each game ends
-* A JSON results summary is written every 2 seconds to **server/html/results/results_summary.js** and can be viewed at **server/html/index.html**
-* Detailed match results can be written manually via the Server GUI, or automatically once every minute if you turn on the option in the server settings file.
+* Whenever a game result is received from a Tournament Manager client, the raw results are written to **server/results.txt**, and a results summary is written to **server/html/results/results_summary.js** (viewed at **server/html/index.html**)
+* Detailed match results can be written manually via the Server GUI, or automatically whenever a game result is received if you turn on the option in the server settings file.
 It is off by default due to long processing times for very large tournaments.
 * Replay files are saved to **server/replays/BotName**
 * Bot read/write directories are stored in **server/bots/BotName/(read|write)**
 
-**Note:** Detecting when a bot crashes is difficult, so a crash is recorded whenever the game doesn't progress for more than a minute.
+Raw and detailed results contain a field called "gameEndType"/"End Type", which indicates if the game ended normally (NORMAL), or ended in some kind of crash or didn't start.
+
+Game End Types:
+* NORMAL
+* GAME_STATE_NOT_UPDATED_60S: gamestate file wasn't updated for 60 seconds, but Starcraft is still running
+* STARCRAFT_CRASH: crash detected by TM client, which means Starcraft was running at some point, but then it couldn't find the process.
+* GAME_STATE_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), but StarCraft is running
+* STARCRAFT_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), and StarCraft never detected running
+* NO_REPORT: only one report received; assigned after the fact (detailed results only); should mean the TM client crashed or weird network error
+
+If two clients report different end types, the one lower in this list is shown in the detailed results.
+
+**Note:** Detecting when a bot crashes is difficult, so a crash is recorded whenever the game doesn't progress (gamestate file not updated) for more than a minute.
 In these cases the bot who recorded the higher frame count (meaning the game was running for longer) is declared the winner.
 This means it isn't possible to distinguish between a crash and a case of a bot taking more than a minute to process a single frame of the game.
 
 Crashes in which the game never starts (frame count for both bots is zero) are not counted in the results summary in **html/index.html**.
-In Detailed results these games are listed with an arbitrary winner and loser, but the crashing bot is listed as "unknown".
 
 Games that last more frames than `gameFrameLimit` in server_settings.json (default setting is equal to one hour at normal speed) are terminated, and the winner is the bot with the higher score.
 These losses are reported as "Game Timeout" in the results summary and "Timeout" in the detailed results page.
@@ -327,10 +337,10 @@ This file must parse as valid JSON or the server will not start.
     </td>
 </tr>
 <tr>
-    <td>DetailedResults</td>
+    <td>detailedResults</td>
     <td>
         <b>Type:</b> Boolean<br><br>
-        Setting to true auto-generates detailed results every minute.
+        Setting to true auto-generates detailed results whenever a game result is received.
         Generating detailed results gets slow for very large tournaments, so default is false.
         You can manually generate the results from the Actions menu in the server, which is recommended.
     </td>
@@ -576,15 +586,14 @@ Example client_settings.json:
 * Fix for some actions that were mistakenly allowed by the Tournament Module in BWAPI 4.1.2 and 4.2.0 ([Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/32))
 
 #### New Features
-* Client count in server GUI
+* Client count added to server GUI
 * Added win percentage by round to results
 * Menu option to open results in browser
 * New option in server settings to set StarCraft game lobby speed for all games
 * Games list and results are stored in JSON format
-* New field in detailed results: "Game End Type"
-* run_proxy.bat is now run from Starcraft/bwapi-data/AI
+* New field in detailed results: "Game End Type" provides more information about crashes
+* For proxy bots, run_proxy.bat is now run from the Starcraft directory, rather than from Starcraft/bwapi-data/AI. This is more consistant with DLL bots for accessing the read and write directories. run_proxy.bat can still change the working directory if needed before running the bot.
 * Bot requirements can have "!" before them to indicate that the client machine should not have that property
-* New ladder mode in settings for use with persistant ladder server (don't use this!)
 * Added BWAPI 4.4.0 support ([Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/34))
 
 ### August 2017
