@@ -241,11 +241,11 @@ Raw and detailed results contain a field called "gameEndType"/"End Type", which 
 
 Game End Types:
 * NORMAL
-* GAME_STATE_NOT_UPDATED_60S: gamestate file wasn't updated for 60 seconds, but Starcraft is still running
-* STARCRAFT_CRASH: crash detected by TM client, which means Starcraft was running at some point, but then it couldn't find the process.
-* GAME_STATE_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), but StarCraft is running
-* STARCRAFT_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), and StarCraft never detected running
-* NO_REPORT: only one report received; assigned after the fact (detailed results only); should mean the TM client crashed or weird network error
+* GAME_STATE_NOT_UPDATED_60S: gamestate file wasn't updated for 60 seconds, but Starcraft is still running.
+* STARCRAFT_CRASH: crash detected by Tournament Manager client, which means that Starcraft was running at some point, but later the client couldn't find the Starcraft process.
+* GAME_STATE_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), but StarCraft is running.
+* STARCRAFT_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), and StarCraft never detected running.
+* NO_REPORT: only one report received; assigned after the fact (detailed results only); this could be caused by the TM client crashing, or a weird network error, etc.
 
 If two clients report different end types, the one lower in this list is shown in the detailed results.
 
