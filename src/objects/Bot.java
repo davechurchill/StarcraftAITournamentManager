@@ -13,6 +13,7 @@ public class Bot implements Serializable
 	private String type;
 	private String bwapiVersion;
 	private Vector<String> requirements;
+	private boolean valid = true;
 
 	public Bot(String name, String race, String type, String bwapiVersion)
 	{
@@ -41,9 +42,19 @@ public class Bot implements Serializable
 		return race;
 	}
 	
+	public void setRace(String race)
+	{
+		this.race = race;
+	}
+	
 	public String getType()
 	{
 		return type;
+	}
+	
+	public void setType(String type)
+	{
+		this.type = type;
 	}
 	
 	public String getServerDir()
@@ -56,9 +67,24 @@ public class Bot implements Serializable
 		return bwapiVersion;
 	}
 	
+	public void setBWAPIVersion(String version)
+	{
+		this.bwapiVersion = version;
+	}
+	
 	public boolean isProxyBot()
 	{
 		return type.equalsIgnoreCase("proxy");
+	}
+	
+	public void setValid(boolean valid)
+	{
+		this.valid = valid;
+	}
+	
+	public boolean isValid()
+	{
+		return valid;
 	}
 	
 	public boolean hasRequirements()
@@ -73,5 +99,10 @@ public class Bot implements Serializable
 	public Vector<String> getRequirements()
 	{
 		return requirements;
+	}
+	
+	public void setRequirements(Vector<String> requirements)
+	{
+		this.requirements = requirements;
 	}
 }

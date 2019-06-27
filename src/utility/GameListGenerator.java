@@ -6,6 +6,9 @@ import java.util.Vector;
 import objects.Bot;
 import objects.Map;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
+
 public class GameListGenerator 
 {
 
@@ -54,12 +57,12 @@ public class GameListGenerator
 					{						
 						if (roundNum % 2 == 0) 
 						{
-							out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(j).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
+							out.write(getGameString(gameID, roundNum, bots.get(j).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
 							gameID++;
 						} 
 						else 
 						{
-							out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(k).getName(), bots.get(j).getName(), m.getMapName()) + System.getProperty("line.separator"));
+							out.write(getGameString(gameID, roundNum, bots.get(k).getName(), bots.get(j).getName(), m.getMapName()) + System.getProperty("line.separator"));
 							gameID++;
 						}
 					}
@@ -68,6 +71,7 @@ public class GameListGenerator
 			}
 		}
 	}
+	
 	public static void generate1VsAll(int rounds, Vector<Map> maps, Vector<Bot> bots, BufferedWriter out) throws IOException 
 	{
 		int gameID = 0;
@@ -79,11 +83,18 @@ public class GameListGenerator
 			{
 				for (int k = 1; k < bots.size(); k++) 
 				{
-					out.write(String.format("%7d %5d %20s %20s %35s", gameID, roundNum, bots.get(0).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
+					out.write(getGameString(gameID, roundNum, bots.get(0).getName(), bots.get(k).getName(), m.getMapName()) + System.getProperty("line.separator"));
 					gameID++;
 				}
 				roundNum++;
 			}
 		}
+	}
+	
+	private static String getGameString(int gameID, int roundID, String homeBot, String awayBot, String map)
+	{
+		JsonObject game = Json.object();
+		game.add("gameID", gameID).add("roundID", roundID).add("homeBot", homeBot).add("awayBot", awayBot).add("map", map);
+		return game.toString();
 	}
 }

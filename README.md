@@ -8,25 +8,25 @@ Created and maintained by [David Churchill](http://www.cs.mun.ca/~dchurchill/) a
 ## Table of Contents
 
 * [Overview](#overview)
-	* [Disclaimer](#disclaimer) 
+    * [Disclaimer](#disclaimer) 
 * [Introduction](#introduction)
-	* [Video](#video)
-	* [Server](#server)
-	* [Client](#client)
-	* [Results Parser](#results-parser)
+    * [Video](#video)
+    * [Server](#server)
+    * [Client](#client)
+    * [Results Parser](#results-parser)
 * [Instructions](#instructions)
-	* [Prerequisites](#prerequisites)
-	* [Download & Compile](#download--compile)
-	* [Initial Server Setup](#initial-server-setup)
-	* [Running Server Software](#running-server-software)
-	* [Server GUI](#server-gui)
-	* [Initial Client Setup](#initial-client-setup)
-	* [Running Client Software](#running-client-software)
-	* [Results Output](#results-output)
-	* [Helpful Windows Commands](#helpful-windows-commands)
+    * [Prerequisites](#prerequisites)
+    * [Download & Compile](#download--compile)
+    * [Initial Server Setup](#initial-server-setup)
+    * [Running Server Software](#running-server-software)
+    * [Server GUI](#server-gui)
+    * [Initial Client Setup](#initial-client-setup)
+    * [Running Client Software](#running-client-software)
+    * [Results Output](#results-output)
+    * [Helpful Windows Commands](#helpful-windows-commands)
 * [Settings](#settings)
-	* [Server Settings](#server-settings)
-	* [Client Settings](#client-settings)
+    * [Server Settings](#server-settings)
+    * [Client Settings](#client-settings)
 * [Change Log](#change-log)
 
 ## Overview
@@ -73,7 +73,7 @@ Normally a new game can be started only if:
 2. no clients are **STARTING**.
 
 The reason no clients can be **STARTING** is to prevent multiple StarCraft game lobbies to be open on the same LAN, which may cause mis-scheduled games due to limitations in BWAPI versions previous to 4.2.0 on how we are able to join games automatically.
-If all bots use BWAPI 4.2.0 there is an option in the server settings file to enable multiple games to start at the same time.
+If all bots use BWAPI 4.2.0 or higher there is an option in the server settings file to enable multiple games to start at the same time.
 Once these two conditions are met, the server sends the required bot files, map files, BWAPI version, and DLL injector to the client machines, specifying one client as the host and one as the away machine.
 Those clients' status are then set to **STARTING**.
 
@@ -118,7 +118,7 @@ Running a tournament using this software requires the following prerequisites:
 * Any prerequisites for bots in the tournament, BWTA/BWTA2 DLLs, specific JDK versions required by Java bots, etc. (Clients only)
 * Java JDK 8 (Clients and Server)
 
-Download a zip file containing all Visual Studio redists and easy install script here: [all_vcredist_x86.zip](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/all_vcredist_x86.zip)
+Download a zip file containing all Visual Studio redists and easy install script here: [all_vcredist_x86.zip](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/all_vcredist_x86.zip).
 
 ### Download & Compile
 
@@ -145,10 +145,11 @@ Download or clone the repository to any directory on your server machine that do
                win_percentage_graph.html      Win % over time for all bots
             replays/                          Replay storage directory * 
             required/                         Required file storage directory
-                Required_BWAPI_374.zip        BWAPI/Starcraft required files (BWAPI 374)
-                Required_BWAPI_401B.zip       BWAPI/Starcraft required files (BWAPI 401B)
-                Required_BWAPI_412.zip        BWAPI/Starcraft required files (BWAPI 412)
-                Required_BWAPI_420.zip        BWAPI/Starcraft required files (BWAPI 420)
+                Required_BWAPI_374.zip        BWAPI/Starcraft required files (BWAPI 3.7.4)
+                Required_BWAPI_401B.zip       BWAPI/Starcraft required files (BWAPI 4.0.1 Beta)
+                Required_BWAPI_412.zip        BWAPI/Starcraft required files (BWAPI 4.1.2)
+                Required_BWAPI_420.zip        BWAPI/Starcraft required files (BWAPI 4.2.0)
+                Required_BWAPI_440.zip        BWAPI/Starcraft required files (BWAPI 4.4.0)
             games.txt                         Default tournament games list filename *
             parse_results.bat                 Script to run results parser
             results.txt                       Default tournament results filename *
@@ -170,12 +171,12 @@ The tournament manager comes pre-compiled as 2 jar files (client/client.jar, ser
 1. (Windows) Edit system PATH to include jdk/bin directory for javac and java
 1. Turn off firewall
 1. The following directory structure must exist for each bot in the tournament:
-	* server/bots/BotName/ - Bot directory
-	* server/bots/BotName/AI/ - Holds all AI files for each bot including BotName.dll
-	* server/bots/BotName/AI/BotName.dll - Bot .dll must be named the same as folder (the .dll file can be empty for a proxy bot, but must exist)
-	* server/bots/BotName/AI/run_proxy.bat - If bot is a proxy bot, this file must exist
-	* server/bots/BotName/read/ - Bot read directory
-	* server/bots/BotName/write/ - Bot write directory
+    * server/bots/BotName/ - Bot directory
+    * server/bots/BotName/AI/ - Holds all AI files for each bot including BotName.dll
+    * server/bots/BotName/AI/BotName.dll - Bot .dll must be named the same as folder (the .dll file can be empty for a proxy bot, but must exist)
+    * server/bots/BotName/AI/run_proxy.bat - If bot is a proxy bot, this file must exist
+    * server/bots/BotName/read/ - Bot read directory
+    * server/bots/BotName/write/ - Bot write directory
 1. Put your map files inside the server/required/Required_*.zip files under the 'maps' folder
 
 **Note:** The tournament manager comes with the bots and maps which competed in the 2014-2016 AIIDE StarCraft AI Competitions.
@@ -230,19 +231,29 @@ It only displays information about the current game or status, and a log.
 
 ### Results Output
 
-* Raw results are written to **server/results.txt** after each game ends
-* A JSON results summary is written every 2 seconds to **server/html/results/results_summary.js** and can be viewed at **server/html/index.html**
-* Detailed match results can be written manually via the Server GUI, or automatically once every minute if you turn on the option in the server settings file.
+* Whenever a game result is received from a Tournament Manager client, the raw results are written to **server/results.txt**, and a results summary is written to **server/html/results/results_summary.js** (viewed at **server/html/index.html**)
+* Detailed match results can be written manually via the Server GUI, or automatically whenever a game result is received if you turn on the option in the server settings file.
 It is off by default due to long processing times for very large tournaments.
 * Replay files are saved to **server/replays/BotName**
 * Bot read/write directories are stored in **server/bots/BotName/(read|write)**
 
-**Note:** Detecting when a bot crashes is difficult, so a crash is recorded whenever the game doesn't progress for more than a minute.
+Raw and detailed results contain a field called "gameEndType"/"End Type", which indicates if the game ended normally (NORMAL), or ended in some kind of crash or didn't start.
+
+Game End Types:
+* NORMAL
+* GAME_STATE_NOT_UPDATED_60S: gamestate file wasn't updated for 60 seconds, but Starcraft is still running.
+* STARCRAFT_CRASH: crash detected by Tournament Manager client, which means that Starcraft was running at some point, but later the client couldn't find the Starcraft process.
+* GAME_STATE_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), but StarCraft is running.
+* STARCRAFT_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), and StarCraft never detected running.
+* NO_REPORT: only one report received; assigned after the fact (detailed results only); this could be caused by the TM client crashing, or a weird network error, etc.
+
+If two clients report different end types, the one lower in this list is shown in the detailed results.
+
+**Note:** Detecting when a bot crashes is difficult, so a crash is recorded whenever the game doesn't progress (gamestate file not updated) for more than a minute.
 In these cases the bot who recorded the higher frame count (meaning the game was running for longer) is declared the winner.
 This means it isn't possible to distinguish between a crash and a case of a bot taking more than a minute to process a single frame of the game.
 
 Crashes in which the game never starts (frame count for both bots is zero) are not counted in the results summary in **html/index.html**.
-In Detailed results these games are listed with an arbitrary winner and loser, but the crashing bot is listed as "unknown".
 
 Games that last more frames than `gameFrameLimit` in server_settings.json (default setting is equal to one hour at normal speed) are terminated, and the winner is the bot with the higher score.
 These losses are reported as "Game Timeout" in the results summary and "Timeout" in the detailed results page.
@@ -257,7 +268,7 @@ If you are running a tournament from a Windows server, you can use [PSExec](http
 for /F "tokens=*" %%A in (client_list.txt) do PsExec.exe -i -d \\%%A cmd /S /C "cd c:\tm\client\ & java -jar client.jar client_settings.json"
 ```
 
-where client_list.txt contains:
+where **client_list.txt** contains something like:
 
 ```
 192.168.1.102 -u username1 -p password1
@@ -282,8 +293,8 @@ This file must parse as valid JSON or the server will not start.
 <table>
 <tr><th>Name</th><th>Value</th></tr>
 <tr>
-	<td>bots</td>
-	<td>
+    <td>bots</td>
+    <td>
         <b>Type:</b> Array of json objects<br><br>
         These are the bots that will play in the tournament.
         Each bot object must contain the following name/value pairs:
@@ -291,174 +302,185 @@ This file must parse as valid JSON or the server will not start.
         <li><b>BotName:</b> String - the name of the bot, matching the bot folder name</li>
         <li><b>Race:</b> "Random" | "Terran" | "Zerg" | "Protoss"</li>
         <li><b>BotType:</b> "dll" | "proxy"</li>
-        <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420"</li>
-        <li><b>ClientRequirements</b> (OPTIONAL): array of json objects with required properties</li>
-        	<ul>
-            	<li>Example: [{"Property": "GPU"}, {"Property": "Extra RAM"}]
-                <li>Bot requirements must match a client in the tournament (see Client Settings) or the tournament will not be able to finish
+        <li><b>BWAPIVersion:</b> "BWAPI_374" | "BWAPI_401B" | "BWAPI_412" | "BWAPI_420" | "BWAPI_440"</li>
+        <li><b>ClientRequirements</b> (OPTIONAL): array of strings with required properties</li>
+            <ul>
+                <li>Example: ["GPU", "Extra RAM", "!64-bit Java"]</li>
+                <li>If the first character of a property is "!", then that bot can only use a client that doesn't have that property. In the example above, the bot could play only on a client with both the "GPU" and "Extra RAM" properties and not the "64-bit Java" property.</li>
+                <li>Bot requirements must match a client in the tournament (see Client Settings) or the tournament will not be able to finish</li>
             </ul>
         </ul>
-     	Example: {"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420"}
+         Example: {"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420"}
     </td>
 </tr>
 <tr>
-	<td>maps</td>
-	<td>
-    	<b>Type:</b> Array of json objects<br><br>
-        Each round of the tournament will be played on these maps in the order they are listed in. Each map object must contain the following name/value pair:
-        <ul>
-        <li><b>mapFile:</b> String - path to the map relative to the Starcraft directory; no spaces</li>
-        </ul>
-     	Example: {"mapFile": "maps/aiide/(2)Benzene.scx"}
+    <td>maps</td>
+    <td>
+        <b>Type:</b> Array of strings<br><br>
+        Each round of the tournament will be played on these maps in the order they are listed in. The value should be the path to the map relative to the Starcraft directory; no spaces
+         Example: "maps/aiide/(2)Benzene.scx"
     </td>
 </tr>
 <tr>
-	<td>gamesListFile</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Location of file with list of games to be played, relative to server.jar; No spaces.
+    <td>gamesListFile</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Location of file with list of games to be played, relative to server.jar; No spaces.
         The user will be prompted to generate a new games list if the file does not already exist (i.e. if this is a new tournament).
     </td>
 </tr>
 <tr>
-	<td>resultsFile</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Location of tournament results file, relative to server.jar. No spaces. Raw results data returned from clients is stored in this file (one line for each client). Nice results are output by the server in the html/ directory.
+    <td>resultsFile</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Location of tournament results file, relative to server.jar. No spaces. Raw results data returned from clients is stored in this file (one line for each client). Nice results are output by the server in the html/ directory.
     </td>
 </tr>
 <tr>
-	<td>DetailedResults</td>
-	<td>
-    	<b>Type:</b> Boolean<br><br>
-    	Setting to true auto-generates detailed results every minute.
+    <td>detailedResults</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
+        Setting to true auto-generates detailed results whenever a game result is received.
         Generating detailed results gets slow for very large tournaments, so default is false.
         You can manually generate the results from the Actions menu in the server, which is recommended.
     </td>
 </tr>
 <tr>
-	<td>serverPort</td>
-	<td>
-    	<b>Type:</b> Number<br><br>
-    	Port to listen for clients on. This should match the port number in the client's <b>ServerAddress</b> setting.
+    <td>serverPort</td>
+    <td>
+        <b>Type:</b> Number<br><br>
+        Port to listen for clients on. This should match the port number in the client's <b>ServerAddress</b> setting.
     </td>
 </tr>
 <tr>
-	<td>clearResults</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Clear existing results on server start? Allowed values: "yes" | "no" | "ask"<br>
+    <td>clearResults</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Clear existing results on server start? Allowed values: "yes" | "no" | "ask"<br>
         If "yes" then a new tournament is always started when the server is started. If "no" then an existing tournament will be resumed if possible.
     </td>
 </tr>
 <tr>
-	<td>startGamesSimultaneously</td>
-	<td>
-    	<b>Type:</b> Boolean<br><br>
-    	If set to <b>true</b> new games will be started while other games are still in the starting process (i.e. other Starcraft instances are in the lobby).
-		If set to <b>false</b> only one game can be <b>STARTING</b> at a time.<br><br>
-        <b>WARNING:</b> This is only useable if all bots are using BWAPI version 4.2.0 or later.
+    <td>startGamesSimultaneously</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
+        If set to <b>true</b> new games will be started while other games are still in the starting process (i.e. other Starcraft instances are in the lobby).
+        If set to <b>false</b> only one game can be <b>STARTING</b> at a time.<br><br>
+        <b>WARNING:</b> This is only usable if all bots are using BWAPI version 4.2.0 or higher.
         If using older versions of BWAPI, bots will join any game in the lobby, leading to games with more than 2 players, and generally games that do not match.
     </td>
 </tr>
 <tr>
-	<td>tournamentType</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Allowed values: "AllVsAll" | "1VsAll"<br>
+    <td>tournamentType</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Allowed values: "AllVsAll" | "1VsAll"<br>
         <ul>
-        	<li>AllVsAll - Standard round robin tournament</li>
+            <li>AllVsAll - Standard round robin tournament</li>
             <li>1VsAll - First bot in <b>bots</b> list will play all the others.
-         	Usefull for testing changes to your bot.</li>
+             Useful for testing changes to your bot.</li>
         </ul>
     </td>
 </tr>
 <tr>
-	<td>enableBotFileIO</td>
-	<td>
-    	<b>Type:</b> Boolean<br><br>
-    	If set to <b>true</b> the server will wait for each round to complete before sarting the next round.
-		Every time a round finishes the contents of 'BotName/write' will be copied to 'BotName/read'.
-		Bots that implement learning from previous rounds will have access to the contents of the read directory in 'bwapi-data/read' on the client machine.
-		If set to <b>false</b> the server will ignore round numbers when scheduling games, and never copy from 'write' to 'read'.
+    <td>lobbyGameSpeed</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Allowed values: "Slowest" | "Slower" | "Slow" | "Normal" | "Fast" | "Faster" | "Fastest"<br>
+        This setting changes registry entries on the client machines so that the game speed slider in the game creation lobby is set appropriately.
+        The actual game speed will be overridden by the tournamentModuleSettings.localSpeed setting, but the slider affects the number of latency frames in the game (the number of frames between a command and its execution).
     </td>
 </tr>
 <tr>
-	<td>excludeFromResults</td>
-	<td>
-    	<b>Type:</b> Array of json objects<br><br>
-    	Bots listed in this array will be excluded from the results summary and detailed results output, but games that include them will still be played.
-        This feature is useful if you need to disqualify a bot from a tournament, or want to see the overall effects of a bot on the results.<br><br>
-        Each excluded bot object must contain the following name/value pair: <br>
-        <ul>
-        	<li><b>BotName:</b> String - Bot to be excluded</li>
-        </ul>
+    <td>enableBotFileIO</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
+        If set to <b>true</b> the server will wait for each round to complete before sarting the next round.
+        Every time a round finishes the contents of 'BotName/write' will be copied to 'BotName/read'.
+        Bots that implement learning from previous rounds will have access to the contents of the read directory in 'bwapi-data/read' on the client machine.
+        If set to <b>false</b> the server will ignore round numbers when scheduling games, and never copy from 'write' to 'read'.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings</td>
-	<td>
-    	<b>Type:</b> Object<br><br>
-    	Tournament Module settings control the tournament module DLL which is injected into each Starcraft instance with BWAPI.
+    <td>ladderMode</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
+        If set to <b>true</b> enables some alternate functionality designed to work with a persistant online ladder server in development by the authors of this project. Should not be used otherwise.
+    </td>
+</tr>
+<tr>
+    <td>excludeFromResults</td>
+    <td>
+        <b>Type:</b> Array of strings<br><br>
+        Bots listed in this array will be excluded from the results summary and detailed results output, but games that include them will still be played.
+        This feature is useful if you need to disqualify a bot from a tournament, or want to see the overall effects of a bot on the results.
+        The values in this array should match bot names given in the array of competing bots.
+    </td>
+</tr>
+<tr>
+    <td>tournamentModuleSettings</td>
+    <td>
+        <b>Type:</b> Object<br><br>
+        Tournament Module settings control the tournament module DLL which is injected into each Starcraft instance with BWAPI.
         It controls game speed, draws information to the screen, and outputs data about the game being played so that the client can tell if a bot has crashed, timed out, etc.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.localSpeed</td>
-	<td>
-    	<b>Type:</b> Number<br><br>
-    	BWAPI Local Speed; Calls BWAPI::Broodwar->setLocalSpeed(SpeedValue).
+    <td>tournamentModuleSettings<br>.localSpeed</td>
+    <td>
+        <b>Type:</b> Number<br><br>
+        BWAPI Local Speed; Calls BWAPI::Broodwar->setLocalSpeed(SpeedValue).
         Set to 0 to run games at the fastest speed possible.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.frameSkip</td>
-	<td>
-    	<b>Type:</b> Number<br><br>
-    	BWAPI Frame Skip; Calls BWAPI::Broodwar->setFrameSkip(SkipValue)<br>
+    <td>tournamentModuleSettings<br>.frameSkip</td>
+    <td>
+        <b>Type:</b> Number<br><br>
+        BWAPI Frame Skip; Calls BWAPI::Broodwar->setFrameSkip(SkipValue)<br>
         This does nothing unless LocalSpeed is 0.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.gameFrameLimit</td>
-	<td>
-    	<b>Type:</b> Number<br><br>
-    	Game Frame Time Limit; Game stops when BWAPI::Broodwar->getFrameCount() > FrameLimit<br>
+    <td>tournamentModuleSettings<br>.gameFrameLimit</td>
+    <td>
+        <b>Type:</b> Number<br><br>
+        Game Frame Time Limit; Game stops when BWAPI::Broodwar->getFrameCount() > FrameLimit<br>
         If gameFrameLimit is 0, no frame limit is used.
         Normal Starcraft speed is 24 frames per second.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.timeoutLimits</td>
-	<td>
-    	<b>Type:</b> Array of json objects<br><br>
-    	Each timeoutLimit object must contain the following name/value pairs:
+    <td>tournamentModuleSettings<br>.timeoutLimits</td>
+    <td>
+        <b>Type:</b> Array of json objects<br><br>
+        Each timeoutLimit object must contain the following name/value pairs:
         <ul>
-        	<li><b>timeInMS:</b> Number</li>
-        	<li><b>frameCount:</b> Number</li>
+            <li><b>timeInMS:</b> Number</li>
+            <li><b>frameCount:</b> Number</li>
         </ul>
         A bot loses a game if it takes <b>timeinMS</b> or more time to advance a single frame <b>frameCount</b> times.
         Timeout limits of more than 60,000 ms will not have an effect since timeouts of more than a minute are counted as crashes.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.drawBotNames</td>
-	<td>
-    	<b>Type:</b> Boolean<br><br>
+    <td>tournamentModuleSettings<br>.drawBotNames</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
         Set to <b>true</b> to draw bot names on the game screen.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.drawTournamentInfo</td>
-	<td>
-    	<b>Type:</b> Boolean<br><br>
+    <td>tournamentModuleSettings<br>.drawTournamentInfo</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
         Set to <b>true</b> to draw tournament information on the game screen.
     </td>
 </tr>
 <tr>
-	<td>tournamentModuleSettings<br>.drawUnitInfo</td>
-	<td>
-    	<b>Type:</b> Boolean<br><br>
+    <td>tournamentModuleSettings<br>.drawUnitInfo</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
         Set to <b>true</b> to draw unit information on the game screen.
     </td>
 </tr>
@@ -468,42 +490,44 @@ Example server_settings.json:
 
 ```json
 {
-	"bots": [
-		{"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420"},
-		{"BotName": "ExampleBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_412", "ClientRequirements": [{"Property": "GPU"}]}
-	],
-	
-	"maps": 
-	[
-		{"mapFile": "maps/aiide/(2)Benzene.scx"},
-		{"mapFile": "maps/aiide/(2)Destination.scx"}
-	],
-	
-	"gamesListFile"           : "games.txt",
-	"resultsFile"             : "results.txt",
-	"detailedResults"         : false,
-	"serverPort"              : 1337,
-	"clearResults"            : "ask",
-	"resumeTournament"        : "ask",
-	"startGamesSimultaneously": false,
-	"tournamentType"          : "AllVsAll",
-	"excludeFromResults"      : [{"BotName": "ExampleBot"}],
-	
-	"tournamentModuleSettings":
-	{
-		"localSpeed"    : 0,
-		"frameSkip"     : 256,
-		"gameFrameLimit": 85714,
-		"timeoutLimits" :
-		[
-			{"timeInMS" : 55,    "frameCount": 320},
-			{"timeInMS" : 1000,  "frameCount": 10},
-			{"timeInMS" : 10000, "frameCount": 1}
-		],
-		"drawBotNames"      : true,
-		"drawTournamentInfo": true,
-		"drawUnitInfo"      : true	
-	}
+    "bots": [
+        {"BotName": "UAlbertaBot", "Race": "Random", "BotType": "proxy", "BWAPIVersion": "BWAPI_420"},
+        {"BotName": "ExampleBot", "Race": "Protoss", "BotType": "dll", "BWAPIVersion": "BWAPI_412", "ClientRequirements": [{"Property": "GPU"}]}
+    ],
+    
+    "maps": 
+    [
+        "maps/aiide/(2)Benzene.scx",
+        "maps/aiide/(2)Destination.scx"
+    ],
+    
+    "gamesListFile"           : "games.txt",
+    "resultsFile"             : "results.txt",
+    "detailedResults"         : false,
+    "serverPort"              : 1337,
+    "clearResults"            : "ask",
+    "startGamesSimultaneously": false,
+    "tournamentType"          : "AllVsAll",
+    "lobbyGameSpeed"          : "Normal",
+    "enableBotFileIO"         : true,
+    "ladderMode"              : false,
+    "excludeFromResults"      : ["ExampleBot"],
+    
+    "tournamentModuleSettings":
+    {
+        "localSpeed"    : 0,
+        "frameSkip"     : 256,
+        "gameFrameLimit": 85714,
+        "timeoutLimits" :
+        [
+            {"timeInMS" : 55,    "frameCount": 320},
+            {"timeInMS" : 1000,  "frameCount": 10},
+            {"timeInMS" : 10000, "frameCount": 1}
+        ],
+        "drawBotNames"      : true,
+        "drawTournamentInfo": true,
+        "drawUnitInfo"      : true    
+    }
 }
 ```
 
@@ -512,43 +536,32 @@ Example server_settings.json:
 <table>
 <tr><th>Name</th><th>Value</th></tr>
 <tr>
-	<td>ClientStarcraftDir</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Directory of Starcraft on client machine; no spaces; end in "\" (backslashes must be escaped).
+    <td>ClientStarcraftDir</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Directory of Starcraft on client machine; no spaces; end in "\" (backslashes must be escaped).
     </td>
 </tr>
 <tr>
-	<td>DefaultBWAPISettings</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Location of default BWAPI settings file, relative to client.jar; no spaces.
+    <td>TournamentModule</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Location of BWAPI Tournament Module DLL, relative to Starcraft directory; no spaces.
     </td>
 </tr>
 <tr>
-	<td>TournamentModule</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	Location of BWAPI Tournament Module DLL, relative to Starcraft directory; no spaces.
+    <td>ServerAddress</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        IP address and port of server. Example: "192.168.1.100:1337"
     </td>
 </tr>
 <tr>
-	<td>ServerAddress</td>
-	<td>
-    	<b>Type:</b> String<br><br>
-    	IP address and port of server. Example: "192.168.1.100:1337"
-    </td>
-</tr>
-<tr>
-	<td>ClientProperties<br>(Optional)</td>
-	<td>
-    	<b>Type:</b> Array of json objects<br><br>
-    	Features of this client that a bot can take advantage of if matched to its <b>ClientRequirements</b> in server settings.
-        Each ClientProperty object must contain the following name/value pair:
-        <ul>
-        <li><b>Property:</b> String</li>
-        </ul>
-		This array can be empty if you are not using the properties feature.
+    <td>ClientProperties<br>(Optional)</td>
+    <td>
+        <b>Type:</b> Array of strings<br><br>
+        Features of this client that a bot can take advantage of if matched to its <b>ClientRequirements</b> in server settings.
+        This array can be empty if you are not using the properties feature.
     </td>
 </tr>
 </table>
@@ -557,15 +570,31 @@ Example client_settings.json:
 
 ```json
 {
-	"ClientStarcraftDir"  : "C:\\TM\\Starcraft\\",
-	"DefaultBWAPISettings": "BWAPI.ini",
-	"TournamentModule"    : "bwapi-data/TournamentModule.dll",
-	"ServerAddress"       : "192.168.1.100:1337",
-	"ClientProperties"    : [{"Property": "GPU"}]
+    "ClientStarcraftDir"  : "C:\\TM\\Starcraft\\",
+    "TournamentModule"    : "bwapi-data/TournamentModule.dll",
+    "ServerAddress"       : "192.168.1.100:1337",
+    "ClientProperties"    : ["GPU"]
 }
 ```
 
 ## Change Log
+
+### June 2019
+
+#### Bug Fixes
+* Fix for client crash when there are extra files in the replay directory
+* Fix for some actions that were mistakenly allowed by the Tournament Module in BWAPI 4.1.2 and 4.2.0 ([Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/32))
+
+#### New Features
+* Client count added to server GUI
+* Added win percentage by round to results
+* Menu option to open results in browser
+* New option in server settings to set StarCraft game lobby speed for all games
+* Games list and results are stored in JSON format
+* New field in detailed results: "Game End Type" provides more information about crashes
+* For proxy bots, run_proxy.bat is now run from the Starcraft directory, rather than from Starcraft/bwapi-data/AI. This is more consistant with DLL bots for accessing the read and write directories. run_proxy.bat can still change the working directory if needed before running the bot.
+* Bot requirements can have "!" before them to indicate that the client machine should not have that property
+* Added BWAPI 4.4.0 support ([Contribution by Chris Coxe](https://github.com/davechurchill/StarcraftAITournamentManager/issues/34))
 
 ### August 2017
 
@@ -575,7 +604,7 @@ Example client_settings.json:
 
 #### New Features
 * Added BWAPI 4.2.0 support.
-* Allow multiple matches to start simultaneously by ensuring that hosts are always different (enable ONLY for BWAPI 4.2.0 bots).
+* Allow multiple matches to start simultaneously by ensuring that hosts are always different (enable ONLY for BWAPI 4.2.0 bots and higher).
 * ChaosLauncher is no longer used for injecting BWAPI; [injectory](https://github.com/blole/injectory) is used instead.
 * Settings files switched to JSON format.
 * Added option to give properties to clients, (e.g. "GPU") and requirements to bots. Requirements and properties have to match for a client to run a game.

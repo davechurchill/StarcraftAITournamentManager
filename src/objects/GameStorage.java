@@ -1,114 +1,79 @@
 package objects;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.Vector;
 
-public class GameStorage 
-{
-	private TreeMap<Integer, Game> gamesToPlay;
-	private HashMap<Integer, Game> allGames;
+public abstract class GameStorage {
+	public abstract boolean hasMoreGames() throws Exception;
+	public abstract Game getNextGame(Vector<Vector<String>> freeClientProperties) throws Exception;
+	public abstract Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties) throws Exception;
+	public abstract Game lookupGame(int gameID);
+	public abstract int getNumGamesRemaining() throws Exception;
+	public abstract int getNumTotalGames() throws Exception;
+	public abstract void removeGame(int gameID) throws Exception;
 	
-	public GameStorage()
+	//checks all combinations of free clients to see if there are two that can match for a given game
+	protected boolean canMeetGameRequirements(Vector<Vector<String>> freeClientProperties, Game game)
 	{
-		gamesToPlay = new TreeMap<Integer, Game>();
-		allGames = new HashMap<Integer, Game>();
-	}
-	
-	public void addGame(Game game)
-	{
-		gamesToPlay.put(game.getGameID(), game);
-		allGames.put(game.getGameID(), game);
-	}
-	
-	public void removePlayedGames(Collection<Integer> gameIDs)
-	{
-		Iterator<Integer> it = gameIDs.iterator();
-		while (it.hasNext()) 
+		//loop over clients searching for suitable host client
+		for (int i = 0; i < freeClientProperties.size(); i++)
 		{
-		    gamesToPlay.remove(it.next());
-		}
-	}
-	
-	public boolean hasMoreGames()
-	{
-		return !gamesToPlay.isEmpty();
-	}
-	
-	public Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties, boolean waitForPreviousRound)
-	{
-		//if bot File IO is turned on, don't return a game if all games from previous rounds have not already been removed
-		int currentRound = gamesToPlay.get(gamesToPlay.firstKey()).getRound();
-		for (int i = gamesToPlay.firstKey(); !waitForPreviousRound || allGames.get(i).getRound() == currentRound; i++)
-		{
-			if (gamesToPlay.get(i) == null)
+			boolean satisfiesHomeBotRequirements = true;
+			for (String requirement : game.getHomebot().getRequirements())
 			{
-				continue;
-			}
-			if (currentHosts != null && currentHosts.contains(gamesToPlay.get(i).getHomebot().getName()))
-			{
-				continue;
-			}
-			
-			//check for bot requirements
-			
-			//check all combinations of free clients to see if there are two that match
-			for (int j = 0; j < freeClientProperties.size(); j++)
-			{
-				boolean hasAllHomeProperties = true;
-				for (String requirement : gamesToPlay.get(i).getHomebot().getRequirements())
+				//check for negated properties
+				if (requirement.startsWith("!"))
 				{
-					if (!freeClientProperties.get(j).contains(requirement))
+					if (freeClientProperties.get(i).contains(requirement.substring(1, requirement.length())))
 					{
-						hasAllHomeProperties = false;
+						satisfiesHomeBotRequirements = false;
 						break;
 					}
 				}
-				
-				if (hasAllHomeProperties)
+				//check for required properties
+				else if (!freeClientProperties.get(i).contains(requirement))
 				{
-					for (int k = 0; k < freeClientProperties.size(); k++)
+					satisfiesHomeBotRequirements = false;
+					break;
+				}
+				
+			}
+			
+			if (satisfiesHomeBotRequirements)
+			{
+				//loop over clients searching for suitable away client
+				for (int j = 0; j < freeClientProperties.size(); j++)
+				{
+					if (i != j)
 					{
-						if (j != k)
+						boolean satisfiesAwayBotRequirements = true;
+						for (String requirement : game.getAwaybot().getRequirements())
 						{
-							boolean hasAllAwayProperties = true;
-							for (String requirement : gamesToPlay.get(i).getAwaybot().getRequirements())
+							//check for negated properties
+							if (requirement.startsWith("!"))
 							{
-								if (!freeClientProperties.get(k).contains(requirement))
+								if (freeClientProperties.get(j).contains(requirement.substring(1, requirement.length())))
 								{
-									hasAllAwayProperties = false;
+									satisfiesAwayBotRequirements = false;
 									break;
 								}
 							}
-							
-							if (hasAllAwayProperties)
+							//check for required properties
+							else if (!freeClientProperties.get(j).contains(requirement))
 							{
-								return gamesToPlay.remove(i);
+								satisfiesAwayBotRequirements = false;
+								break;
 							}
+						}
+						
+						if (satisfiesAwayBotRequirements)
+						{
+							return true;
 						}
 					}
 				}
 			}
 		}
-		
-		//returns null if no game can be started right now
-		return null;
-	}
-	
-	public Game lookupGame(int gameID) 
-	{
-		return allGames.get(gameID);
-	}
-	
-	public int getNumGamesRemaining()
-	{
-		return gamesToPlay.size();
-	}
-	
-	public int getNumTotalGames()
-	{
-		return allGames.size();
+		return false;
 	}
 }

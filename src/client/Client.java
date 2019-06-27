@@ -21,6 +21,7 @@ public class Client extends Thread
 	
 	private long startTime;
 	private long endTime;
+	private GameReport report;
 	
 	public InstructionMessage previousInstructions;
 	
@@ -36,6 +37,7 @@ public class Client extends Thread
 	private int 		gameStateReadAttempts 	= 0;
 	private boolean 	haveGameStateFile		= false;
 	private boolean 	starcraftIsRunning		= false;
+	private boolean     starcraftDetected       = false;
 	
 	public boolean 		shutDown = false;
 
@@ -84,7 +86,7 @@ public class Client extends Thread
 			properties += " ";
 		}
 		
-		gui.UpdateClient(listener.getAddress().replace("/", ""), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data, properties);		
+		gui.UpdateClient(listener.getAddress(), currentStatus, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", func, data, properties);		
 	}
 	
 	public void setListener(ClientListenerThread l)
@@ -103,13 +105,21 @@ public class Client extends Thread
 		gui.logText(getTimeStamp() + " " + s);
 	}
 	
-	public synchronized void setStatus(ClientStatus s, Game g) 
+	public synchronized void setStatus(ClientStatus s) 
 	{
 		System.out.println("\n\nNEW STATUS: " + s + "\n\n");
 		this.status = s;
 		updateGUI("" + status, haveGameStateFile ? "STATEFILE" : "NOSTATE", starcraftIsRunning ? "STARCRAFT" : "NOSTARCRAFT", "sendStatus", "sendStatus");
 		log("Status: " + status + "\n");
-		listener.sendMessageToServer(new ClientStatusMessage(this.status, g));
+	
+		if (s == ClientStatus.SENDING)
+		{
+			listener.sendMessageToServer(new ClientStatusMessage(this.status, report));
+		}
+		else
+		{
+			listener.sendMessageToServer(new ClientStatusMessage(this.status, null));
+		}
 	}
 	
 	public synchronized void sendRunningUpdate(TournamentModuleState gameState)
@@ -120,11 +130,6 @@ public class Client extends Thread
 	public synchronized void sendStartingUpdate(int startingDuration)
 	{
 		listener.sendMessageToServer(new ClientStatusMessage(this.status, null, null, previousInstructions.isHost, startingDuration));
-	}
-	
-	public synchronized void setStatus(ClientStatus s) 
-	{
-		setStatus(s, null);
 	}
 	
 	public synchronized void sendProperties(Vector<String> properties)
@@ -153,6 +158,10 @@ public class Client extends Thread
 			// try to read in the game state file
 			haveGameStateFile = gameState.readData(settings.ClientStarcraftDir + "gameState.txt");
 			starcraftIsRunning = WindowsCommandTools.IsWindowsProcessRunning("StarCraft.exe");
+			if (starcraftIsRunning)
+			{
+				starcraftDetected = true;
+			}
 			
 			//System.out.println("Client Main Loop: " + status + " " + haveGameStateFile + " " + starcraftIsRunning);
 			
@@ -182,6 +191,15 @@ public class Client extends Thread
 						log("MainLoop: Game didn't start for " + gameStartingTimeout + "ms\n");
 						//System.out.println("MONITOR: I could not read the file in 60 seconds, reporting crash");
 						setEndTime();
+						if (starcraftDetected)
+						{
+							report.setGameEndType(starcraftIsRunning ? GameEndType.GAME_STATE_NEVER_DETECTED : GameEndType.STARCRAFT_CRASH);
+						}
+						else
+						{
+							report.setGameEndType(GameEndType.STARCRAFT_NEVER_DETECTED);
+						}
+						
 						prepCrash(gameState);
 					}
 				}
@@ -213,14 +231,13 @@ public class Client extends Thread
 				}
 				// check for a crash
 				else
-				{
-					boolean crash = ((System.currentTimeMillis() - lastGameStateUpdate) > timeOutThreshold)	|| !starcraftIsRunning;
-									
-					if (crash)
+				{									
+					if (((System.currentTimeMillis() - lastGameStateUpdate) > timeOutThreshold)	|| !starcraftIsRunning)
 					{
 						log("MainLoop: We crashed, prepping crash\n");
 						System.out.println("MONITOR: Crash detected, shutting down game");
 						setEndTime();
+						report.setGameEndType(starcraftIsRunning ? GameEndType.GAME_STATE_NOT_UPDATED_60S : GameEndType.STARCRAFT_CRASH);
 						prepCrash(gameState);
 					}
 				}
@@ -263,6 +280,10 @@ public class Client extends Thread
 		else if (m instanceof TournamentModuleSettingsMessage)
 		{
 			tmSettings = (TournamentModuleSettingsMessage)m;
+		}
+		else if (m instanceof InitialSettingsMessage)
+		{
+			ClientCommands.Client_SetLobbySpeed(((InitialSettingsMessage) m).lobbyGameSpeed);
 		}
 		else if (m instanceof RequestClientScreenshotMessage)
 		{
@@ -369,7 +390,15 @@ public class Client extends Thread
 
 			// Record the time that we tried to start the game
 			startTime = System.currentTimeMillis();
-			
+			report = new GameReport(
+				instructions.game_id,
+				instructions.round_id, 
+				instructions.map,
+				(instructions.isHost ? instructions.hostBot : instructions.awayBot),
+				(instructions.isHost ? instructions.awayBot : instructions.hostBot),
+				instructions.isHost
+			);
+						
 			// Reset the files for next game
 			requiredFiles = null;
 			botFiles = null;
@@ -386,50 +415,24 @@ public class Client extends Thread
 	}
 	
 	void prepReply(TournamentModuleState gameState) 
-	{
-		Game retGame = new Game(	previousInstructions.game_id, 
-									previousInstructions.round_id,
-									previousInstructions.hostBot, 
-									previousInstructions.awayBot, 
-									null 
-									);
-							
-		retGame.setWasDraw(gameState.gameHourUp > 0);
-		retGame.setFinalFrame(gameState.frameCount);
-		
-		if (previousInstructions.isHost)
-		{
-			retGame.setHostTime(getElapsedTime());
-			retGame.setHostTimers(gameState.timeOutExceeded);
-			retGame.setTimeout(gameState.gameHourUp == 1);
-			retGame.setHostwon(gameState.selfWin == 1);
-			retGame.setHostScore(gameState.selfScore);
-		} 
-		else 
-		{
-			retGame.setGuestTime(getElapsedTime());
-			retGame.setAwayTimers(gameState.timeOutExceeded);
-			retGame.setTimeout(gameState.gameHourUp == 1);
-			retGame.setHostwon(gameState.selfWin == 0);
-			retGame.setAwayScore(gameState.selfScore);
-		}
+	{	
+		report.setFinishDate();
+		report.setFinalFrame(gameState.frameCount);
+		report.setTimers(gameState.timeOutExceeded);
+		report.setGameTimeout(gameState.gameHourUp == 1);
+		report.setWon(gameState.selfWin == 1);
+		report.setScore(gameState.selfScore);
+		report.setTime(getElapsedTime());
+		report.setGameEndType(GameEndType.NORMAL);
 
 		log("Game ended normally. Sending results and cleaning the machine\n");
-		setStatus(ClientStatus.SENDING, retGame);
+		setStatus(ClientStatus.SENDING);
 		gameOver();
 		setStatus(ClientStatus.READY);
 	}
 
 	void prepCrash(TournamentModuleState gameState) 
-	{		
-		Game retGame = new Game(	previousInstructions.game_id, 
-									previousInstructions.round_id,
-									previousInstructions.hostBot, 
-									previousInstructions.awayBot, 
-									null);
-		
-		retGame.setFinalFrame(gameState.frameCount);
-		
+	{	
 		//some crashes leave the timeOuts in gameState empty (if game never started).
 		if (gameState.timeOutExceeded.size() == 0)
 		{
@@ -440,25 +443,20 @@ public class Client extends Thread
 			gameState.timeOutExceeded = emptyTimers;
 		}
 		
-		if (previousInstructions.isHost) 
-		{
-			retGame.setHostcrash(true);
-			retGame.setHostTime(getElapsedTime());
-			retGame.setHostTimers(gameState.timeOutExceeded);
-			retGame.setHostScore(gameState.selfScore);
-		} 
-		else 
-		{
-			retGame.setAwaycrash(true);
-			retGame.setGuestTime(getElapsedTime());
-			retGame.setAwayTimers(gameState.timeOutExceeded);
-			retGame.setAwayScore(gameState.selfScore);
-		}
+		report.setFinishDate();
+		report.setFinalFrame(gameState.frameCount);
+		report.setTimers(gameState.timeOutExceeded);
+		report.setGameTimeout(gameState.gameHourUp == 1);
+		report.setWon(gameState.selfWin == 1);
+		report.setScore(gameState.selfScore);
+		report.setTime(getElapsedTime());
+		report.setCrash(true);
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
 		ClientCommands.Client_KillStarcraft();
+		starcraftDetected = false;
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
-		setStatus(ClientStatus.SENDING, retGame);
+		setStatus(ClientStatus.SENDING);
 		sendFilesToServer(false);
 		ClientCommands.Client_CleanStarcraftDirectory();
 		setStatus(ClientStatus.READY);
@@ -468,6 +466,7 @@ public class Client extends Thread
 	{
 		sendFilesToServer(true);
 		ClientCommands.Client_KillStarcraft();
+		starcraftDetected = false;
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
 		ClientCommands.Client_CleanStarcraftDirectory();
 	}
@@ -525,11 +524,6 @@ public class Client extends Thread
 	public String previousBotName()
 	{
 		return previousInstructions.isHost ? previousInstructions.hostBot.getName() : previousInstructions.awayBot.getName();
-	}
-	
-	public void setFinalFrame(String substring) 
-	{
-		Integer.parseInt(substring.trim());
 	}
 
 	public void setEndTime() 

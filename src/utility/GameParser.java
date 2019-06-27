@@ -5,23 +5,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.File;
-import java.util.Vector;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 
 import objects.*;
 import server.ServerSettings;
 
 public class GameParser 
 {
-	private static GameStorage games;
-	private static Vector<Bot> bots;
-	private static Vector<Map> maps;
+	private static TournamentGameStorage games;
 
-	public static GameStorage getGames(Vector<Bot> p_bots, Vector<Map> p_maps)
+	public static GameStorage getGames()
 	{
 		try
 		{
-			maps = p_maps;
-			bots = p_bots;
 			parse();
 		}
 		catch (Exception e)
@@ -36,19 +34,18 @@ public class GameParser
 
 	private static void parse() throws NumberFormatException, Exception 
 	{
-		games = new GameStorage();
-		try 
+		games = new TournamentGameStorage();
+		try
 		{
-		
 			if (!new File(ServerSettings.Instance().GamesListFile).exists())
 			{
 				return;
 			}
-		
+			
 			BufferedReader br = new BufferedReader(new FileReader(ServerSettings.Instance().GamesListFile));
 			parseGames(br);
 			br.close();
-		} 
+		}
 		catch (FileNotFoundException e) 
 		{
 			System.out.println("Could not read settings file");
@@ -56,36 +53,46 @@ public class GameParser
 		} 
 		catch (IOException e) 
 		{
-			System.out.println("IOException while reading settings.ini");
+			System.out.println("IOException while reading settings file");
 			e.printStackTrace();
 		}
 	}
 	
-	private static void parseGames(BufferedReader br) throws NumberFormatException, Exception 
+	private static void parseGames(BufferedReader br) throws Exception 
 	{
-		String line = br.readLine();
-		while (line.startsWith("#")) 
-		{
-			line = br.readLine();
-		}
+		String line;
 		
-		line = line.trim();
-		while (line != null) 
+		while ((line = br.readLine()) != null)
 		{
-			if(!line.startsWith("#") && line.length() > 0)
+			if (line.trim().length() > 0)
 			{
-				line = line.trim();
-				String[] args = line.split("\\s+");
-				Game newGame = new Game(Integer.parseInt(args[0]), Integer.parseInt(args[1]), findBot(args[2]), findBot(args[3]), findMap(args[4])); 
-				games.addGame(newGame);
+				//don't play games with excluded bots
+				Game g = parseGame(line);
+				if (ServerSettings.Instance().isExcludedBot(g.getHomebot().getName()) || ServerSettings.Instance().isExcludedBot(g.getAwaybot().getName()))
+				{
+					continue;
+				}
+				games.addGame(parseGame(line));
 			}
-			line = br.readLine();
 		}
+	}
+	
+	public static Game parseGame(String line) throws Exception
+	{
+		JsonObject game = Json.parse(line).asObject();
+		
+		int gameID = game.get("gameID").asInt();
+		int roundID = game.get("roundID").asInt();
+		String homeBot = game.get("homeBot").asString();
+		String awayBot = game.get("awayBot").asString();
+		String map = game.get("map").asString();
+		
+		return new Game(gameID, roundID, findBot(homeBot), findBot(awayBot), findMap(map));
 	}
 	
 	private static Bot findBot(String name) throws Exception
 	{
-		for(Bot b : bots)
+		for(Bot b : ServerSettings.Instance().BotVector)
 		{
 			if(b.getName().equals(name))
 			{
@@ -98,7 +105,7 @@ public class GameParser
 	
 	private static Map findMap(String name) throws Exception
 	{
-		for (Map m : maps)
+		for (Map m : ServerSettings.Instance().MapVector)
 		{
 			if (m.getMapName().equals(name))
 			{

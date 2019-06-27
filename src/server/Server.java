@@ -1,12 +1,17 @@
-
 package server;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import java.text.*;
 
 import utility.*;
 import objects.*;
+
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
+import com.eclipsesource.json.WriterConfig;
 
 public class Server  extends Thread 
 {
@@ -27,19 +32,44 @@ public class Server  extends Thread
     Server()
 	{
     	gui = new ServerGUI(this);
-		boolean resumed = gui.handleTournamentResume();
-		gui.handleFileDialogues();
     	
-		games = GameParser.getGames(ServerSettings.Instance().BotVector, ServerSettings.Instance().MapVector);
-		if (resumed)
+    	
+		if (ServerSettings.Instance().LadderMode)
 		{
-			ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
-			gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
-			games.removePlayedGames(rp.getGameIDs());
+			games = new LadderGameStorage();
+			try
+			{
+				gui.updateServerStatus(games.getNumTotalGames(), 0);
+			}
+			catch (Exception e)
+			{
+				// couldn't access games storage file
+				e.printStackTrace();
+			}
 		}
 		else
 		{
-			gui.updateServerStatus(games.getNumTotalGames(), 0);
+			boolean resumed = gui.handleTournamentResume();
+			gui.handleFileDialogues();
+			
+			games = GameParser.getGames();
+			
+			if (resumed)
+			{
+				ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
+				try
+				{
+					gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
+				}
+				catch (Exception e)
+				{
+					// This shouldn't happen
+					e.printStackTrace();
+				}
+				// This block only executes when not in ladder mode, so the games object
+				// will be a TournamentGameStorage, not a LadderGameStorage
+				((TournamentGameStorage)games).removePlayedGames(rp.getGameIDs());
+			}
 		}
 		
         clients 	= new Vector<ServerClientThread>();
@@ -54,53 +84,83 @@ public class Server  extends Thread
     public static Server Instance() 
 	{
         return INSTANCE;
-    } 
-
-	public void run()
+    }
+    
+    public void run()
 	{
-		if (!games.hasMoreGames())
+		if (!ServerSettings.Instance().LadderMode)
 		{
-			System.err.println("Server: Games list had no valid games in it");
-			System.exit(-1);
+			try
+			{
+				if (!games.hasMoreGames())
+				{
+					System.err.println("Server: Games list had no valid games in it");
+					System.exit(-1);
+				}
+			}
+			catch (Exception e) {
+				// This shouldn't happen
+				e.printStackTrace();
+			}
 		}
 		
 		int neededClients = 2;
-		int iterations = 0;
 		
 		Game nextGame = null;
 		
-		//only one message of each kind is logged per instance
+		// only one message of each kind is logged per instance
 		boolean notEnoughClients = false;
 		boolean requirementsNotMet = false;
+		boolean noGamesInGamesList = false;
 		
 		// keep trying to schedule games
 		while (true)
 		{
 			try
-			{		
+			{
 				// schedule a game once every few seconds
 				Thread.sleep(gameRescheduleTimer);
-				updateResults(iterations++);
+				if (ServerSettings.Instance().LadderMode)
+				{
+					writeServerStatus();
+					ServerSettings.Instance().updateSettings();
+					gui.updateServerStatus(games.getNumTotalGames(), games.getNumTotalGames() - games.getNumGamesRemaining());
+				}
 				
 				if (!games.hasMoreGames())
 				{
-					if (free.size() == clients.size())
+					if (ServerSettings.Instance().LadderMode)
 					{
-						log("No more games in games list, please shut down tournament!\n");
-						break;
+						if (!noGamesInGamesList)
+						{
+							log("Ladder Mode: No games in games list, waiting for new games.\n");
+							noGamesInGamesList = true;
+						}
 					}
 					else
 					{
-						log("No more games in games list, please wait for all games to finish.\n");
-						while (free.size() < clients.size())
-	                    {
-	                        Thread.sleep(gameRescheduleTimer);
-	                        updateResults(iterations++);
-	                    }
+						if (free.size() == clients.size())
+						{
+							log("No more games in games list, please shut down tournament!\n");
+							break;
+						}
+						else
+						{
+							log("No more games in games list, please wait for all games to finish.\n");
+							while (free.size() < clients.size())
+		                    {
+		                        Thread.sleep(gameRescheduleTimer);
+		                        if (ServerSettings.Instance().LadderMode)
+		        				{
+		        					writeServerStatus();
+		        				}
+		                    }
+						}
 					}
 					continue;
 				}
-				
+				noGamesInGamesList = false;
+								
 				// we can't start a game if we don't have enough clients
 				if (free.size() < neededClients) 
 				{
@@ -120,8 +180,13 @@ public class Server  extends Thread
 				
 				if (ServerSettings.Instance().StartGamesSimul)
 				{
+					if (ServerSettings.Instance().LadderMode)
+					{
+						updateBotFiles();
+					}
+					
 					// we can start multiple games at same time
-					nextGame = games.getNextGame(startingBots, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
+					nextGame = games.getNextGame(startingBots, freeClientProperties);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
@@ -143,8 +208,13 @@ public class Server  extends Thread
 				}
 				else if (startingBots.isEmpty())
 				{
+					if (ServerSettings.Instance().LadderMode)
+					{
+						updateBotFiles();
+					}
+					
 					// can only start one game at a time, but none others are starting
-					nextGame = games.getNextGame(null, freeClientProperties, ServerSettings.Instance().EnableBotFileIO);
+					nextGame = games.getNextGame(freeClientProperties);
 					if (nextGame == null)
 					{
 						//can't start a game because of bot requirements or round
@@ -186,7 +256,10 @@ public class Server  extends Thread
 	                    while (free.size() < clients.size())
 	                    {
 	                        Thread.sleep(gameRescheduleTimer);
-	                        updateResults(iterations++);
+	                        if (ServerSettings.Instance().LadderMode)
+	        				{
+	        					writeServerStatus();
+	        				}
 	                    }
 	                    
 	                    log("Moving Write Directory to Read Directory\n");
@@ -198,7 +271,20 @@ public class Server  extends Thread
 				
 				notEnoughClients = false;
 				requirementsNotMet = false;
-				start1v1Game(nextGame);
+				
+				if (ServerSettings.Instance().LadderMode)
+				{
+					// for ladder mode have to check if bots are valid
+					if (checkValidGame(nextGame))
+					{
+						start1v1Game(nextGame);
+					}
+				}
+				else
+				{
+					start1v1Game(nextGame);
+				}
+								
 				previousScheduledGame = nextGame;
 			}
 			catch (Exception e)
@@ -210,22 +296,22 @@ public class Server  extends Thread
 		}
 	}
 	
-	public synchronized void updateResults(int iter) throws Exception
+	public synchronized void updateResults() throws Exception
 	{	
 		ResultsParser rp = new ResultsParser(ServerSettings.Instance().ResultsFile);
 		
 		gui.updateServerStatus(games.getNumTotalGames(), rp.getGameIDs().size());
 				
 		// only write the all results file every 30 reschedules, saves time
-		if (ServerSettings.Instance().DetailedResults && iter % 30 == 0)
+		if (ServerSettings.Instance().DetailedResults)
 		{
 			log("Generating All Results File...\n");
-			rp.writeDetailedResultsJSON();
+			rp.writeDetailedResults();
 			log("Generating All Results File Complete!\n");
 		}
 		
 		rp.writeWinPercentageGraph();
-		FileUtils.writeToFile(rp.getResultsJSON(), "html/results/results_summary_json.js");
+		FileUtils.writeToFile(rp.getResultsSummary(), "html/results/results_summary_json.js", false);
 	}
 	
 	public synchronized void updateRunningStats(String client, TournamentModuleState state, boolean isHost, int gameID)
@@ -400,6 +486,15 @@ public class Server  extends Thread
                 clients.add(c);
                 log("New Client Added: " + c.toString() + "\n");
                 c.sendTournamentModuleSettings();
+                try
+				{
+					c.sendMessage(new InitialSettingsMessage());
+				}
+                catch (Exception e)
+				{
+					e.printStackTrace();
+					System.exit(-1);
+				}
             }
             if (c.getStatus() == ClientStatus.READY && !free.contains(c)) 
 			{
@@ -505,7 +600,17 @@ public class Server  extends Thread
 				boolean hasAllProperties = true;
 				for (String requirement : requirements)
 				{
-					if (!clients.get(i).getProperties().contains(requirement))
+					//check for negated properties
+					if (requirement.startsWith("!"))
+					{
+						if (clients.get(i).getProperties().contains(requirement.substring(1, requirement.length())))
+						{
+							hasAllProperties = false;
+							break;
+						}
+					}
+					//check for required properties
+					else if (!clients.get(i).getProperties().contains(requirement))
 					{
 						hasAllProperties = false;
 						break;
@@ -520,12 +625,64 @@ public class Server  extends Thread
 		return -1;
 	}
 	
+	/**
+	 * In Ladder mode, instead of starting a game, output results showing it couldn't be played because of bot issues if needed
+	 * @throws Exception 
+	 */
+	private boolean checkValidGame(Game game) throws Exception
+	{
+		if (!game.getHomebot().isValid() || !game.getAwaybot().isValid())
+		{
+			games.removeGame(game.getGameID());
+			
+			String message = "Unable to play game " + game.getGameID() + ".";
+			if (!game.getHomebot().isValid())
+			{
+				message +=" Bot " + game.getHomebot().getName() + " is not valid.";
+			}
+			if (!game.getAwaybot().isValid())
+			{
+				message +=" Bot " + game.getAwaybot().getName() + " is not valid.";
+			}
+			log(message + "\n");
+	        
+			try 
+			{
+	        	JsonObject gameIncomplete = new JsonObject();
+	        	gameIncomplete.add("gameID", game.getGameID());
+	        	gameIncomplete.add("bots", new JsonArray().add(game.getHomebot().getName()).add(game.getAwaybot().getName()));
+	        	JsonArray invalidBots = new JsonArray();
+	        	if (!game.getHomebot().isValid())
+	        	{
+	        		invalidBots.add(game.getHomebot().getName());
+	        	}
+	        	if (!game.getAwaybot().isValid())
+	        	{
+	        		invalidBots.add(game.getAwaybot().getName());
+	        	}
+	        	gameIncomplete.add("invalidBots", invalidBots);
+	        	
+	            FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
+	            BufferedWriter out = new BufferedWriter(fstream);
+	            out.write(gameIncomplete.toString() + "\n");
+	            out.close();
+	        } 
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+				
+	        }
+			return false;
+		}
+		return true;
+	}
+	
     /**
      * Handles all of the code needed to start a 1v1 game
      */
     private synchronized void start1v1Game(Game game) throws Exception
 	{	
-		// get the clients and their instructions
+    	// get the clients and their instructions
     	int[] gameClients = getClientsForGame(game);
 		ServerClientThread hostClient = free.get(gameClients[0]);
 		ServerClientThread awayClient = free.get(gameClients[1]);
@@ -554,11 +711,10 @@ public class Server  extends Thread
 		awayClient.sendMessage(new StartGameMessage());
 		
 		// set the game to running
-		game.setHomeAddress(hostClient.address.toString());
-		game.setAwayAddress(awayClient.address.toString());
-		game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
-        game.setStatus(GameStatus.RUNNING);
-        game.startTime();
+		game.setHomeAddress(hostClient.toString());
+		game.setAwayAddress(awayClient.toString());
+		//game.setStartDate(new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime()));
+       //game.startTime();
 		
 		// remove the clients from the free list
         free.remove(hostClient);
@@ -592,15 +748,23 @@ public class Server  extends Thread
         listener = l;
     }
 
-    public synchronized void receiveGameResults(String address, Game game) 
+    public synchronized void receiveGameResults(String address, GameReport report) 
 	{
 		try 
 		{
-			log("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");				// EXCEPTION HERE
-			System.out.println("Recieving Replay: (" + game.getGameID() + " / " + game.getRound() + ")\n");
-			Game g = games.lookupGame(game.getGameID());
-			g.updateWithGame(game);
-			appendGameData(g);
+			log("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");				// EXCEPTION HERE
+			System.out.println("Recieving Replay: (" + report.getGameID() + " / " + report.getRound() + ")\n");
+			
+			Game g = games.lookupGame(report.getGameID());
+			
+			report.setAddress((report.isHost() ? g.getHomeAddress() : g.getAwayAddress()));
+			report.setOpponentAddress((report.isHost() ? g.getAwayAddress() : g.getHomeAddress()));
+			appendGameData(report);
+			
+			if (!ServerSettings.Instance().LadderMode)
+			{
+				updateResults();
+			}
 		}
 		catch (Exception e)
 		{
@@ -614,20 +778,20 @@ public class Server  extends Thread
     	return clients.indexOf(c);
     }
     
-    private synchronized void appendGameData(Game game) 
+    private synchronized void appendGameData(GameReport report) 
 	{
-    	System.out.println("Writing out replay data for gameID " + game.getGameID());
-        try 
+    	System.out.println("Writing out replay data for gameID " + report.getGameID());
+    	String line = report.getResultJSON(ServerSettings.Instance().tmSettings.TimeoutLimits) + "\n";
+    	try
 		{
-            FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
-            BufferedWriter out = new BufferedWriter(fstream);
-            out.write(game.getResultString());
-            out.close();
-        } 
-		catch (Exception e) 
+    		FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+    		FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
+    		FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
+		}
+    	catch (Exception e)
 		{
 			e.printStackTrace();
-        }
+		}
     }
     
     
@@ -679,4 +843,140 @@ public class Server  extends Thread
             }
         }
     }
+	
+    //write out server status for Ladder
+	private void writeServerStatus()
+	{
+		Vector<Vector<String>> tableData = gui.getTableData();
+		JsonObject status = Json.object();
+		//JsonObject clients = Json.object();
+		JsonArray clients = (JsonArray) Json.array();
+		for (Vector<String> vec : tableData)
+		{
+			JsonObject client = Json.object();
+			client.add("Client", vec.get(0));
+			client.add("Status", vec.get(1));
+			client.add("Game", vec.get(2));			
+			client.add("Self", vec.get(3));
+			client.add("Enemy", vec.get(4));
+			client.add("Map", vec.get(5));
+			client.add("Duration", vec.get(6));
+			client.add("Win", vec.get(7));
+			client.add("Properties", vec.get(8));
+			clients.add(client);
+		}
+		status.add("clients", clients);
+		
+		TimeZone tz = TimeZone.getTimeZone("UTC");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		df.setTimeZone(tz);
+		String time = df.format(new Date());
+		
+		status.add("updateTime", time);
+		
+		try
+		{
+			status.add("totalGames", games.getNumTotalGames());
+			status.add("gamesRemaining", games.getNumGamesRemaining());
+		}
+		catch (Exception e1)
+		{
+			//don't update status if can't access all data
+			e1.printStackTrace();
+			return;
+		}
+		
+		try
+		{
+			FileUtils.lockFile("server_status.json.lock", 10, 20, 60000);
+			FileUtils.writeToFile(status.toString(WriterConfig.PRETTY_PRINT), "server_status.json", false);
+			FileUtils.unlockFile("server_status.json.lock");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	//check for new versions of bots for Ladder
+	private void updateBotFiles() throws IOException
+	{
+		boolean foundNewFiles = false;
+		
+		File botsDir = new File(ServerSettings.Instance().ServerBotDir);
+		for (String botDir : botsDir.list())
+		{
+			//find dirs like "server/bots/new_BotName/"
+			if (botDir.length() >= 4 && botDir.substring(0, 4).equals("new_"))
+			{
+				File newFilesDir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir);
+				if (newFilesDir.isDirectory())
+				{
+					//obtain lock on this directory and process its contents
+					try
+					{
+						FileUtils.lockFile(ServerSettings.Instance().ServerBotDir + "/" + botDir + ".lock", 4, 50, 60000);
+						
+						//find all subdirs of "new_BotName/" 
+						for (String dirName : newFilesDir.list())
+						{
+							File dir = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName);
+							if (!dir.isDirectory())
+							{
+								continue;
+							}
+							
+							//only looking for 'AI/' or 'read/' dir
+							if (!dirName.equals("AI") && !dirName.equals("read"))
+							{
+								continue;
+							}
+							
+							//expecting a single zip file
+							File newFile = null;
+							for (String zipFile : dir.list())
+							{
+								File candidate = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir + "/" + dirName + "/" + zipFile);
+								if (candidate.isDirectory())
+								{
+									continue;
+								}
+								else if (candidate.getPath().substring(candidate.getPath().length() - 4, candidate.getPath().length()).equalsIgnoreCase(".zip"))
+								{
+									newFile = candidate;
+									break;
+								}
+							}
+							
+							if (newFile != null)
+							{
+								File dest = new File(ServerSettings.Instance().ServerBotDir + "/" + botDir.substring(4) + "/" + dirName);
+								if (!dest.exists())
+								{
+									dest.mkdirs();
+								}
+								FileUtils.CleanDirectory(dest);
+								ZipTools.UnzipFileToDir(newFile, dest);
+								foundNewFiles = true;
+							}
+						}
+						
+						// delete directory and remove lock
+						FileUtils.DeleteDirectory(newFilesDir);
+						FileUtils.unlockFile(ServerSettings.Instance().ServerBotDir + "/" + botDir + ".lock");
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		if (foundNewFiles)
+		{
+			//if a bot has been updated in some way, reparse the settings file to check that the bot is valid
+			ServerSettings.Instance().updateSettings();
+		}
+	}
+	
 }

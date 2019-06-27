@@ -32,7 +32,7 @@ public class ClientCommands
 	{
         Client.log("      Client_RunProxyScript()\n");
         
-		WindowsCommandTools.RunWindowsCommand(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI\\run_proxy.bat", false, false);
+        WindowsCommandTools.RunWindowsCommand("cd " + ClientSettings.Instance().ClientStarcraftDir + " & "+ ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\AI\\run_proxy.bat", false, false);
 	}
 	
 	public static void Client_ClearWriteDirectory()
@@ -62,7 +62,22 @@ public class ClientCommands
 		WindowsCommandTools.RegEdit(sc64KeyName, "Program",     "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64KeyName, "GamePath",    "REG_SZ", ClientSettings.Instance().ClientStarcraftDir + "StarCraft.exe");
 		WindowsCommandTools.RegEdit(sc64UserKeyName, "introX",      "REG_DWORD", "00000000");
-	}	
+	}
+	
+	public static void Client_SetLobbySpeed(LobbyGameSpeed speed)
+	{
+		Client.log("      Client_SetLobbySpeed()\n");
+		
+		// 32-bit machine StarCraft settings
+		String sc32UserKeyName = "HKEY_CURRENT_USER\\SOFTWARE\\Blizzard Entertainment\\Starcraft";
+		WindowsCommandTools.RegEdit(sc32UserKeyName, "Game Speed", "REG_SZ",    speed.toString().substring(0, 1) + speed.toString().toLowerCase().substring(1));
+		WindowsCommandTools.RegEdit(sc32UserKeyName, "speed",      "REG_DWORD", "0000000" + speed.ordinal());
+		
+		// 64-bit machine StarCraft settings
+		String sc64UserKeyName = "HKEY_CURRENT_USER\\SOFTWARE\\Wow6432Node\\Blizzard Entertainment\\Starcraft";
+		WindowsCommandTools.RegEdit(sc64UserKeyName, "Game Speed", "REG_SZ",    speed.toString().substring(0, 1) + speed.toString().toLowerCase().substring(1));
+		WindowsCommandTools.RegEdit(sc64UserKeyName, "speed",      "REG_DWORD", "0000000" + speed.ordinal());
+	}
 	
 	public static void Client_KillStarcraft()
 	{
@@ -185,7 +200,9 @@ public class ClientCommands
 		BWINI += "; for replays, just set the map to the path of the replay file" + newLine;
 		BWINI += "auto_menu = " + bwapi.auto_menu + newLine + newLine;
 		
-		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		String versionDigits = thisBot.getBWAPIVersion().replaceAll("[^0-9]", "");
+		boolean isBWAPI420OrHigher = (versionDigits.length() >= 3 && versionDigits.substring(0, 3).compareTo("420") >= 0);
+		if (isBWAPI420OrHigher)
 		{
 			BWINI += "; character_name = FIRST | WAIT | <other>" + newLine;
 			BWINI += "; if FIRST (default), use the first character in the list" + newLine;
@@ -251,7 +268,7 @@ public class ClientCommands
 		BWINI += ";           | GREED | SLAUGHTER | SUDDEN_DEATH | TEAM_MELEE | TEAM_FREE_FOR_ALL | TEAM_CAPTURE_THE_FLAG" + newLine;
 		BWINI += "game_type = " + bwapi.game_type + newLine + newLine;
 		
-		if (thisBot.getBWAPIVersion().equals("BWAPI_420"))
+		if (isBWAPI420OrHigher)
 		{
 			BWINI += "; game_type_extra = Text that appears in the drop-down list below the Game Type drop-down list." + newLine;
 			BWINI += "; If empty, the Starcraft default will be used." + newLine;

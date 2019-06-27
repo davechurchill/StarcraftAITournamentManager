@@ -1,8 +1,11 @@
 package objects;
 
 import java.io.File;
+import java.io.Serializable;
 
-public class Map{
+public class Map implements Serializable
+{
+	private static final long serialVersionUID = 4103173912768231773L;
 
 	private String mapName;
 
