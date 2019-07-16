@@ -662,10 +662,12 @@ public class Server  extends Thread
 	        	}
 	        	gameIncomplete.add("invalidBots", invalidBots);
 	        	
-	            FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
+	        	FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+	        	FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
 	            BufferedWriter out = new BufferedWriter(fstream);
 	            out.write(gameIncomplete.toString() + "\n");
 	            out.close();
+	    		FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
 	        } 
 			catch (Exception e) 
 			{
