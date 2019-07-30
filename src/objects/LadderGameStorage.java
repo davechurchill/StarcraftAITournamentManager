@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import server.Server;
 import server.ServerSettings;
 import utility.FileUtils;
 import utility.GameParser;
@@ -17,16 +18,39 @@ public class LadderGameStorage extends GameStorage {
 	
 	private HashMap<Integer, Game> gamesInProgress;
 	private TreeMap<Integer, Game> allGames;
+	private Vector<Integer> receivedOneResult;
 	private long gameQueueLastModTime = -1;
 	
 	public LadderGameStorage()
 	{
 		gamesInProgress = new HashMap<Integer, Game>();
 		allGames = new TreeMap<Integer, Game>();
+		receivedOneResult = new Vector<Integer>();
 	}
 	
 	private void updateGameQueue() throws Exception
 	{
+		// first check for rare situation where a game we think is in progress (two results have not returned) is actually not (maybe a TM client crashed)
+		// this actually gets called when server is initializing, so the server instance may be still null at this point.
+		if (Server.Instance() != null)
+		{
+			Vector<Integer> playing = Server.Instance().getGamesInProgress();
+			boolean foundFinishedGame = false;
+			for (int gameID : gamesInProgress.keySet())
+			{
+				if (!playing.contains(gameID))
+				{
+					removeGame(gameID);
+					foundFinishedGame = true;
+				}
+			}
+			if (foundFinishedGame)
+			{
+				// games queue is already up to date now
+				return;
+			}
+		}
+		
 		//throws exception if no lock possible in 10 seconds
 		FileUtils.lockFile(ServerSettings.Instance().GamesListFile + ".lock", 100, 100, 60000);
 		TreeMap<Integer, Game> games = new TreeMap<Integer, Game>();
@@ -138,18 +162,34 @@ public class LadderGameStorage extends GameStorage {
 		return null;
 	}
 
-	public Game lookupGame(int gameID) {
+	public Game lookupGame(int gameID)
+	{
 		return allGames.get(gameID);
 	}
 
-	public int getNumGamesRemaining() throws Exception {
+	public int getNumGamesRemaining() throws Exception
+	{
 		updateGameQueue();
 		return allGames.size() - gamesInProgress.size();
 	}
 
-	public int getNumTotalGames() throws Exception {
+	public int getNumTotalGames() throws Exception
+	{
 		updateGameQueue();
 		return allGames.size();
+	}
+	
+	public void receivedResult(int gameID) throws Exception
+	{
+		if (receivedOneResult.contains(gameID))
+		{
+			receivedOneResult.remove(gameID);
+			removeGame(gameID);
+		}
+		else
+		{
+			receivedOneResult.add(gameID);
+		}
 	}
 
 	public void removeGame(int gameID) throws Exception {

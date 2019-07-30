@@ -501,6 +501,7 @@ public class Server  extends Thread
                 free.add(c);
                 log("Client Ready: " + c.toString() + "\n");
             }
+            
         }
 	}
 	 
@@ -767,6 +768,10 @@ public class Server  extends Thread
 			{
 				updateResults();
 			}
+			else
+			{
+				((LadderGameStorage)games).receivedResult(g.getGameID());
+			}
 		}
 		catch (Exception e)
 		{
@@ -786,9 +791,15 @@ public class Server  extends Thread
     	String line = report.getResultJSON(ServerSettings.Instance().tmSettings.TimeoutLimits) + "\n";
     	try
 		{
-    		FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+    		if (ServerSettings.Instance().LadderMode)
+    		{
+    			FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);    			
+    		}
     		FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
-    		FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
+    		if (ServerSettings.Instance().LadderMode)
+    		{
+    			FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");    			
+    		}
 		}
     	catch (Exception e)
 		{
@@ -979,6 +990,22 @@ public class Server  extends Thread
 			//if a bot has been updated in some way, reparse the settings file to check that the bot is valid
 			ServerSettings.Instance().updateSettings();
 		}
+	}
+	
+	public Vector<Integer> getGamesInProgress()
+	{
+		Vector<Integer> gameIDs = new Vector<Integer>();
+		if (clients != null)
+		{
+			for (ServerClientThread client : clients)
+			{
+				if (client.getStatus() != ClientStatus.READY && client.lastInstructionSent != null)
+				{
+					gameIDs.add(client.lastInstructionSent.game_id);
+				}
+			}			
+		}
+		return gameIDs;
 	}
 	
 }
