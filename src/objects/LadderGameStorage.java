@@ -183,7 +183,7 @@ public class LadderGameStorage extends GameStorage {
 	{
 		if (receivedOneResult.contains(gameID))
 		{
-			receivedOneResult.remove(gameID);
+			receivedOneResult.removeElement(gameID);
 			removeGame(gameID);
 		}
 		else
