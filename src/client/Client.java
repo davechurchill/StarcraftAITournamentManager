@@ -5,7 +5,9 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
 import java.text.*;
 
 import javax.imageio.ImageIO;
@@ -238,6 +240,18 @@ public class Client extends Thread
 						System.out.println("MONITOR: Crash detected, shutting down game");
 						setEndTime();
 						report.setGameEndType(starcraftIsRunning ? GameEndType.GAME_STATE_NOT_UPDATED_60S : GameEndType.STARCRAFT_CRASH);
+						
+						// check for crash log
+						if (!starcraftIsRunning)
+						{
+							String crashLog = getCrashLog();
+							if (crashLog != null)
+							{
+								report.setCrashLog(crashLog);
+							}
+						}
+						
+						
 						prepCrash(gameState);
 					}
 				}
@@ -460,6 +474,85 @@ public class Client extends Thread
 		sendFilesToServer(false);
 		ClientCommands.Client_CleanStarcraftDirectory();
 		setStatus(ClientStatus.READY);
+	}
+	
+	private String getCrashLog() {
+		// sleep for a second
+        try { Thread.sleep(1000); } catch (Exception e) {}
+
+        // filename can have one of two formats (depending on BWAPI version)
+        DateFormat df_file = new SimpleDateFormat("yyy MMM dd");
+        String filename1 = df_file.format(new Date()) + ".txt";
+        df_file = new SimpleDateFormat("yyy_MM_dd");
+        String filename2 = df_file.format(new Date()) + ".txt";
+
+        // date and time in error log, want to match: TIME: Jun 24 20:16:10 2019
+        DateFormat df_first_part = new SimpleDateFormat("EEE MMM dd");
+        DateFormat df_last_part = new SimpleDateFormat("yyyy");
+        String date_regex = "TIME: " + df_first_part.format(new Date()) + " \\d\\d:\\d\\d:\\d\\d " + df_last_part.format(new Date());
+		
+		java.io.File dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "Errors");
+		
+		if(dir.list().length > 0)
+        {
+            for (java.io.File file : dir.listFiles())
+            {
+                if (file.isFile() && (file.getName().equalsIgnoreCase(filename1) || file.getName().equalsIgnoreCase(filename2)))
+                {
+                    // read the file and check for log from last minute
+                    try
+                    {
+                        BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
+                        String line;
+                        boolean foundRecord = false;
+                        boolean doneRecord = false;
+                        String record = "";
+                        while ((line = br.readLine()) != null && !doneRecord)
+                        {
+                            if (line.matches("//////////////////////////////////////////////////"))
+                            {
+                            	if (foundRecord)
+                                {
+                                    doneRecord = true;
+                                }
+                                else
+                                {
+                                    record = line + "\n";
+                                }
+                            }
+                            else if (line.matches(date_regex))
+                            {
+                                // line looks like this: "TIME: Mon Jun 24 20:16:10 2019"
+                                String time = line.substring(6);
+                                DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss yyyy");
+                                Date result =  df.parse(time);
+                                if (new Date().getTime() - result.getTime() < 1000 * 60)
+                                {
+                                    foundRecord = true;
+                                    record += line + "\n";
+                                }
+                            }
+                            else {
+                                record += line + "\n";
+                            }
+                        }
+                        
+                        if (foundRecord)
+                        {
+                        	br.close();
+                            return record;
+                        }
+                        br.close();
+                        
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return null;
 	}
 
 	private void gameOver()
