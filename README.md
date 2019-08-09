@@ -245,15 +245,12 @@ Game End Types:
 * STARCRAFT_CRASH: crash detected by Tournament Manager client, which means that Starcraft was running at some point, but later the client couldn't find the Starcraft process.
 * GAME_STATE_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), but StarCraft is running.
 * STARCRAFT_NEVER_DETECTED: no game state file (output from TournamentModule once game is running) detected by time limit (60s), and StarCraft never detected running.
+* GAME_STATE_NOT_UPDATED_60S_BOTH_BOTS,  gamestate file wasn't updated for 60 seconds (both bots); assigned after the fact (detailed results only); can't know which bot (if any) is responsible
 * NO_REPORT: only one report received; assigned after the fact (detailed results only); this could be caused by the TM client crashing, or a weird network error, etc.
 
 If two clients report different end types, the one lower in this list is shown in the detailed results.
 
-**Note:** Detecting when a bot crashes is difficult, so a crash is recorded whenever the game doesn't progress (gamestate file not updated) for more than a minute.
-In these cases the bot who recorded the higher frame count (meaning the game was running for longer) is declared the winner.
-This means it isn't possible to distinguish between a crash and a case of a bot taking more than a minute to process a single frame of the game.
-
-Crashes in which the game never starts (frame count for both bots is zero) are not counted in the results summary in **html/index.html**.
+**Note:** Detecting when a bot crashes or freezes while processing a game frame is difficult, so a crash is recorded whenever the game doesn't progress (gamestate file not updated) for more than a minute. Crashes in which the game never starts (frame count for both bots is zero), or in which both Starcraft clients don't output gamestate.txt files for 60s, are not counted in the results summary in **html/index.html**.
 
 Games that last more frames than `gameFrameLimit` in server_settings.json (default setting is equal to one hour at normal speed) are terminated, and the winner is the bot with the higher score.
 These losses are reported as "Game Timeout" in the results summary and "Timeout" in the detailed results page.

@@ -87,7 +87,14 @@ public class GameResult implements Comparable<Object>
 		
 		//see GameEndType source for precedence order of game end types
 		GameEndType thisGameEnd = GameEndType.valueOf(result.get("gameEndType").asString());
-		gameEndType = thisGameEnd.ordinal() < gameEndType.ordinal() ? thisGameEnd : gameEndType;
+		if (gameEndType == GameEndType.GAME_STATE_NOT_UPDATED_60S && thisGameEnd == gameEndType.GAME_STATE_NOT_UPDATED_60S)
+		{
+			gameEndType = GameEndType.GAME_STATE_NOT_UPDATED_60S_BOTH_BOTS;
+		}
+		else
+		{
+			gameEndType = thisGameEnd.ordinal() < gameEndType.ordinal() ? thisGameEnd : gameEndType;
+		}
 		
 		//if this bot reports that StarCraft didn't start or crashed before the game, assign it as crashing bot
 		if (thisGameEnd == GameEndType.STARCRAFT_NEVER_DETECTED)

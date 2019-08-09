@@ -11,6 +11,7 @@ import java.io.*;
 import java.text.*;
 
 import objects.Game;
+import objects.GameEndType;
 import objects.GameResult;
 import server.ServerSettings;
 
@@ -110,7 +111,7 @@ public class ResultsParser
 			
 			// if the game didn't start for either bot, don't parse this result
 			// if all bots have not reported, don't parse this result
-			if (result.finalFrame <= 0 || !result.complete)
+			if (result.finalFrame <= 0 || !result.complete || result.gameEndType == GameEndType.GAME_STATE_NOT_UPDATED_60S_BOTH_BOTS)
 			{
 				continue;
 			}
