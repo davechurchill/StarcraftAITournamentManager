@@ -441,7 +441,7 @@ public class Client extends Thread
 
 		log("Game ended normally. Sending results and cleaning the machine\n");
 		setStatus(ClientStatus.SENDING);
-		gameOver();
+		gameOver(10);
 		setStatus(ClientStatus.READY);
 	}
 
@@ -467,12 +467,9 @@ public class Client extends Thread
 		report.setCrash(true);
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
-		ClientCommands.Client_KillStarcraft();
-		starcraftDetected = false;
-		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
+		
 		setStatus(ClientStatus.SENDING);
-		sendFilesToServer(false);
-		ClientCommands.Client_CleanStarcraftDirectory();
+		gameOver(2);
 		setStatus(ClientStatus.READY);
 	}
 	
@@ -555,9 +552,9 @@ public class Client extends Thread
         return null;
 	}
 
-	private void gameOver()
+	private void gameOver(int replaySendAttempts)
 	{
-		sendFilesToServer(true);
+		sendFilesToServer(replaySendAttempts);
 		ClientCommands.Client_KillStarcraft();
 		starcraftDetected = false;
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
@@ -572,16 +569,13 @@ public class Client extends Thread
 		System.exit(0);
 	}
 	
-	private void sendFilesToServer(boolean retryWait)
+	private void sendFilesToServer(int retryAttempts)
 	{
-		// sleep 5 seconds to make sure starcraft wrote the replay file correctly
-		
 		int attempt=0;
 		java.io.File dir;
 		boolean fileExists=false;
 		do
 		{
-			try { Thread.sleep(5000); } catch (Exception e) {}
 			dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
 			if(dir.list().length>0)
 			{
@@ -595,9 +589,12 @@ public class Client extends Thread
 						}
 					}
 				}
-			}
+			}			
 			attempt++;
-		}while(attempt<10 && !fileExists && retryWait);
+			// sleep 5 seconds to make sure starcraft wrote the replay file correctly
+			try { Thread.sleep(5000); } catch (Exception e) {}
+			
+		} while(attempt < retryAttempts && !fileExists);
 			
 			
 		// send the replay data to the server
