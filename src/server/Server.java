@@ -26,6 +26,7 @@ public class Server  extends Thread
 	public ServerGUI 						gui;
 	
 	private Game							previousScheduledGame = null;
+	private Game							nextGame = null;        
 	
 	private static final Server INSTANCE = new Server();
 
@@ -106,7 +107,7 @@ public class Server  extends Thread
 		
 		int neededClients = 2;
 		
-		Game nextGame = null;
+		nextGame = null;
 		
 		// only one message of each kind is logged per instance
 		boolean notEnoughClients = false;
@@ -1005,6 +1006,13 @@ public class Server  extends Thread
 				}
 			}			
 		}
+		
+		// add in the next game to start, since that one is "in progress" in teh ladder game storage
+		if (nextGame != null)
+		{
+			gameIDs.add(nextGame.getGameID());
+		}
+		
 		return gameIDs;
 	}
 	
