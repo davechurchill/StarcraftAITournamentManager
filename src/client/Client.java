@@ -477,79 +477,77 @@ public class Client extends Thread
 		// sleep for a second
         try { Thread.sleep(1000); } catch (Exception e) {}
 
-        // filename can have one of two formats (depending on BWAPI version)
-        DateFormat df_file = new SimpleDateFormat("yyy MMM dd");
-        String filename1 = df_file.format(new Date()) + ".txt";
-        df_file = new SimpleDateFormat("yyy_MM_dd");
-        String filename2 = df_file.format(new Date()) + ".txt";
+        String startLine = "";
+        String fullRecord = "";
 
-        // date and time in error log, want to match: TIME: Jun 24 20:16:10 2019
-        DateFormat df_first_part = new SimpleDateFormat("EEE MMM dd");
-        DateFormat df_last_part = new SimpleDateFormat("yyyy");
-        String date_regex = "TIME: " + df_first_part.format(new Date()) + " \\d\\d:\\d\\d:\\d\\d " + df_last_part.format(new Date());
-		
-		java.io.File dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "Errors");
-		
-		if(dir.list().length > 0)
+        java.io.File dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "Errors");
+
+        if(dir.list().length > 0)
         {
             for (java.io.File file : dir.listFiles())
             {
-                if (file.isFile() && (file.getName().equalsIgnoreCase(filename1) || file.getName().equalsIgnoreCase(filename2)))
+                // only files
+                if (!file.isFile())
                 {
-                    // read the file and check for log from last minute
-                    try
+                    continue;
+                }
+
+                // file must be modified in last minute
+                if (Math.abs(file.lastModified() - System.currentTimeMillis()) > 60 * 1000) {
+                    continue;
+                }
+
+                if (file.getName().substring(file.getName().length() - 4).equalsIgnoreCase(".ERR"))
+                {
+                    // ".ERR" file
+                    startLine = "------------------------------------------------------";
+                }
+                else {
+                    // error file like "yyyy MMM dd.txt" or "yyy_MM_dd.txt"
+                    startLine = "//////////////////////////////////////////////////";
+                }
+
+                // read the file and check for last crash log
+                try
+                {
+                    BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
+                    String line;
+                    String record = "";
+                    while ((line = br.readLine()) != null)
                     {
-                        BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
-                        String line;
-                        boolean foundRecord = false;
-                        boolean doneRecord = false;
-                        String record = "";
-                        while ((line = br.readLine()) != null && !doneRecord)
+                        if (line.matches(startLine))
                         {
-                            if (line.matches("//////////////////////////////////////////////////"))
-                            {
-                            	if (foundRecord)
-                                {
-                                    doneRecord = true;
-                                }
-                                else
-                                {
-                                    record = line + "\n";
-                                }
-                            }
-                            else if (line.matches(date_regex))
-                            {
-                                // line looks like this: "TIME: Mon Jun 24 20:16:10 2019"
-                                String time = line.substring(6);
-                                DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss yyyy");
-                                Date result =  df.parse(time);
-                                if (new Date().getTime() - result.getTime() < 1000 * 60)
-                                {
-                                    foundRecord = true;
-                                    record += line + "\n";
-                                }
-                            }
-                            else {
-                                record += line + "\n";
-                            }
+                            // start over with new record
+                            record = line + "\n";
                         }
-                        
-                        if (foundRecord)
+                        else if (line.matches("COMPUTER NAME:.*") || line.matches("USER NAME:.*"))
                         {
-                        	br.close();
-                            return record;
+                            // don't record these two lines
+                            continue;
                         }
-                        br.close();
-                        
+                        else {
+                            // add to record
+                            record += line + "\n";
+                        }
                     }
-                    catch (Exception e)
+                    br.close();
+                    if (!record.equals(""))
                     {
-                        e.printStackTrace();
+                        fullRecord += record + "\n";
                     }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
                 }
             }
         }
-        return null;
+
+        if (fullRecord.equals(""))
+        {
+            fullRecord = null;
+        }
+        return fullRecord;
 	}
 
 	private void gameOver(int replaySendAttempts)
