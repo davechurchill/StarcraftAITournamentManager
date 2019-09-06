@@ -200,6 +200,20 @@ public class ServerClientThread extends Thread implements Comparable<ServerClien
 		}
 	}
 	
+	public void sendMapFiles()
+	{
+		try
+		{
+			Message m = new DataMessage(DataType.MAPS, ServerSettings.Instance().ServerRequiredDir + ServerSettings.Instance().MapsFile);
+			sendMessage(m);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
+	
 	public String toString()
 	{
 		return "" + this.getAddress().toString().replaceAll("/", "");

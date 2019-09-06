@@ -699,11 +699,13 @@ public class Server  extends Thread
 		// send instructions and files to the host machine
         hostClient.sendMessage(hostInstructions);
 		hostClient.sendRequiredFiles(hostInstructions.hostBot);
+		hostClient.sendMapFiles();
 		hostClient.sendBotFiles(hostInstructions.hostBot);
 		
 		// send instructions and files to the away machine
 		awayClient.sendMessage(awayInstructions);
 		awayClient.sendRequiredFiles(awayInstructions.awayBot);
+		awayClient.sendMapFiles();
 		awayClient.sendBotFiles(awayInstructions.awayBot);
 		
 		// start games on those machines

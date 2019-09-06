@@ -319,6 +319,14 @@ This file must parse as valid JSON or the server will not start.
     </td>
 </tr>
 <tr>
+    <td>mapsFile</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Location of zip file within server/required/ that contains all maps and associated files, relative to Starcraft dir on client.
+        Example contents of "maps.zip": maps/aiide/(2)Benzene.scx, bwapi-data/BWTA/..., ...
+    </td>
+</tr>
+<tr>
     <td>gamesListFile</td>
     <td>
         <b>Type:</b> String<br><br>

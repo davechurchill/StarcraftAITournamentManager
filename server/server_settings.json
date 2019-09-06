@@ -44,6 +44,7 @@
 		"maps/aiide/(4)Python.scx"
 	],
 	
+	"mapsFile"                  :   "maps.zip",
 	"gamesListFile"				:	"games.txt",
 	"resultsFile"				: 	"results.txt",
 	"detailedResults"			: 	false,

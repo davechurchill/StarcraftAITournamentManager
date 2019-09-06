@@ -44,6 +44,7 @@ public class Client extends Thread
 	public static 		ClientGUI gui;
 	
 	private DataMessage	requiredFiles			= null;
+	private DataMessage mapFiles                = null;
 	private DataMessage	botFiles				= null;
 	
 	private TournamentModuleSettingsMessage	tmSettings = null;
@@ -260,6 +261,11 @@ public class Client extends Thread
 				requiredFiles = dm;
 				log("Client: Required files received\n");
 			}
+			else if (dm.type == DataType.MAPS)
+			{
+				mapFiles = dm;
+				log("Client: Map files received\n");
+			}
 			else if (dm.type == DataType.BOT_DIR)
 			{
 				botFiles = dm;
@@ -317,7 +323,7 @@ public class Client extends Thread
 	
 	public boolean canStartStarCraft()
 	{
-		return (previousInstructions != null) && (requiredFiles != null) && (botFiles != null);
+		return (previousInstructions != null) && (requiredFiles != null) && (mapFiles != null) && (botFiles != null);
 	}
 	
 	public void receiveInstructions(InstructionMessage instructions) 
@@ -366,6 +372,9 @@ public class Client extends Thread
 			// Write the required starcraft files to the client machine
 			requiredFiles.write(ClientSettings.Instance().ClientStarcraftDir);
 			
+			// Write the map files to the client machine
+			mapFiles.write(ClientSettings.Instance().ClientStarcraftDir);
+			
 			// Write the bot files to the client machine
 			botFiles.write(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data");
 			
@@ -401,6 +410,7 @@ public class Client extends Thread
 						
 			// Reset the files for next game
 			requiredFiles = null;
+			mapFiles = null;
 			botFiles = null;
 		}
 		else

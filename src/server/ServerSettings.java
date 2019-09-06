@@ -29,6 +29,7 @@ public class ServerSettings
 	
 	//These are set in server_settings.json
 	public int				ServerPort			= -1;
+	public String           MapsFile            = "maps.zip";
 	public String			GamesListFile		= null;
 	public String			ResultsFile			= null;
 	public String 			ClearResults	 	= "ask";
@@ -144,6 +145,7 @@ public class ServerSettings
 				newMapVector.add(new Map(mapValue.asString()));
 			}
 			
+			MapsFile =  jo.get("mapsFile").asString();
 			GamesListFile = jo.get("gamesListFile").asString();
 			ResultsFile = jo.get("resultsFile").asString();
 			DetailedResults = jo.get("detailedResults").asBoolean(); 
@@ -231,6 +233,7 @@ public class ServerSettings
 		}
 		if (!new File(ServerBotDir).exists()) 		{ System.err.println("ServerSettings: Bot Dir (" + ServerBotDir + ") does not exist"); valid = false; }
 		if (!new File(ServerRequiredDir).exists()) 	{ System.err.println("ServerSettings: Required Files Dir (" + ServerRequiredDir + ") does not exist"); valid = false; }
+		if (!new File(ServerRequiredDir + MapsFile).exists()) 	{ System.err.println("ServerSettings: Maps File (" + ServerRequiredDir + MapsFile + ") does not exist"); valid = false; }
 		
 		// check all bot directories
 		for (Bot b : BotVector)
