@@ -61,7 +61,7 @@
 	{
 		"localSpeed"		: 0,
 		"frameSkip"			: 256,
-		"gameFrameLimit"	: 85714,
+		"gameFrameLimit"	: 86400,
 		"timeoutLimits"		:
 		[
 			{ "timeInMS"	: 55,	"frameCount": 320 },
