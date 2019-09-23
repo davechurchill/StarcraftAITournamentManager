@@ -39,6 +39,7 @@ public class ResultsParser
 	private int[] allWins 			= new int[numBots];
 	private int[] crash 			= new int[numBots];
 	private int[] frames 			= new int[numBots];
+	private int[] realSeconds       = new int[numBots];
 	private int[] mapUsage 			= new int[numMaps];
 	private int[] hour 		        = new int[numBots];
 	
@@ -139,6 +140,8 @@ public class ResultsParser
 					hour[b1] += (result.gameTimeout) ? 1 : 0;
 					games[b1]++;
 					frames[b1] += result.finalFrame;
+					long gameLengthMS = result.times.get(0) > result.times.get(1) ? result.times.get(0) : result.times.get(1);  
+					realSeconds[b1] += gameLengthMS / 1000;
 					mapGames[b1][map]++;
 					
 					//record all results for combinations of bots in the game
@@ -374,6 +377,7 @@ public class ResultsParser
 			botSummary.add("Score", new DecimalFormat("##.##").format(allPairs.get(i).win*100));
 			botSummary.add("ELO", (int)elo[ii]);
 			botSummary.add("AvgTime", games[ii] > 0 ? frames[ii]/games[ii] : 0);
+			botSummary.add("WallTime", games[ii] > 0 ? realSeconds[ii]/games[ii] : 0);
 			botSummary.add("Hour", hour[ii]);
 			botSummary.add("Crash", crash[ii]);
 			botSummary.add("Timeout", timeout[ii]);

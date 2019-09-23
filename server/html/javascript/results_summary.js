@@ -15,7 +15,7 @@ function displayDetailedResultsSize(size)
 
 function fillResultsTable(data)
 {
-	var dataTotals = [0, 0, 0, 0, 0, 0, 0];
+	var dataTotals = [0, 0, 0, 0, 0, 0, 0, 0];
 	var html = "";
 	for (var i=0; i<data.length; ++i)
 	{
@@ -27,6 +27,7 @@ function fillResultsTable(data)
 		html += "<td>" + data[i].Score + "</td>";		
 		//html += "<td>" + data[i].ELO + "</td>";
 		html += "<td>" + getTime(data[i].AvgTime) + "</td>";
+		html += "<td>" + getWallTime(data[i].WallTime) + "</td>";
 		html += "<td>" + data[i].Hour + "</td>";
 		html += "<td>" + data[i].Crash + "</td>";
 		html += "<td>" + data[i].Timeout + "</td>";
@@ -36,9 +37,10 @@ function fillResultsTable(data)
 		dataTotals[1] += data[i].Wins;
 		dataTotals[2] += data[i].Losses;
 		dataTotals[3] += data[i].AvgTime;
-		dataTotals[4] += data[i].Hour;
-		dataTotals[5] += data[i].Crash;
-		dataTotals[6] += data[i].Timeout;
+		dataTotals[4] += data[i].WallTime;
+		dataTotals[5] += data[i].Hour;
+		dataTotals[6] += data[i].Crash;
+		dataTotals[7] += data[i].Timeout;
 		
 		$("#resultsTable tbody").html(html);
 	}
@@ -50,9 +52,10 @@ function fillResultsTable(data)
 	html += "<td>" + "N/A" + "</td>";
 	//html += "<td>" + "N/A" + "</td>"; // ELO
 	html += "<td>" + getTime((dataTotals[3]/data.length)) + "</td>";
-	html += "<td>" + (dataTotals[4]/2) + "</td>";
-	html += "<td>" + (dataTotals[5]) + "</td>";
+	html += "<td>" + getWallTime(Math.round(dataTotals[4]/data.length)) + "</td>";
+	html += "<td>" + (dataTotals[5]/2) + "</td>";
 	html += "<td>" + (dataTotals[6]) + "</td>";
+	html += "<td>" + (dataTotals[7]) + "</td>";
 	
 	$("#resultsTable tfoot tr").html(html);
 }
@@ -137,6 +140,15 @@ function getTime(frames)
 	var seconds = Math.floor((frames / fps) % 60);
 	
 	return "" + minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+}
+
+//calculates game time at normal speed using frame count
+function getWallTime(seconds)
+{
+	var minutes = Math.floor(seconds / 60);
+	seconds -= minutes * 60;
+	
+	return minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
 }
 
 //returns "<td>....</td>" with wins/games as content with cell color according to ratio

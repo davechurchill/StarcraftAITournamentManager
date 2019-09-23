@@ -191,6 +191,8 @@ public class Client extends Thread
 					{
 						log("MainLoop: Game didn't start for " + gameStartingTimeout + "ms\n");
 						//System.out.println("MONITOR: I could not read the file in 60 seconds, reporting crash");
+						// we want to record no duration here, since the game didn't 'start'
+						startTime = System.currentTimeMillis();
 						setEndTime();
 						if (starcraftDetected)
 						{
@@ -207,6 +209,8 @@ public class Client extends Thread
 				else
 				{
 					// the game is now running
+					// Record the time that we the game started
+					startTime = System.currentTimeMillis();
 					setStatus(ClientStatus.RUNNING);
 				}
 			}
@@ -397,8 +401,6 @@ public class Client extends Thread
 			// Start starcraft
 			ClientCommands.Client_StartStarcraft();
 
-			// Record the time that we tried to start the game
-			startTime = System.currentTimeMillis();
 			report = new GameReport(
 				instructions.game_id,
 				instructions.round_id, 
