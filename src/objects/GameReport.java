@@ -30,6 +30,7 @@ public class GameReport implements Serializable
 	private long            time; //time in ms measured by TM client
 	private int             score;
 	private boolean         crash;
+	private String          crashLog;
 	private Vector<Integer> timers;
 	private boolean         gameTimeout;
 	private int             finalFrame;
@@ -50,6 +51,7 @@ public class GameReport implements Serializable
 		time = 0;
 		score = 0;
 		crash = false;
+		crashLog = "";
 		timers = new Vector<Integer>();
 		gameTimeout = false;
 		finalFrame = 0;
@@ -77,6 +79,10 @@ public class GameReport implements Serializable
 		resultObject.add("gameDuration", time);
 		resultObject.add("score", score);
 		resultObject.add("crash", crash);
+		if (!crashLog.equals(""))
+		{
+			resultObject.add("crashLog", crashLog);
+		}
 		resultObject.add("gameTimeout", gameTimeout);
 		resultObject.add("finalFrame", finalFrame);
 		
@@ -158,6 +164,11 @@ public class GameReport implements Serializable
 	public void setCrash(boolean crash)
 	{
 		this.crash = crash;
+	}
+	
+	public void setCrashLog(String text)
+	{
+		this.crashLog = text;
 	}
 
 	public Vector<Integer> getTimers() 

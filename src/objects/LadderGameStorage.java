@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import server.Server;
 import server.ServerSettings;
 import utility.FileUtils;
 import utility.GameParser;
@@ -17,21 +18,44 @@ public class LadderGameStorage extends GameStorage {
 	
 	private HashMap<Integer, Game> gamesInProgress;
 	private TreeMap<Integer, Game> allGames;
+	private Vector<Integer> receivedOneResult;
 	private long gameQueueLastModTime = -1;
 	
 	public LadderGameStorage()
 	{
 		gamesInProgress = new HashMap<Integer, Game>();
 		allGames = new TreeMap<Integer, Game>();
+		receivedOneResult = new Vector<Integer>();
 	}
 	
 	private void updateGameQueue() throws Exception
 	{
+		// first check for rare situation where a game we think is in progress (two results have not returned) is actually not (maybe a TM client crashed)
+		// this actually gets called when server is initializing, so the server instance may be still null at this point.
+		if (Server.Instance() != null)
+		{
+			Vector<Integer> playing = Server.Instance().getGamesInProgress();
+			boolean foundFinishedGame = false;
+			for (int gameID : gamesInProgress.keySet())
+			{
+				if (!playing.contains(gameID))
+				{
+					removeGame(gameID);
+					foundFinishedGame = true;
+				}
+			}
+			if (foundFinishedGame)
+			{
+				// games queue is already up to date now
+				return;
+			}
+		}
+		
 		//throws exception if no lock possible in 10 seconds
 		FileUtils.lockFile(ServerSettings.Instance().GamesListFile + ".lock", 100, 100, 60000);
 		TreeMap<Integer, Game> games = new TreeMap<Integer, Game>();
 		
-		//if the file has been modified since the last time it was read, update modification time and return
+		//if the file has NOT been modified since the last time it was read, return; otherwise update mod time 
 		File gameQueue = new File(ServerSettings.Instance().GamesListFile);
 		if (gameQueue.lastModified() > gameQueueLastModTime)
 		{
@@ -78,7 +102,7 @@ public class LadderGameStorage extends GameStorage {
 		}
 	}
 
-	public boolean hasMoreGames() throws Exception
+	public synchronized boolean hasMoreGames() throws Exception
 	{
 		updateGameQueue();
 		return allGames.size() > gamesInProgress.size();
@@ -90,7 +114,7 @@ public class LadderGameStorage extends GameStorage {
 	 * @return next Game to play.
 	 * @throws Exception 
 	 */
-	public Game getNextGame(Vector<Vector<String>> freeClientProperties) throws Exception
+	public synchronized Game getNextGame(Vector<Vector<String>> freeClientProperties) throws Exception
 	{
 		return getNextGame(null, freeClientProperties);
 	}
@@ -103,7 +127,7 @@ public class LadderGameStorage extends GameStorage {
 	 * @return next Game to play.
 	 * @throws Exception 
 	 */
-	public Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties) throws Exception
+	public synchronized Game getNextGame(Collection<String> currentHosts, Vector<Vector<String>> freeClientProperties) throws Exception
 	{
 		updateGameQueue();
 		//Rounds may not be used for ladder games but leaving the functionality intact for now
@@ -113,12 +137,17 @@ public class LadderGameStorage extends GameStorage {
 		
 		//if bot File IO is turned on, don't return a game if all games from previous rounds have not already been removed
 		int currentRound = allGames.get(allGames.firstKey()).getRound();
-		for (int i = allGames.firstKey(); !waitForPreviousRound || allGames.get(i).getRound() == currentRound; i++)
-		{
+		for (int i = allGames.firstKey(); i <= allGames.lastKey(); i++)
+		{	
 			//skip games already in progress or finished
 			if (gamesInProgress.containsKey(i) || !allGames.containsKey(i))
 			{
 				continue;
+			}
+			
+			// break if we've entered another round (if we need to wait)
+			if (waitForPreviousRound && allGames.get(i).getRound() != currentRound) {
+				break;
 			}
 			
 			//if there are current hosts, we skip games with a host which is currently hosting another game in the lobby
@@ -132,27 +161,43 @@ public class LadderGameStorage extends GameStorage {
 				gamesInProgress.put(i, allGames.get(i));
 				return allGames.get(i);
 			}
-		}
+		} 
 		
 		//returns null if no game can be started right now
 		return null;
 	}
 
-	public Game lookupGame(int gameID) {
+	public synchronized Game lookupGame(int gameID)
+	{
 		return allGames.get(gameID);
 	}
 
-	public int getNumGamesRemaining() throws Exception {
+	public synchronized int getNumGamesRemaining() throws Exception
+	{
 		updateGameQueue();
 		return allGames.size() - gamesInProgress.size();
 	}
 
-	public int getNumTotalGames() throws Exception {
+	public synchronized int getNumTotalGames() throws Exception
+	{
 		updateGameQueue();
 		return allGames.size();
 	}
+	
+	public synchronized void receivedResult(int gameID) throws Exception
+	{
+		if (receivedOneResult.contains(gameID))
+		{
+			receivedOneResult.removeElement(gameID);
+			removeGame(gameID);
+		}
+		else
+		{
+			receivedOneResult.add(gameID);
+		}
+	}
 
-	public void removeGame(int gameID) throws Exception {
+	public synchronized void removeGame(int gameID) throws Exception {
 		//throws exception if no lock possible
 		//keep trying for remove game for 10 seconds
 		FileUtils.lockFile(ServerSettings.Instance().GamesListFile + ".lock", 100, 100, 60000);

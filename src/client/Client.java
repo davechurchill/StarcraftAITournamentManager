@@ -5,7 +5,9 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
 import java.text.*;
 
 import javax.imageio.ImageIO;
@@ -243,6 +245,18 @@ public class Client extends Thread
 						System.out.println("MONITOR: Crash detected, shutting down game");
 						setEndTime();
 						report.setGameEndType(starcraftIsRunning ? GameEndType.GAME_STATE_NOT_UPDATED_60S : GameEndType.STARCRAFT_CRASH);
+						
+						// check for crash log
+						if (!starcraftIsRunning)
+						{
+							String crashLog = getCrashLog();
+							if (crashLog != null)
+							{
+								report.setCrashLog(crashLog);
+							}
+						}
+						
+						
 						prepCrash(gameState);
 					}
 				}
@@ -439,7 +453,7 @@ public class Client extends Thread
 
 		log("Game ended normally. Sending results and cleaning the machine\n");
 		setStatus(ClientStatus.SENDING);
-		gameOver();
+		gameOver(10);
 		setStatus(ClientStatus.READY);
 	}
 
@@ -465,18 +479,92 @@ public class Client extends Thread
 		report.setCrash(true);
 		
 		log("Game ended in crash. Sending results and cleaning the machine\n");
-		ClientCommands.Client_KillStarcraft();
-		starcraftDetected = false;
-		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
+		
 		setStatus(ClientStatus.SENDING);
-		sendFilesToServer(false);
-		ClientCommands.Client_CleanStarcraftDirectory();
+		gameOver(2);
 		setStatus(ClientStatus.READY);
 	}
+	
+	private String getCrashLog() {
+		// sleep for a second
+        try { Thread.sleep(1000); } catch (Exception e) {}
 
-	private void gameOver()
+        String startLine = "";
+        String fullRecord = "";
+
+        java.io.File dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "Errors");
+
+        if(dir.list().length > 0)
+        {
+            for (java.io.File file : dir.listFiles())
+            {
+                // only files
+                if (!file.isFile())
+                {
+                    continue;
+                }
+
+                // file must be modified in last minute
+                if (Math.abs(file.lastModified() - System.currentTimeMillis()) > 60 * 1000) {
+                    continue;
+                }
+
+                if (file.getName().substring(file.getName().length() - 4).equalsIgnoreCase(".ERR"))
+                {
+                    // ".ERR" file
+                    startLine = "------------------------------------------------------";
+                }
+                else {
+                    // error file like "yyyy MMM dd.txt" or "yyy_MM_dd.txt"
+                    startLine = "//////////////////////////////////////////////////";
+                }
+
+                // read the file and check for last crash log
+                try
+                {
+                    BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()));
+                    String line;
+                    String record = "";
+                    while ((line = br.readLine()) != null)
+                    {
+                        if (line.matches(startLine))
+                        {
+                            // start over with new record
+                            record = line + "\n";
+                        }
+                        else if (line.matches("COMPUTER NAME:.*") || line.matches("USER NAME:.*"))
+                        {
+                            // don't record these two lines
+                            continue;
+                        }
+                        else {
+                            // add to record
+                            record += line + "\n";
+                        }
+                    }
+                    br.close();
+                    if (!record.equals(""))
+                    {
+                        fullRecord += record + "\n";
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (fullRecord.equals(""))
+        {
+            fullRecord = null;
+        }
+        return fullRecord;
+	}
+
+	private void gameOver(int replaySendAttempts)
 	{
-		sendFilesToServer(true);
+		sendFilesToServer(replaySendAttempts);
 		ClientCommands.Client_KillStarcraft();
 		starcraftDetected = false;
 		ClientCommands.Client_KillExcessWindowsProccess(startingproc);
@@ -491,16 +579,13 @@ public class Client extends Thread
 		System.exit(0);
 	}
 	
-	private void sendFilesToServer(boolean retryWait)
+	private void sendFilesToServer(int retryAttempts)
 	{
-		// sleep 5 seconds to make sure starcraft wrote the replay file correctly
-		
 		int attempt=0;
 		java.io.File dir;
 		boolean fileExists=false;
 		do
 		{
-			try { Thread.sleep(5000); } catch (Exception e) {}
 			dir = new java.io.File(ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
 			if(dir.list().length>0)
 			{
@@ -514,9 +599,12 @@ public class Client extends Thread
 						}
 					}
 				}
-			}
+			}			
 			attempt++;
-		}while(attempt<10 && !fileExists && retryWait);
+			// sleep 5 seconds to make sure starcraft wrote the replay file correctly
+			try { Thread.sleep(5000); } catch (Exception e) {}
+			
+		} while(attempt < retryAttempts && !fileExists);
 			
 			
 		// send the replay data to the server

@@ -26,6 +26,7 @@ public class Server  extends Thread
 	public ServerGUI 						gui;
 	
 	private Game							previousScheduledGame = null;
+	private Game							nextGame = null;        
 	
 	private static final Server INSTANCE = new Server();
 
@@ -106,7 +107,7 @@ public class Server  extends Thread
 		
 		int neededClients = 2;
 		
-		Game nextGame = null;
+		nextGame = null;
 		
 		// only one message of each kind is logged per instance
 		boolean notEnoughClients = false;
@@ -501,6 +502,7 @@ public class Server  extends Thread
                 free.add(c);
                 log("Client Ready: " + c.toString() + "\n");
             }
+            
         }
 	}
 	 
@@ -662,10 +664,12 @@ public class Server  extends Thread
 	        	}
 	        	gameIncomplete.add("invalidBots", invalidBots);
 	        	
-	            FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
+	        	FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+	        	FileWriter fstream = new FileWriter(ServerSettings.Instance().ResultsFile, true);
 	            BufferedWriter out = new BufferedWriter(fstream);
 	            out.write(gameIncomplete.toString() + "\n");
 	            out.close();
+	    		FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
 	        } 
 			catch (Exception e) 
 			{
@@ -767,6 +771,10 @@ public class Server  extends Thread
 			{
 				updateResults();
 			}
+			else
+			{
+				((LadderGameStorage)games).receivedResult(g.getGameID());
+			}
 		}
 		catch (Exception e)
 		{
@@ -786,9 +794,15 @@ public class Server  extends Thread
     	String line = report.getResultJSON(ServerSettings.Instance().tmSettings.TimeoutLimits) + "\n";
     	try
 		{
-    		FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+    		if (ServerSettings.Instance().LadderMode)
+    		{
+    			FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);    			
+    		}
     		FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
-    		FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
+    		if (ServerSettings.Instance().LadderMode)
+    		{
+    			FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");    			
+    		}
 		}
     	catch (Exception e)
 		{
@@ -979,6 +993,29 @@ public class Server  extends Thread
 			//if a bot has been updated in some way, reparse the settings file to check that the bot is valid
 			ServerSettings.Instance().updateSettings();
 		}
+	}
+	
+	public Vector<Integer> getGamesInProgress()
+	{
+		Vector<Integer> gameIDs = new Vector<Integer>();
+		if (clients != null)
+		{
+			for (ServerClientThread client : clients)
+			{
+				if (client.getStatus() != ClientStatus.READY && client.lastInstructionSent != null)
+				{
+					gameIDs.add(client.lastInstructionSent.game_id);
+				}
+			}			
+		}
+		
+		// add in the next game to start, since that one is "in progress" in teh ladder game storage
+		if (nextGame != null)
+		{
+			gameIDs.add(nextGame.getGameID());
+		}
+		
+		return gameIDs;
 	}
 	
 }
