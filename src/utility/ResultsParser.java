@@ -13,6 +13,7 @@ import java.text.*;
 import objects.Game;
 import objects.GameEndType;
 import objects.GameResult;
+import objects.TournamentModuleSettingsMessage;
 import server.ServerSettings;
 
 public class ResultsParser
@@ -293,6 +294,20 @@ public class ResultsParser
 		
 		//replay dir on local machine, easy to change by editing the output file
 		out.append("var replayPath = '../replays/';\n");
+		
+		//details of the frame time limits
+		String frameLimits = "var frameLimits = [";
+		TournamentModuleSettingsMessage tmSettings =  ServerSettings.Instance().tmSettings;
+		// looks like [{"timeInMS":55,"frameCount":320},{"timeInMS":1000,"frameCount":10},{"timeInMS":10000,"frameCount":1}]
+		for (int i = 0; i < tmSettings.TimeoutLimits.size(); i++)
+		{
+			frameLimits += "{\"timeInMS\":" + tmSettings.TimeoutLimits.get(i) + ",\"frameCount\":" + tmSettings.TimeoutBounds.get(i) + "}";
+			if (i != tmSettings.TimeoutLimits.size() - 1) {
+				frameLimits += ",";
+			}
+		}
+		frameLimits += "];\n";
+		out.append(frameLimits);
 		
 		out.append("var detailedResults = [\n");
 		

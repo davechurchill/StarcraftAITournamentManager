@@ -11,6 +11,18 @@ $(function()
 	
 	fillDetailedResultsTable(detailedResults, replayPath);
 	$("#detailedResultsTable").tablesorter();
+	
+	// toggle the legend div
+	$("#legend-toggle").click(function(event) {
+		if ($(event.currentTarget).html() === "Show Table Legend") {
+			$(event.currentTarget).html('Hide Table Legend');
+			$("#legend").show();
+		}
+		else {
+			$(event.currentTarget).html('Show Table Legend');
+			$("#legend").hide();
+		}
+	});
 });
 
 function fillFilters(resultsSummary, maps)
@@ -77,13 +89,13 @@ function fillDetailedResultsTable(data, replayDir)
 		var numTimers = data[0].timers[0].length;
 		for (var i = 0; i < numTimers; i++)
 		{
-			winnerTimerHeaders += "<th> W " + data[0].timers[0][i].timeInMS + "</th>";
-			loserTimerHeaders += "<th> L " + data[0].timers[0][i].timeInMS + "</th>";
+			winnerTimerHeaders += "<th> W " + data[0].timers[0][i].timeInMS + "ms<br>(Max " + frameLimits[i].frameCount + ")</th>";
+			loserTimerHeaders += "<th> L " + data[0].timers[0][i].timeInMS + "ms<br>(Max " + frameLimits[i].frameCount + ")</th>";
 		}
 	}
 	
 	//headers
-	var headerHtml = "<tr><th>Game ID</th><th>Round</th><th>Winner</th><th>Loser</th><th>Crash</th><th>Timeout</th><th>Map</th><th>Duration</th><th>End Type</th><th>W Score</th><th>L Score</th><th>(W-L)/Max</th>";
+	var headerHtml = "<tr><th>Game ID</th><th>Round</th><th>Winner</th><th>Loser</th><th>Crash</th><th>Timeout</th><th>Map</th><th>Duration</th><th>End Type</th><th>W Score</th><th>L Score</th><th>(W-L) / Max</th>";
 	headerHtml += winnerTimerHeaders + loserTimerHeaders;
 	headerHtml += "<th>Win Addr</th><th>Lose Addr</th><th>Start</th><th>Finish</th></tr>";
 	

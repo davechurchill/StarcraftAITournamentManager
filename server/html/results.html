@@ -14,6 +14,48 @@
 </head>
 <body>
 	<p>Go To: <a href="index.html">Results Overview</a>. Click column header to sort. Sort multiple columns by holding shift.</p>
+	<button id="legend-toggle">Show Table Legend</button>
+	<div id="legend">
+		<h1>Detailed Results Legend</h1>
+		<p>The End Type column gives some detail about how the game ended. This table explains each end type. Only games in which at least one bot ended the game 'normally' and counted a final game frame greater than zero (see Duration column) are counted in the results summary.</p>
+		<table>
+			<tr><th>End Type</th><th>Description</th><th>Game Counted?</th></tr>
+			<tr>
+				<td>NORMAL</td>
+				<td>Game ended because a bot won normally, or the game reached the time limit (higher score wins), or one bot took too long to process one or more frames.</td>
+				<td>Yes</td>
+			</tr>
+			<tr>
+				<td>GAME_STATE_NOT_UPDATED_60S</td>
+				<td>The gamestate file (output from TournamentModule once game is running) wasn't updated for 60 seconds, but Starcraft is still running.</td>
+				<td rowspan="4">If "Duration" is greater than 00:00:00</td>
+			</tr>
+			<tr>
+				<td>STARCRAFT_CRASH</td>
+				<td>Crash detected by Tournament Manager client, which means that Starcraft was running at some point, but later the client couldn't find the Starcraft process.</td>
+			</tr>
+			<tr>
+				<td>GAME_STATE_NEVER_DETECTED</td>
+				<td>No gamestate file (output from TournamentModule once game is running) detected by time limit (60s), but StarCraft is running.</td>
+			</tr>
+			<tr>
+				<td>STARCRAFT_NEVER_DETECTED</td>
+				<td>No gamestate file (output from TournamentModule once game is running) detected by time limit (60s), and StarCraft never detected running.</td>
+			</tr>
+			<tr>
+				<td>GAME_STATE_NOT_UPDATED_60S_BOTH_BOTS</td>
+				<td>Gamestate file wasn't updated for 60 seconds (both bots); assigned after the fact (detailed results only); can't know which bot (if any) is responsible.</td>
+				<td rowspan="2">No (Winner/Loser is arbitrary)</td>
+			</tr>
+			<tr>
+				<td>NO_REPORT</td>
+				<td>Only one report received; assigned after the fact (detailed results only); this could be caused by the Tournament Manager client crashing, or a network error, etc.</td>
+			</tr>
+		</table>
+		
+		<p>Timeouts: W 55, L 1000, etc. record the number of times a bot (winner or loser) took longer than 55, 1000, etc. ms to process a frame. If a bot exceeds the max, it loses the game.</p>
+	</div>
+	
 	<label for="crashes" class="filter">Crashes</label>
 	<select id="crashes" class="filter">
 		<option value="all">All Games</option>
