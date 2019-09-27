@@ -3,7 +3,6 @@ package objects;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -11,6 +10,8 @@ import java.util.Vector;
 import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
+
+import server.ServerSettings;
 
 public class GameReport implements Serializable
 {
@@ -60,7 +61,6 @@ public class GameReport implements Serializable
 		finishDate = "unknown";
 	}
 
-
 	public String getResultJSON(Vector<Integer> timerLimits) 
 	{
 		JsonObject resultObject = Json.object();
@@ -79,7 +79,7 @@ public class GameReport implements Serializable
 		resultObject.add("gameDuration", time);
 		resultObject.add("score", score);
 		resultObject.add("crash", crash);
-		if (!crashLog.equals(""))
+		if (!crashLog.equals("") && ServerSettings.Instance().LadderMode)
 		{
 			resultObject.add("crashLog", crashLog);
 		}
@@ -99,6 +99,15 @@ public class GameReport implements Serializable
 		resultObject.add("finishDate", finishDate);
 		
 		return resultObject.toString();
+	}
+	
+	public String getCrashLog()
+	{
+		if (!crashLog.equals(""))
+		{
+			return crashLog;
+		}
+		return null;		
 	}
 	
 	public void setAddress(String address)

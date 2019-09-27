@@ -414,6 +414,20 @@ This file must parse as valid JSON or the server will not start.
     </td>
 </tr>
 <tr>
+    <td>writeCrashLogs</td>
+    <td>
+        <b>Type:</b> Boolean<br><br>
+        If set to <b>true</b> then crash error logs from "Starcraft/Errors" are written to crash log directory (see next field).
+    </td>
+</tr>
+<tr>
+    <td>crashLogDir</td>
+    <td>
+        <b>Type:</b> String<br><br>
+        Location of crash log directory, relative to server.jar. The server will create the directory if it doesn't exist. Crash error data is written to files in this directory if writeCrashLogs is set to true.
+    </td>
+</tr>
+<tr>
     <td>excludeFromResults</td>
     <td>
         <b>Type:</b> Array of strings<br><br>

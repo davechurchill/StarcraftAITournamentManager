@@ -431,7 +431,7 @@ public class ServerGUI
 			int resClear = JOptionPane.NO_OPTION;
 			if (ServerSettings.Instance().ClearResults.equalsIgnoreCase("ask"))
 			{
-				resClear = JOptionPane.showConfirmDialog(mainFrame, "Clear existing tournament data?\nThis will clear all existing results, replays and bot read/write folders.", "Clear Tournament Data", JOptionPane.YES_NO_OPTION);
+				resClear = JOptionPane.showConfirmDialog(mainFrame, "Clear existing tournament data?\nThis will clear all existing results, replays, crash logs, and bot read/write folders.", "Clear Tournament Data", JOptionPane.YES_NO_OPTION);
 			}
 			else if (ServerSettings.Instance().ClearResults.equalsIgnoreCase("yes"))
 			{
@@ -449,6 +449,13 @@ public class ServerGUI
 				if (resultsFile.exists())
 				{
 					resultsFile.delete();
+				}
+				
+				logText(getTimeStamp() + " Clearing crash logs\n");
+				File crashDir = new File(ServerSettings.Instance().CrashLogsDir);
+				if (crashDir.exists())
+				{
+					FileUtils.DeleteDirectory(crashDir);
 				}
 				
 				logText(getTimeStamp() + " Clearing Bot Read / Write Directories\n");

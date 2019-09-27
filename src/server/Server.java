@@ -796,12 +796,26 @@ public class Server  extends Thread
 		{
     		if (ServerSettings.Instance().LadderMode)
     		{
-    			FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);    			
+    			FileUtils.lockFile(ServerSettings.Instance().ResultsFile + ".lock", 10, 100, 60000);
+    			FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
+    			FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");
     		}
-    		FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
-    		if (ServerSettings.Instance().LadderMode)
+    		else
     		{
-    			FileUtils.unlockFile(ServerSettings.Instance().ResultsFile + ".lock");    			
+    			FileUtils.writeToFile(line, ServerSettings.Instance().ResultsFile, true);
+    			String crashLog = report.getCrashLog();
+    			if (crashLog != null && ServerSettings.Instance().WriteCrashLogs)
+    			{
+    				new File(ServerSettings.Instance().CrashLogsDir).mkdirs();
+    				    				
+    				String id = "" + report.getGameID();
+    				while (id.length() < 5)
+    				{
+    					id = "0" + id;
+    				}
+    				String fileName = ServerSettings.Instance().CrashLogsDir + "/crash_" + report.getReportingBot().getName() + "_" + id + ".txt";
+    				FileUtils.writeToFile(crashLog, fileName, false);
+    			}
     		}
 		}
     	catch (Exception e)
@@ -995,6 +1009,7 @@ public class Server  extends Thread
 		}
 	}
 	
+	// only used in LadderGameStorage, so only in Ladder mode
 	public Vector<Integer> getGamesInProgress()
 	{
 		Vector<Integer> gameIDs = new Vector<Integer>();
@@ -1009,7 +1024,7 @@ public class Server  extends Thread
 			}			
 		}
 		
-		// add in the next game to start, since that one is "in progress" in teh ladder game storage
+		// add in the next game to start, since that one is "in progress" in the ladder game storage
 		if (nextGame != null)
 		{
 			gameIDs.add(nextGame.getGameID());

@@ -55,6 +55,8 @@
 	"lobbyGameSpeed"            :   "Normal",
 	"enableBotFileIO"           :   true,
 	"ladderMode"				:	false,
+	"writeCrashLogs"            :   true,
+	"crashLogDir"              :   "crash_logs",
 	"excludeFromResults"		:	["ExampleExcludedBot"],
 	
 	"tournamentModuleSettings":

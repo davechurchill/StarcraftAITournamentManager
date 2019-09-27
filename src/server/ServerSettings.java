@@ -39,6 +39,8 @@ public class ServerSettings
 	public LobbyGameSpeed   lobbyGameSpeed      = LobbyGameSpeed.NORMAL;
 	public boolean			EnableBotFileIO		= true;
 	public boolean			LadderMode			= false;
+	public boolean          WriteCrashLogs      = true;
+	public String           CrashLogsDir       = "crash_logs";
 	public Vector<String>	ExcludeFromResults	= new Vector<String>();
 	
 	public BWAPISettings	bwapi = new BWAPISettings();
@@ -163,6 +165,8 @@ public class ServerSettings
 			
 			EnableBotFileIO = jo.get("enableBotFileIO").asBoolean();
 			LadderMode = jo.get("ladderMode").asBoolean();
+			WriteCrashLogs = jo.get("writeCrashLogs").asBoolean();
+			CrashLogsDir = jo.get("crashLogDir").asString();
 			
 			JsonArray excludedBots = jo.get("excludeFromResults").asArray();
 			for (JsonValue excludedBot : excludedBots)
