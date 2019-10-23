@@ -37,3 +37,6 @@ server/games.txt
 server/html/*.txt
 *.project
 .classpath
+server/html/results/
+server/crash_logs/
+StarcraftAITournamentManager.iml
