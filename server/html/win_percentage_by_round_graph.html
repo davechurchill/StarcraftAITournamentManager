@@ -9,12 +9,15 @@
 	<script src="results/roundwins.js"></script>
 	<script>
 		$(function() {
+			var numBots = roundWins.length;
+		
 			$('#winPercentageGraph').highcharts({
 				chart: {
-					zoomType: 'xy'
+					zoomType: 'xy',
+					type: 'area'
 				},
 				title: {
-					text: 'Starcraft AI Competition Win Percentage Per Round',
+					text: 'Starcraft AI Competition - Wins Per Round',
 					style: {
 						color: 'black',
 						fontSize:'24px'
@@ -39,7 +42,7 @@
 				},
 				yAxis: {
 					title: {
-						text: 'Win Rate',
+						text: 'Wins',
 						style: {
 							color: 'black',
 							fontSize:'18px'
@@ -51,6 +54,7 @@
 							fontSize:'18px'
 						}
 					},
+					max: numBots / 2,
 					plotLines: [{
 						value: 0,
 						width: 0,
@@ -69,11 +73,11 @@
 					borderWidth: 0
 				},
 				plotOptions: {
-					line: {
-						lineWidth: 2,
-						marker: {
-							enabled: true
-						}
+					area: {
+						stacking: 'normal',
+						lineColor: '#666666',
+						lineWidth: 1,
+						marker: { enabled: false }
 					}
 				},
 				series: roundWins
