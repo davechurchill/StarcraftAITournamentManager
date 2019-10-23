@@ -10,6 +10,7 @@ import com.eclipsesource.json.WriterConfig;
 import java.io.*;
 import java.text.*;
 
+import objects.Bot;
 import objects.Game;
 import objects.GameEndType;
 import objects.GameResult;
@@ -23,26 +24,28 @@ public class ResultsParser
 	Vector<GameResult> results 		= new Vector<GameResult>();
 	Set<Integer> gameIDs 			= new HashSet<Integer>();
 	
-	private int numBots 			= ServerSettings.Instance().BotVector.size();
-	private int numMaps 			= ServerSettings.Instance().MapVector.size();
+	private Vector<Bot> botVector;
 	
-	private String[] botNames 		= new String[numBots];
-	private String[] mapNames 		= new String[numMaps];
+	private int numBots;
+	private int numMaps;
 	
-	private int[][] wins 			= new int[numBots][numBots];
-	private int[][] mapWins 		= new int[numBots][numMaps];
-	private int[][] mapGames 		= new int[numBots][numMaps];
+	private String[] botNames;
+	private String[] mapNames;
 	
-	private int eloK				= 32;
-	private double[] elo			= new double[numBots];
-	private int[] timeout 			= new int[numBots];
-	private int[] games 			= new int[numBots];
-	private int[] allWins 			= new int[numBots];
-	private int[] crash 			= new int[numBots];
-	private int[] frames 			= new int[numBots];
-	private int[] realSeconds       = new int[numBots];
-	private int[] mapUsage 			= new int[numMaps];
-	private int[] hour 		        = new int[numBots];
+	private int[][] wins;
+	private int[][] mapWins;
+	private int[][] mapGames;
+	
+	private int eloK = 32;
+	private double[] elo;
+	private int[] timeout;
+	private int[] games;
+	private int[] allWins;
+	private int[] crash;
+	private int[] frames;
+	private int[] realSeconds;
+	private int[] mapUsage;
+	private int[] hour;
 	
 	//first index is bot index, second index is round number
 	private Vector<Vector<Integer>> winsAfterRound = new Vector<Vector<Integer>>();
@@ -50,11 +53,40 @@ public class ResultsParser
 	
 	public ResultsParser(String filename)
 	{
+		// get number of bots excluding any excluded bots
+		botVector = new Vector<Bot>();
+		for (Bot bot : ServerSettings.Instance().BotVector)
+		{
+			if (!ServerSettings.Instance().isExcludedBot(bot.getName()))
+			{
+				botVector.add(bot);
+			}
+		}
+		numBots = botVector.size();
+		numMaps = ServerSettings.Instance().MapVector.size();
+		
+		botNames    = new String[numBots];
+		mapNames    = new String[numMaps];
+		
+		wins        = new int[numBots][numBots];
+		mapWins     = new int[numBots][numMaps];
+		mapGames    = new int[numBots][numMaps];
+		
+		elo         = new double[numBots];
+		timeout     = new int[numBots];
+		games       = new int[numBots];
+		allWins     = new int[numBots];
+		crash       = new int[numBots];
+		frames      = new int[numBots];
+		realSeconds = new int[numBots];
+		mapUsage    = new int[numMaps];
+		hour        = new int[numBots];
+		
 		// set the bot names and map names
 		for (int i=0; i<botNames.length; ++i)
 		{
 			elo[i] = 1200;
-			botNames[i] = ServerSettings.Instance().BotVector.get(i).getName();
+			botNames[i] = botVector.get(i).getName();
 			
 		}
 		
@@ -360,20 +392,14 @@ public class ResultsParser
 		for (int i=0; i<numBots; ++i)
 		{
 			int ii = allPairs.get(i).botIndex;
-			
-			//don't include excluded bots in results
-			if (ServerSettings.Instance().isExcludedBot(botNames[ii]))
-			{
-				continue;
-			}
 		
 			JsonObject botSummary = Json.object();
 			botSummary.add("BotName", botNames[ii]);
 			botSummary.add("Rank", i);
-			botSummary.add("Race", ServerSettings.Instance().BotVector.get(ii).getRace());
+			botSummary.add("Race", botVector.get(ii).getRace());
 			
 			//parse BWAPI version to go from "BWAPI_412" -> "4.1.2"
-			String version = ServerSettings.Instance().BotVector.get(ii).getBWAPIVersion();
+			String version = botVector.get(ii).getBWAPIVersion();
 			version = version.replaceFirst("BWAPI_", "");
 			String versionNum = "";
 			for (int j = 0; j < version.length(); j++)
@@ -401,10 +427,6 @@ public class ResultsParser
 			for (int j=0; j<numBots; j++)
 			{
 				int jj = allPairs.get(j).botIndex;
-				if (ServerSettings.Instance().isExcludedBot(botNames[jj]))
-				{
-					continue;
-				}
 				
 				JsonObject pair = Json.object();				
 				pair.add("Opponent", botNames[jj]);
