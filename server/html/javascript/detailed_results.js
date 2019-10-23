@@ -1,7 +1,25 @@
+mapNames = []
+mapNamesMap = {}
+
 $(function()
 {
-	//these arguments are declared in two other files output by the Tournament Manager
-	fillFilters(resultsSummary, maps);
+	// these arguments are declared in two other files output by the Tournament Manager
+	// first adjust map names if they are full file names
+	for (map of maps)
+	{
+		var mapName = map;
+		if (mapName.match(/^\(\d\)/g))
+		{
+			mapName = mapName.substring(3);
+		}
+		if (mapName.match(/\.\w\w\w$/g))
+		{
+			mapName = mapName.substring(0, mapName.length - 4);
+		}
+		mapNames.push(mapName);
+		mapNamesMap[map] = mapName;
+	}
+	fillFilters(resultsSummary, mapNames);
 	
 	$("select.filter").change(function()
 	{
@@ -62,7 +80,7 @@ function filterResult(result, crashFilter, botFilter, winnerFilter, loserFilter,
 	{
 		return false;
 	}
-	if (mapFilter != "all" && mapFilter != result.map)
+	if (mapFilter != "all" && mapFilter != mapNamesMap[result.map])
 	{
 		return false;
 	}
@@ -158,7 +176,7 @@ function fillDetailedResultsTable(data, replayDir)
 		
 		html += "<td>" + (data[i].crash == -1 ? "" : data[i].bots[data[i].crash]) + "</td>";
 		html += "<td>" + (data[i].timeout == -1 ? "" : data[i].bots[data[i].timeout]) + "</td>";
-		html += "<td>" + data[i].map + "</td>";
+		html += "<td>" + mapNamesMap[data[i].map] + "</td>";
 		html += "<td>" + data[i].duration + "</td>";
 		html += "<td>" + data[i].gameEndType + "</td>";
 		html += "<td>" + data[i].scores[winner] + "</td>";

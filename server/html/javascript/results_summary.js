@@ -100,7 +100,17 @@ function fillMapsTable(data, maps)
 	var html = "<th>Bot</th>";
 	for (var i=0; i<maps.length; i++)
 	{
-		html += "<th>" + maps[i].substring(0, Math.min(7, maps[i].length)) + "</th>";
+		// if map is full file name, reduce to just map name
+		var mapName = maps[i];
+		if (mapName.match(/^\(\d\)/g))
+		{
+			mapName = mapName.substring(3);
+		}
+		if (mapName.match(/\.\w\w\w$/g))
+		{
+			mapName = mapName.substring(0, mapName.length - 4);
+		}
+		html += "<th>" + mapName.substring(0, Math.min(7, maps[i].length)) + "</th>";
 	}
 	
 	$("#resultsMapTable thead tr").html(html);

@@ -383,7 +383,7 @@ public class ResultsParser
 		JsonArray maps = (JsonArray) Json.array();
 		for (String mapName : mapNames)
 		{
-			maps.add(mapName.substring(mapName.indexOf(')') + 1, mapName.indexOf('.')));
+			maps.add(mapName);
 		}
 		out.append("var maps = " + maps.toString() + ";\n");
 		
