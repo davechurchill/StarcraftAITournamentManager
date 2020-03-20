@@ -118,7 +118,7 @@ Running a tournament using this software requires the following prerequisites:
 * Any prerequisites for bots in the tournament, BWTA/BWTA2 DLLs, specific JDK versions required by Java bots, etc. (Clients only)
 * Java JDK 8 (Clients and Server)
 
-Download a zip file containing all Visual Studio redists and easy install script here: [all_vcredist_x86.zip](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/all_vcredist_x86.zip).
+Download a zip file containing all Visual Studio redists and easy install script here: [all_vcredist_x86.zip](http://www.cs.mun.ca/~dchurchill/starcraftaicomp/files/aiide/vcredist_x86_all.zip).
 
 ### Download & Compile
 
