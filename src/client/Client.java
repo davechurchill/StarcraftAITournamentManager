@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.text.*;
 
 import javax.imageio.ImageIO;
@@ -387,14 +388,22 @@ public class Client extends Thread
 			ClientCommands.Client_KillStarcraft();
 			ClientCommands.Client_CleanStarcraftDirectory();
 			
-			// Write the required starcraft files to the client machine
-			requiredFiles.write(ClientSettings.Instance().ClientStarcraftDir);
-			
-			// Write the map files to the client machine
-			mapFiles.write(ClientSettings.Instance().ClientStarcraftDir);
-			
-			// Write the bot files to the client machine
-			botFiles.write(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data");
+			try
+			{
+			    // Write the required starcraft files to the client machine
+                requiredFiles.write(ClientSettings.Instance().ClientStarcraftDir);
+                
+                // Write the map files to the client machine
+                mapFiles.write(ClientSettings.Instance().ClientStarcraftDir);
+                
+                // Write the bot files to the client machine
+                botFiles.write(ClientSettings.Instance().ClientStarcraftDir + "bwapi-data");
+            }
+			catch (IOException e)
+			{
+                e.printStackTrace();
+                System.exit(-1);
+            }
 			
 			// Rename the character files to match the bot names
 			ClientCommands.Client_RenameCharacterFile(instructions);
@@ -608,16 +617,29 @@ public class Client extends Thread
 			
 			
 		// send the replay data to the server
-		DataMessage replayMessage = new DataMessage(DataType.REPLAY, ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
-		log("Sending Data to Sever: " + replayMessage.toString() + "\n");
-		listener.sendMessageToServer(replayMessage);
+		DataMessage replayMessage;
+        try {
+            replayMessage = new DataMessage(DataType.REPLAY, ClientSettings.Instance().ClientStarcraftDir + "maps\\replays");
+            log("Sending Data to Sever: " + replayMessage.toString() + "\n");
+            listener.sendMessageToServer(replayMessage);
+        } catch (IOException e) {
+            // if this fails we want the client to keep going
+            e.printStackTrace();
+        }
 		
 		// send the write folder back to the server
 		if (previousInstructions != null)
 		{
-			DataMessage writeDirMessage = new DataMessage(DataType.WRITE_DIR, previousBotName(), ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\write");
-			log("Sending Data to Sever: " + writeDirMessage.toString() + "\n");
-			listener.sendMessageToServer(writeDirMessage);
+			DataMessage writeDirMessage;
+            try {
+                writeDirMessage = new DataMessage(DataType.WRITE_DIR, previousBotName(), ClientSettings.Instance().ClientStarcraftDir + "bwapi-data\\write");
+                log("Sending Data to Sever: " + writeDirMessage.toString() + "\n");
+                listener.sendMessageToServer(writeDirMessage);
+            } catch (IOException e) {
+                // this can fail if the bot still has the file open for writing. Doesn't matter if we can't send the message. 
+                e.printStackTrace();
+            }
+			
 		}
 	}
 	

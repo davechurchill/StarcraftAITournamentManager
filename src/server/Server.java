@@ -151,10 +151,6 @@ public class Server  extends Thread
 							while (free.size() < clients.size())
 		                    {
 		                        Thread.sleep(gameRescheduleTimer);
-		                        if (ServerSettings.Instance().LadderMode)
-		        				{
-		        					writeServerStatus();
-		        				}
 		                    }
 						}
 					}

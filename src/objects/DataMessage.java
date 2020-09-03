@@ -1,6 +1,7 @@
 package objects;
 
 import java.io.File;
+import java.io.IOException;
 
 import utility.*;
 
@@ -15,7 +16,7 @@ public class DataMessage implements Message
 	public String botName;		// associated bot name (if necessary)
 	public String zipFileName = "";
 	
-	public DataMessage(DataType type, String src)
+	public DataMessage(DataType type, String src) throws IOException
 	{
 		this.type = type;
 		
@@ -41,7 +42,7 @@ public class DataMessage implements Message
 		
 	}
 	
-	public DataMessage(DataType type, String botName, String src)
+	public DataMessage(DataType type, String botName, String src) throws IOException
 	{
 		this.type = type;
 		this.botName = botName;
@@ -60,42 +61,18 @@ public class DataMessage implements Message
 		return "" + type + extra + " " + (data.length/1000) + " kb";
 	}
 	
-	public void read(String src)
+	public void read(String src) throws IOException
 	{
-		try
-		{
-			data = ZipTools.ZipDirToByteArray(src);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		data = ZipTools.ZipDirToByteArray(src);
 	}
 	
-	public void readZipFile(String src)
+	public void readZipFile(String src) throws IOException
 	{
-		try
-		{
-			data = ZipTools.LoadZipFileToByteArray(src);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		data = ZipTools.LoadZipFileToByteArray(src);
 	}
 	
-	public void write(String dest)
+	public void write(String dest) throws IOException
 	{
-		try
-		{
-			ZipTools.UnzipByteArrayToDir(data, dest);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			System.exit(-1);
-		}
+		ZipTools.UnzipByteArrayToDir(data, dest);
 	}
 }
