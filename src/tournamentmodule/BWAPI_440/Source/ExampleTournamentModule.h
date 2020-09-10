@@ -26,6 +26,7 @@ class ExampleTournamentAI : public BWAPI::AIModule
 
 public:
 
+  virtual void updateFrameTimers();
   virtual void drawUnitInformation(int x, int y);
   virtual void drawTournamentModuleSettings(int x, int y);
   virtual void parseConfigFile(const std::string & filename);

@@ -108,14 +108,58 @@ int lastMoved = 0;
 int localSpeed = 0;
 int frameSkip = 0;
 int gameTimeLimit = 85714;
+int oldFrameCount = -1;
+int numPrevEventsThisFrame = 0;
 
 bool drawBotNames = true;
 bool drawUnitInfo = true;
 bool drawTournamentInfo = true;
+bool eventTimesVaried = false;
 
 char buffer[MAX_PATH];
 
 std::vector<int> frameTimes(100000,0);
+
+void ExampleTournamentAI::updateFrameTimers()
+{
+	const int eventTime = BWAPI::Broodwar->getLastEventTime();
+	const int frameCount = BWAPI::Broodwar->getFrameCount();
+
+	// For a client bot, if the TM calls BWAPI v4.4.0's getLastEventTime() it
+	// returns the total time for all events for the current frame (not just
+	// for the last event), and it returns the same value regardless of which
+	// TM callback method (onUnitDiscover(), onFrame() etc) is calling
+	// getLastEventTime(). We don't want to count the same amount multiple
+	// times. So, we try to detect whether we should interpret the value as
+	// the total time for all events for that frame or just the time for the
+	// last event, by examining whether getLastEventTime() has ever returned
+	// different values during the same frame. For the frames before it is
+	// detected, we interpret it as meaning the total time for all events for
+	// that frame. Future versions of BWAPI might solve the problem for us,
+	// but for v4.4.0 at least, we use this workaround. BWAPI versions before
+	// v4.4.0 don't time client bots at all, so the workaround isn't needed
+	// in those versions.
+	if (frameCount != oldFrameCount)
+	{
+		frameTimes[frameCount] = eventTime;
+		numPrevEventsThisFrame = 1;
+		oldFrameCount = frameCount;
+	}
+	else
+	{
+		if (eventTimesVaried)
+		{
+			frameTimes[frameCount] += eventTime;
+		}
+		else if (eventTime != frameTimes[frameCount])
+		{
+			eventTimesVaried = true;
+			frameTimes[frameCount] = (frameTimes[frameCount] * numPrevEventsThisFrame) + eventTime;
+		}
+
+		++numPrevEventsThisFrame;
+	}
+}
 
 void ExampleTournamentAI::onStart()
 {
@@ -140,6 +184,8 @@ void ExampleTournamentAI::onStart()
 	
 	Broodwar->setLocalSpeed(localSpeed);
 	Broodwar->setFrameSkip(frameSkip);
+
+	updateFrameTimers();
 }
 
 
@@ -181,8 +227,7 @@ void ExampleTournamentAI::onFrame()
 		return;
 	}
 
-	// add the framer times for this frame
-	frameTimes[frame] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 
 	// the total time for the last frame
 	int timeElapsed = frameTimes[frame-1];
@@ -309,47 +354,47 @@ void ExampleTournamentAI::drawUnitInformation(int x, int y)
 
 void ExampleTournamentAI::onSendText(std::string text)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onReceiveText(BWAPI::Player player, std::string text)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onPlayerLeft(BWAPI::Player player)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onNukeDetect(BWAPI::Position target)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitDiscover(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitEvade(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitShow(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitHide(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitCreate(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 
 	int mult = 3;
 
@@ -364,27 +409,27 @@ void ExampleTournamentAI::onUnitCreate(BWAPI::Unit unit)
 
 void ExampleTournamentAI::onUnitDestroy(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitMorph(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitComplete(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onUnitRenegade(BWAPI::Unit unit)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 void ExampleTournamentAI::onSaveGame(std::string gameName)
 {
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
+	updateFrameTimers();
 }
 
 bool ExampleTournamentModule::onAction(BWAPI::Tournament::ActionID actionType, void *parameter)
