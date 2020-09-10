@@ -322,11 +322,6 @@ void ExampleTournamentAI::onPlayerLeft(BWAPI::Player player)
 	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
 }
 
-void ExampleTournamentAI::onPlayerDropped(BWAPI::Player* player)
-{
-	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
-}
-
 void ExampleTournamentAI::onNukeDetect(BWAPI::Position target)
 {
 	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
@@ -377,17 +372,19 @@ void ExampleTournamentAI::onUnitMorph(BWAPI::Unit unit)
 	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
 }
 
-void ExampleTournamentAI::onUnitComplete(BWAPI::Unit *unit)
+void ExampleTournamentAI::onUnitComplete(BWAPI::Unit unit)
 {
 	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
 }
 
 void ExampleTournamentAI::onUnitRenegade(BWAPI::Unit unit)
 {
+	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
 }
 
 void ExampleTournamentAI::onSaveGame(std::string gameName)
 {
+	frameTimes[BWAPI::Broodwar->getFrameCount()] += BWAPI::Broodwar->getLastEventTime();
 }
 
 bool ExampleTournamentModule::onAction(BWAPI::Tournament::ActionID actionType, void *parameter)
