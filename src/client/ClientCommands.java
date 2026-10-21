@@ -85,8 +85,11 @@ public class ClientCommands
 		
 		while (WindowsCommandTools.IsWindowsProcessRunning("StarCraft.exe"))
 		{
+			String killCommand1 = "taskkill /T /F /IM StarCraft.exe";
+			String killCommand2 = "wmic process where \"name='StarCraft.exe'\" call terminate";
+
 			System.out.println("Killing Starcraft...  ");
-			WindowsCommandTools.RunWindowsCommand("taskkill /T /F /IM StarCraft.exe", true, false);
+			WindowsCommandTools.RunWindowsCommand(killCommand2, true, false);
 			try { Thread.sleep(100); } catch (InterruptedException e) {}
 		}
 	}
